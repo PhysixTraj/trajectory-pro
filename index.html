@@ -7,7 +7,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
 :root{
---bg:#06081a;--bg2:#0c1030;--pan:rgba(14,18,48,.66);--sol:#0d1234;--sol2:#131a44;
+--bg:#06081a;--pan:rgba(14,18,48,.66);--sol:#0d1234;
 --a:#5eead4;--a2:#38bdf8;--a3:#818cf8;
 --g:#fbbf6b;--r:#fb7185;
 --tx:#f1f5fd;--mu:#94a6c9;--mu2:#64748f;
@@ -18,7 +18,7 @@
 --grT:linear-gradient(100deg,#f1f5fd 10%,#5eead4 45%,#fbbf6b 90%);
 }
 [data-th=light]{
---bg:#eef2fb;--bg2:#e2e9f7;--pan:rgba(255,255,255,.78);--sol:#ffffff;--sol2:#f4f7ff;
+--bg:#eef2fb;--pan:rgba(255,255,255,.78);--sol:#fff;
 --a:#0d9488;--a2:#0284c7;--a3:#6366f1;
 --g:#b45309;--r:#e11d48;
 --tx:#101c38;--mu:#51617f;--mu2:#7c8aa6;
@@ -43,7 +43,7 @@ background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(2,5,18,.55) 1
 .ui{position:fixed;inset:0;z-index:10;pointer-events:none;padding:14px;user-select:none;-webkit-user-select:none}
 body.hui .ui>*{opacity:0!important;pointer-events:none!important}
 .ui>*{transition:opacity .3s}
-::-webkit-scrollbar{width:7px}::-webkit-scrollbar-thumb{background:var(--bs);border-radius:4px}::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:var(--bs);border-radius:4px}::-webkit-scrollbar-track{background:transparent}
 .gs{background:var(--pan);border:1px solid var(--bs);border-radius:16px;backdrop-filter:blur(18px) saturate(1.35);
 -webkit-backdrop-filter:blur(18px) saturate(1.35);box-shadow:var(--sh);position:relative;overflow:hidden}
 .gs::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;
@@ -82,6 +82,7 @@ background:linear-gradient(90deg,transparent,rgba(241,245,253,.22),transparent);
 .pt{pointer-events:auto;position:absolute;top:50%;transform:translateY(-50%);width:28px;height:74px;background:var(--pan);border:1px solid var(--bs);color:var(--mu);cursor:pointer;border-radius:9px;font-size:.85rem;backdrop-filter:blur(10px);transition:.2s}
 .pt:hover{color:var(--g);box-shadow:0 0 14px var(--gl)}
 .dl .pt{left:-34px}.dr .pt{right:-34px}
+.mcol{display:none;pointer-events:auto;position:absolute;top:6px;right:8px;background:rgba(129,140,248,.1);border:1px solid var(--bs);color:var(--mu);width:26px;height:26px;border-radius:8px;font-size:.8rem;cursor:pointer;place-items:center}
 .cp{padding:14px;display:flex;flex-direction:column;gap:9px}
 .tt{font-size:.56rem;color:var(--g);font-weight:800;text-transform:uppercase;letter-spacing:.16em;display:flex;align-items:center;gap:6px}
 .tt::before{content:'';width:11px;height:2px;background:var(--gr);border-radius:2px}
@@ -113,7 +114,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
 .st b.blue{color:var(--a);font-size:1rem}.st b.red{color:var(--r)}.st b.gold{color:var(--g)}
 .tl{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;border-top:1px solid var(--bs);padding-top:8px}
 .tl div{background:rgba(129,140,248,.07);border-radius:9px;padding:5px 2px;text-align:center;transition:.2s}
-.tl div:hover{background:rgba(94,234,212,.13)}
 .tl small{display:block;font-size:.47rem;color:var(--mu2);text-transform:uppercase;letter-spacing:.05em}
 .tl b{font-family:Consolas,ui-monospace,monospace;font-size:.78rem;color:var(--a)}
 .ab{display:flex;gap:5px;margin-top:3px}
@@ -134,6 +134,9 @@ background:linear-gradient(100deg,transparent,rgba(255,255,255,.4),transparent);
 .ctb:hover{color:var(--a);box-shadow:0 0 14px var(--gl)}
 .chp{pointer-events:auto;margin-top:6px;padding:9px 13px;transition:transform .35s,opacity .3s}
 .chp.off{transform:translateY(calc(100% + 40px));opacity:0;pointer-events:none}
+.chTabs{display:flex;gap:3px;margin-bottom:5px;flex-wrap:wrap;justify-content:center}
+.chTabs button{background:rgba(129,140,248,.07);border:1px solid var(--bs);color:var(--mu);padding:4px 9px;border-radius:7px;cursor:pointer;font-size:.62rem;font-weight:700;transition:.2s}
+.chTabs button.act{background:var(--gr);color:#04122c;border-color:transparent}
 .chh{display:flex;justify-content:space-between;font-size:.55rem;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
 .chh i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin:0 3px 2px 7px}
 .lgr{background:var(--a);box-shadow:0 0 5px var(--a)}.lgi{background:repeating-linear-gradient(90deg,var(--g) 0 4px,transparent 4px 8px)}.lgg{background:rgba(129,140,248,.65)}
@@ -143,6 +146,10 @@ background:linear-gradient(100deg,transparent,rgba(255,255,255,.4),transparent);
 .bh .n{font-family:Consolas,ui-monospace,monospace;font-weight:700;font-size:2.4rem;line-height:1;background:var(--grT);-webkit-background-clip:text;background-clip:text;color:transparent}
 .bh .l{font-size:.54rem;letter-spacing:.3em;color:var(--mu2);text-transform:uppercase;margin-top:3px}
 .bh .alt{font-family:Consolas,ui-monospace,monospace;font-size:.85rem;color:var(--mu);margin-top:4px}
+.mbar{display:none;pointer-events:auto;position:fixed;left:10px;right:10px;bottom:10px;z-index:60;gap:6px}
+.mbar button{flex:1;padding:15px;border-radius:14px;border:0;font-weight:800;font-size:.95rem;cursor:pointer}
+.mbar .b1{background:var(--gr);color:#04122c;box-shadow:0 6px 22px var(--gl)}
+.mbar .b2{background:var(--pan);border:1px solid var(--bs);color:var(--tx);backdrop-filter:blur(10px)}
 .md{position:fixed;inset:0;background:rgba(3,5,18,.78);backdrop-filter:blur(12px);z-index:100;display:none;justify-content:center;align-items:center;padding:16px;opacity:0;transition:opacity .3s}
 .md.open{display:flex;opacity:1}
 .mc{background:var(--sol);border:1px solid var(--b);border-radius:22px;padding:30px;max-width:720px;width:100%;box-shadow:0 0 70px var(--gv),var(--sh);max-height:88dvh;overflow-y:auto;position:relative;transform:translateY(18px);transition:transform .3s}
@@ -170,7 +177,7 @@ background:linear-gradient(100deg,transparent,rgba(255,255,255,.4),transparent);
 .lgT tr:hover td{background:rgba(94,234,212,.07);color:var(--tx)}
 .lgE{color:var(--mu);font-style:italic}
 @keyframes fi{from{opacity:0}to{opacity:1}}
-#to{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--sol);border:1px solid var(--g);color:var(--tx);padding:10px 20px;border-radius:13px;font-weight:600;font-size:.82rem;box-shadow:0 0 26px var(--gg),var(--sh);z-index:200;opacity:0;transition:.3s;pointer-events:none;max-width:80vw;text-align:center}
+#to{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--sol);border:1px solid var(--g);color:var(--tx);padding:10px 20px;border-radius:13px;font-weight:600;font-size:.82rem;box-shadow:0 0 26px var(--gg),var(--sh);z-index:200;opacity:0;transition:.3s;pointer-events:none;max-width:80vw;text-align:center}
 #to.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #er{position:fixed;top:0;left:0;right:0;z-index:400;display:none;background:rgba(76,8,28,.94);border-bottom:1px solid var(--r);color:#ffe0e6;padding:8px 14px;font-size:.76rem;font-family:Consolas,ui-monospace,monospace}
 #er.show{display:block}
@@ -179,7 +186,24 @@ background:linear-gradient(100deg,transparent,rgba(255,255,255,.4),transparent);
 #ld .m{width:68px;height:68px;border-radius:19px;display:grid;place-items:center;background:var(--gr);color:#04122c;font-size:1.9rem;box-shadow:0 0 60px var(--gv);animation:lp 1.5s ease-in-out infinite}
 @keyframes lp{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
 #ld .t{color:#94a6c9;letter-spacing:.34em;text-transform:uppercase;font-size:.64rem;margin-top:15px}
-@media(max-width:1100px){html,body{overflow-y:auto;overflow-x:hidden}.tb{position:static;flex-direction:column;gap:8px}.br{justify-content:center}.tbs{justify-content:center}.cb{position:static;transform:none;justify-content:center;flex-wrap:wrap}.dl,.dr,.cdk,.rp{position:static}.pt{display:none}.sp.loff,.sp.roff,.chp.off{transform:none;opacity:1;pointer-events:auto}.cdk{display:flex;flex-direction:column;align-items:center}.rp{display:none}.ui{overflow-y:auto;height:auto;min-height:100%;display:flex;flex-direction:column;gap:10px;padding:10px}.sp{width:auto!important;max-height:none}#ch{width:100%;max-width:100%}.bh{display:none}}
+@media(max-width:1100px){
+html,body{overflow-y:auto;overflow-x:hidden}
+.tb{position:sticky;top:0;flex-direction:column;gap:8px;background:linear-gradient(var(--bg) 70%,transparent);z-index:30;padding-bottom:6px}
+.br{justify-content:center}.tbs{justify-content:center}
+.cb{position:sticky;top:auto;transform:none;justify-content:center;flex-wrap:wrap}
+.dl,.dr,.cdk,.rp{position:static}
+.pt{display:none}
+.sp.loff,.sp.roff,.chp.off{transform:none;opacity:1;pointer-events:auto}
+.cdk{display:flex;flex-direction:column;align-items:center}
+.rp{display:none}
+.ui{overflow-y:auto;height:auto;min-height:100%;display:flex;flex-direction:column;gap:10px;padding:10px 10px 76px 10px}
+.sp{width:auto!important;max-height:none;position:relative}
+.mcol{display:grid}
+.sp.fold .cp{display:none}
+#ch{width:100%;max-width:100%}
+.mbar{display:flex}
+.bh{display:none}
+#to{bottom:76px}}
 @media(max-width:760px){
 .bn{font-size:.78rem}.sb{letter-spacing:.16em;font-size:.5rem}
 .mk{width:30px;height:30px;font-size:.9rem}
@@ -190,7 +214,7 @@ background:linear-gradient(100deg,transparent,rgba(255,255,255,.4),transparent);
 .bt{padding:12px 8px;font-size:.78rem}
 .pr button{padding:7px 9px}
 .md .mc{padding:20px;max-height:92dvh}
-#to{bottom:14px;max-width:calc(100vw - 28px);font-size:.75rem}
+#to{max-width:calc(100vw - 28px);font-size:.75rem}
 #er{font-size:.68rem}}
 </style>
 </head>
@@ -228,6 +252,7 @@ background:linear-gradient(100deg,transparent,rgba(255,255,255,.4),transparent);
 
 <div class="dk dl">
   <div class="sp gs" id="pL">
+    <button class="mcol" data-for="pL">▾</button>
     <div class="cp">
       <div><div class="tt">Готовые тела</div>
       <div class="pr" id="prBox">
@@ -242,7 +267,7 @@ background:linear-gradient(100deg,transparent,rgba(255,255,255,.4),transparent);
       <div class="ct"><label>Площадь <span id="AL">0.038 м²</span></label><input type="range" id="area" min="0.001" max="0.05" step="0.001" value="0.038"></div>
       <div class="ct"><label>Cd <span id="cdL">0.50</span></label><input type="range" id="cd" min="0.05" max="1.4" step="0.05" value="0.5"></div>
       <div class="ct"><label>Ветер <span id="windL">0 м/с</span></label><input type="range" id="wind" min="-15" max="15" step="0.5" value="0"></div>
-      <div class="ct"><label>Высота броска <span id="h0L">0.0 м</span></label><input type="range" id="h0" min="0" max="3" step="0.1" value="0"></div>
+      <div class="ct"><label>Высота пушки <span id="h0L">0.0 м</span></label><input type="range" id="h0" min="0" max="3" step="0.1" value="0"></div>
       <div class="ct"><label>Скорость времени <span id="tsL">×1.0</span></label><input type="range" id="ts" min="0.1" max="2" step="0.1" value="1"></div>
       <div><div class="tt" style="margin-bottom:4px">Планета</div>
       <div class="sg" id="gseg">
@@ -261,10 +286,11 @@ background:linear-gradient(100deg,transparent,rgba(255,255,255,.4),transparent);
 
 <div class="dk dr">
   <div class="sp gs" id="pR">
+    <button class="mcol" data-for="pR">▾</button>
     <div class="cp hudp">
       <div class="st"><span>Дальность (идеал)</span><b id="rI">–</b></div>
       <div class="st"><span>Дальность (реал)</span><b class="blue" id="rR">–</b></div>
-      <div class="st"><span>Погрешность</span><b class="red" id="er">–</b></div>
+      <div class="st"><span>Погрешность</span><b class="red" id="erV">–</b></div>
       <div class="st"><span>Макс. высота</span><b id="mH">–</b></div>
       <div class="st"><span>Угол падения</span><b id="la">–</b></div>
       <div class="st"><span>Рекорд</span><b class="gold" id="bs">–</b></div>
@@ -292,12 +318,23 @@ background:linear-gradient(100deg,transparent,rgba(255,255,255,.4),transparent);
 </div>
 
 <div class="cdk">
-  <button class="ctb gs" id="chT">📈 График y(x)</button>
+  <button class="ctb gs" id="chT">📈 Графики</button>
   <div class="chp gs" id="chP">
-    <div class="chh"><span>y(x)</span><span><i class="lgr"></i>реал<i class="lgi"></i>идеал<i class="lgg"></i>призраки</span></div>
-    <canvas id="ch" width="500" height="150"></canvas>
+    <div class="chTabs">
+      <button class="act" data-cc="xy">y(x)</button>
+      <button data-cc="yt">y(t)</button>
+      <button data-cc="vt">v(t)</button>
+      <button data-cc="at">a(t)</button>
+    </div>
+    <div class="chh"><span id="chName">y(x)</span><span><i class="lgr"></i>реал<i class="lgi"></i>идеал<i class="lgg"></i>призраки</span></div>
+    <canvas id="ch" width="500" height="170"></canvas>
   </div>
 </div>
+</div>
+
+<div class="mbar">
+  <button class="b1" id="mPlay">▶ ПУСК</button>
+  <button class="b2" id="mRst">🔄 Сброс</button>
 </div>
 
 <div class="md" id="mod">
@@ -312,18 +349,19 @@ background:linear-gradient(100deg,transparent,rgba(255,255,255,.4),transparent);
       <button onclick="swT('t6')">Журнал</button>
     </div>
     <div id="t1" class="tcn act">
-      <h3>Траектория PRO</h3>
-      <p><b>Тема:</b> влияние сопротивления воздуха на движение тела, брошенного под углом к горизонту.</p>
-      <p><b>Цель:</b> доказать, что школьная формула дальности (без учёта воздуха) даёт серьёзную погрешность для лёгких тел и высоких скоростей.</p>
-      <p><b>Гипотеза:</b> чем меньше масса и выше скорость — тем сильнее реальная траектория отличается от идеальной параболы, а оптимальный угол уходит ниже 45°.</p>
+      <h3>Траектория PRO — паспорт проекта</h3>
+      <p><b>Проблема.</b> Школьная формула дальности полёта предполагает вакуум. Насколько велика ошибка, если воздух всё-таки есть?</p>
+      <p><b>Гипотеза.</b> Чем меньше масса и выше скорость тела, тем сильнее реальная траектория отличается от идеальной параболы, а оптимальный угол броска уходит ниже 45°.</p>
+      <p><b>Метод.</b> Реальный полёт считается численно — методом Рунге–Кутты 4-го порядка с шагом 1/240 с. Идеальный — по классическим формулам кинематики. Оба сравниваются на одном графике и в 3D.</p>
       <ul>
-        <li>реальный полёт — численно, методом Рунге–Кутты 4-го порядка (шаг 1/240 с);</li>
-        <li>идеальный полёт — по классическим формулам кинематики;</li>
-        <li>параметры: скорость, угол, масса, площадь, Cd, ветер, высота, скорость времени;</li>
-        <li>3 планеты: Земля, Луна, Марс; 7 готовых тел от пинг-понга до ядра;</li>
-        <li>мишень со счётом, авто-оптимум, призраки, журнал бросков, CSV, скриншоты;</li>
-        <li>кинокамеры: ракурсы провожают шар во время полёта.</li>
+        <li>7 готовых тел с реальными параметрами: от пинг-понгового шарика до ядра;</li>
+        <li>3 планеты: Земля, Луна, Марс — на Луне траектории совпадают, что доказывает роль именно воздуха;</li>
+        <li>мишень со счётом, авто-оптимум угла, призраки прошлых бросков;</li>
+        <li>4 графика: y(x), y(t), v(t), a(t) — данные можно выгрузить в CSV для отчёта;</li>
+        <li>кинокамеры, провожающие шар: сверху, сбоку, спереди, сзади.</li>
       </ul>
+      <p><b>Ожидаемые результаты.</b> У волана и пёрышка погрешность идеальной формулы достигает сотен процентов; у ядра — единицы процентов. Оптимальный угол в воздухе — 30–40° вместо 45°.</p>
+      <p><b>Ограничения модели.</b> Шар считается идеальной сферой, не учтены вращение (эффект Магнуса) и боковой ветер. Это честные рамки применимости выводов.</p>
       <p><b>Технологии:</b> HTML5, CSS3, Three.js (WebGL), Canvas 2D, Web Audio API, RK4.</p>
       <p><b>Автор:</b> ученик 10–11 класса. Индивидуальный проект по физике.</p>
     </div>
@@ -337,18 +375,18 @@ background:linear-gradient(100deg,transparent,rgba(255,255,255,.4),transparent);
       <p><b>3. Метод.</b> Уравнение аналитически не решается — используется Рунге–Кутта 4-го порядка, шаг 1/240 с.</p>
       <p><b>4. Ветер.</b> Сопротивление считается по скорости воздуха относительно тела — встречный ветер тормозит заметнее, чем попутный ускоряет.</p>
       <p><b>5. Оптимум.</b> В вакууме всегда 45°, с воздухом — ниже, обычно 30–40°. Клавиша O применяет найденный перебором угол.</p>
+      <p><b>6. Графики.</b> Вкладка a(t) показывает полное ускорение: в вакууме это прямая g, в воздухе кривая выше — это и есть «зерно» проекта.</p>
     </div>
     <div id="t3" class="tcn">
       <h3>Как пользоваться</h3>
       <ul>
         <li><b>Ползунки:</b> статистика обновляется ещё до броска. Настройки запоминаются.</li>
         <li><b>Тела:</b> эмодзи-кнопки ставят реальные параметры снарядов.</li>
-        <li><b>Камера:</b> ракурсы 1–5 провожают шар в полёте. «Сверху» летит над шаром, «Сбоку» — боковая киносъёмка. Зажми мышь/палец — свободный облёт.</li>
-        <li><b>Радар:</b> вид сверху — шар, мишень, точки падения.</li>
-        <li><b>Пуск:</b> полёт; повторно — пауза. ⏹ — к старту. Двойной тап по сцене = ПУСК.</li>
+        <li><b>Камера:</b> ракурсы 1–5 провожают шар в полёте. «Сверху» летит над шаром, «Сбоку» — боковая киносъёмка. Зажми мышь/палец — свободный облёт, щипок — зум.</li>
+        <li><b>На телефоне:</b> стрелка ▾ сворачивает панель; кнопки ПУСК/Сброс закреплены внизу; двойной тап по сцене — пуск.</li>
+        <li><b>Графики:</b> вкладки y(x), y(t), v(t), a(t); кнопка 📄 выгружает точки в CSV.</li>
+        <li><b>Радар:</b> вид сверху — шар, мишень, точки падения (на компьютере).</li>
         <li><b>⚖️:</b> гонка реального и идеального шаров. <b>⚡/O:</b> оптимум. <b>🎯/G:</b> мишень.</li>
-        <li><b>📄:</b> CSV точек. <b>📓 Журнал:</b> таблица всех бросков + экспорт.</li>
-        <li><b>📸:</b> скриншот. <b>👁/H:</b> спрятать весь интерфейс.</li>
         <li><b>Клавиши:</b> <kbd>Space</kbd> пуск, <kbd>R</kbd> сброс, <kbd>C</kbd> сравнение, <kbd>O</kbd> оптимум, <kbd>G</kbd> мишень, <kbd>H</kbd> скрыть UI, <kbd>1–5</kbd> камеры.</li>
       </ul>
     </div>
@@ -360,6 +398,7 @@ background:linear-gradient(100deg,transparent,rgba(255,255,255,.4),transparent);
         <li><b>Ветер:</b> сравни +10 и −10 м/с — эффект несимметричен.</li>
         <li><b>Луна:</b> атмосферы нет — траектории совпадут.</li>
         <li><b>Квадрат:</b> удвой скорость — посмотри, во сколько раз выросла погрешность.</li>
+        <li><b>График a(t):</b> у пёрышка ускорение в начале полёта в разы больше g — воздух тормозит сильнее гравитации.</li>
         <li><b>Мишень:</b> попадай 3 раза подряд — готовый демо-сюжет для защиты.</li>
         <li><b>Данные:</b> сделай серию бросков, открой журнал и экспортируй его в CSV — готовая таблица для отчёта.</li>
       </ul>
@@ -389,6 +428,7 @@ const l=$('ldT');if(l)l.textContent='Сбой — см. плашку сверх�
 window.addEventListener('error',e=>showErr(e.message));
 if(typeof THREE==='undefined'){$('ldT').textContent='Нет интернета — обнови страницу';throw new Error('no THREE');}
 
+const MOB=innerWidth<800;
 const STEP=1/240;
 const DEF={v0:25,angle:45,mass:0.43,area:0.038,cd:0.5,wind:0,h0:0,ts:1,g:9.81,rho:1.225,mode:'air'};
 const P=Object.assign({},DEF);
@@ -429,8 +469,8 @@ b.innerHTML=h+'</table>';}
 renderJr();
 
 // ===== 3D =====
-const rn=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
-rn.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+const rn=new THREE.WebGLRenderer({antialias:!MOB,preserveDrawingBuffer:true});
+rn.setPixelRatio(Math.min(window.devicePixelRatio||1,MOB?1.8:2));
 rn.setSize(innerWidth,innerHeight);$('sc').appendChild(rn.domElement);
 const sc=new THREE.Scene();sc.background=new THREE.Color(0x06081a);sc.fog=new THREE.Fog(0x06081a,150,900);
 const cam=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,0.1,5000);
@@ -440,11 +480,11 @@ const pl=new THREE.PointLight(0x5eead4,1.1,80);pl.position.set(0,8,0);sc.add(pl)
 const gr=new THREE.GridHelper(600,60,0x3b4a9e,0x161f52);gr.material.transparent=true;gr.material.opacity=0.25;sc.add(gr);
 const gnd=new THREE.Mesh(new THREE.PlaneGeometry(800,800),new THREE.MeshStandardMaterial({color:0x0b1236,roughness:1,transparent:true,opacity:0.85}));
 gnd.rotation.x=-Math.PI/2;gnd.position.y=-0.03;sc.add(gnd);
-(function(){const n=400,a=new Float32Array(n*3);for(let i=0;i<n;i++){a[i*3]=(Math.random()-0.5)*1200;a[i*3+1]=Math.random()*400+20;a[i*3+2]=(Math.random()-0.5)*1200;}
+(function(){const n=MOB?160:400,a=new Float32Array(n*3);for(let i=0;i<n;i++){a[i*3]=(Math.random()-0.5)*1200;a[i*3+1]=Math.random()*400+20;a[i*3+2]=(Math.random()-0.5)*1200;}
 const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(a,3));
 sc.add(new THREE.Points(g,new THREE.PointsMaterial({color:0x9fd0ff,size:0.8,transparent:true,opacity:0.45})));})();
 (function(){const m=new THREE.MeshStandardMaterial({color:0x131c54,roughness:1,flatShading:true});
-for(let i=0;i<12;i++){const an=Math.random()*Math.PI*2,d=280+Math.random()*140,h=25+Math.random()*50;
+for(let i=0;i<(MOB?6:12);i++){const an=Math.random()*Math.PI*2,d=280+Math.random()*140,h=25+Math.random()*50;
 const c=new THREE.Mesh(new THREE.ConeGeometry(30+Math.random()*35,h,5),m);c.position.set(Math.cos(an)*d,h/2-2,Math.sin(an)*d);sc.add(c);}})();
 const dg=new THREE.Group();sc.add(dg);
 function upD(L){while(dg.children.length)dg.remove(dg.children[0]);
@@ -458,11 +498,27 @@ const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(
 sp.position.set(x,1.5,-2.4);sp.scale.set(st*0.15,st*0.075,1);dg.add(sp);}}
 const pad0=new THREE.Mesh(new THREE.TorusGeometry(1.2,0.06,8,40),new THREE.MeshBasicMaterial({color:0x5eead4}));
 pad0.rotation.x=Math.PI/2;sc.add(pad0);
-const gun=new THREE.Group();
-const bar=new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.22,2.4,14),new THREE.MeshStandardMaterial({color:0x1a2456,metalness:0.7,roughness:0.35}));
-bar.rotation.z=-Math.PI/2;bar.position.x=1.2;
-const mz=new THREE.Mesh(new THREE.TorusGeometry(0.22,0.05,8,20),new THREE.MeshBasicMaterial({color:0xfbbf6b}));
-mz.rotation.y=Math.PI/2;mz.position.x=2.4;gun.add(bar,mz);sc.add(gun);
+
+// ===== ПУШКА =====
+const gun=new THREE.Group();sc.add(gun);
+const gMetal=new THREE.MeshStandardMaterial({color:0x1a2456,metalness:0.78,roughness:0.3});
+const gWood=new THREE.MeshStandardMaterial({color:0x4a3020,roughness:0.85});
+const bg2=new THREE.Group();bg2.position.set(0.45,0.55,0);gun.add(bg2);
+const bar=new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.25,2.6,18),gMetal);
+bar.rotation.z=-Math.PI/2;bar.position.x=1.3;bg2.add(bar);
+[0.55,1.55].forEach(x=>{const ring=new THREE.Mesh(new THREE.TorusGeometry(0.2,0.035,8,20),gMetal);
+ring.rotation.y=Math.PI/2;ring.position.x=x;bg2.add(ring);});
+const mz=new THREE.Mesh(new THREE.TorusGeometry(0.24,0.055,8,20),new THREE.MeshBasicMaterial({color:0xfbbf6b}));
+mz.rotation.y=Math.PI/2;mz.position.x=2.6;bg2.add(mz);
+const cr=new THREE.Mesh(new THREE.BoxGeometry(1.5,0.3,0.7),gWood);cr.position.set(0.35,0.35,0);gun.add(cr);
+[-0.42,0.42].forEach(z=>{
+const w=new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.42,0.1,20),gWood);
+w.rotation.x=Math.PI/2;w.position.set(0.35,0.42,z);gun.add(w);
+const hub=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.14,12),gMetal);
+hub.rotation.x=Math.PI/2;hub.position.set(0.35,0.42,z);gun.add(hub);
+for(let s=0;s<6;s++){const sp2=new THREE.Mesh(new THREE.BoxGeometry(0.72,0.05,0.12),gWood);
+sp2.rotation.z=s*Math.PI/6;sp2.position.set(0.35,0.42,z);gun.add(sp2);}});
+
 const bg=new THREE.SphereGeometry(1,24,24);
 const rB=new THREE.Mesh(bg,new THREE.MeshStandardMaterial({color:0x5eead4,emissive:0x0d9488,metalness:0.3,roughness:0.3}));
 const iB=new THREE.Mesh(bg,new THREE.MeshStandardMaterial({color:0xfbbf6b,emissive:0x92610f,metalness:0.3,roughness:0.3}));
@@ -586,23 +642,29 @@ function simI(p){const a=p.angle*Math.PI/180,vx=p.v0*Math.cos(a),vy=p.v0*Math.si
 const T=(vy+Math.sqrt(vy*vy+2*p.g*p.h0))/p.g,pts=[],n=300;
 for(let i=0;i<=n;i++){const t=T*i/n;pts.push({t,x:vx*t,y:Math.max(0,p.h0+vy*t-0.5*p.g*t*t)});}
 return{pts,range:vx*T,time:T,maxH:p.h0+vy*vy/(2*p.g)};}
+function withMuzzle(){const a2=P.angle*Math.PI/180;
+return Object.assign({},P,{h0:P.h0+0.55+1.6*Math.sin(a2)});}
 
 // ===== СОСТОЯНИЕ =====
-let fc=null,idf=null,chH=10,tS=0,run=false,done=false,cmp=false;
+let fc=null,idf=null,chH=10,tS=0,run=false,done=false,cmp=false,chMode='xy';
 let best=parseFloat(localStorage.getItem('bs')||'0')||0,snd=true;
 const F=(x,d=1)=>x.toFixed(d);
 function fOpt(){let bA=45,bR=-1;
-for(let a=10;a<=80;a+=2.5){const q=Object.assign({},P,{angle:a});
+for(let a=10;a<=80;a+=2.5){const q=withMuzzle();q.angle=a;
 const r=q.mode==='vac'?simI(q).range:simR(q).range;if(r>bR){bR=r;bA=a;}}
 $('optA').textContent=bA+'°';return bA;}
 function recalc(){
-gun.rotation.z=P.angle*Math.PI/180;gun.position.y=P.h0;
+const a2=P.angle*Math.PI/180;
+bg2.rotation.z=a2;
+const mzx=0.45+2.6*Math.cos(a2),mzy=0.55+2.6*Math.sin(a2);
+gun.position.set(-mzx,P.h0,0);
 const r=0.22+0.55*Math.cbrt(P.mass/7.26);rB.scale.setScalar(r);iB.scale.setScalar(r);
-idf=simI(P);
-if(P.mode==='vac'){const a=P.angle*Math.PI/180,vx=P.v0*Math.cos(a),vy=P.v0*Math.sin(a);
+const q=withMuzzle();
+idf=simI(q);
+if(P.mode==='vac'){const vx=P.v0*Math.cos(a2),vy=P.v0*Math.sin(a2);
 fc={pts:idf.pts.map(p=>({t:p.t,x:p.x,y:p.y,vx,vy:vy-P.g*p.t})),range:idf.range,time:idf.time,maxH:idf.maxH,
 land:Math.atan2(Math.abs(vy-P.g*idf.time),vx)*180/Math.PI};}
-else fc=simR(P);
+else fc=simR(q);
 chH=Math.max(idf.maxH,fc.maxH)*1.15+1;
 if(iLn)sc.remove(iLn);
 iLn=new THREE.Line(new THREE.BufferGeometry().setFromPoints(idf.pts.map(p=>new THREE.Vector3(p.x,p.y,0))),
@@ -614,7 +676,7 @@ rGe.attributes.position.needsUpdate=true;sGe.attributes.position.needsUpdate=tru
 rGe.setDrawRange(0,0);sGe.setDrawRange(0,0);
 $('rI').textContent=F(idf.range)+' м';$('rR').textContent=F(fc.range)+' м';
 const er=idf.range>0.01?Math.abs(idf.range-fc.range)/idf.range*100:0;
-$('er').textContent=F(er)+' %';
+$('erV').textContent=F(er)+' %';
 $('mH').textContent=F(Math.max(fc.maxH,idf.maxH))+' м';
 $('la').textContent=F(fc.land,0)+'°';
 $('bs').textContent=best>0?F(best)+' м':'–';
@@ -696,6 +758,7 @@ rg.strokeStyle='rgba(94,234,212,.4)';rg.beginPath();rg.moveTo(px(x),H-12);rg.lin
 
 // ===== ЦИКЛ =====
 const ck=new THREE.Clock();let ld=false;
+const camTgt=new THREE.Vector3();
 function tick(){requestAnimationFrame(tick);
 const dt=Math.min(ck.getDelta(),0.05);
 if(ct){ct.k=Math.min(1,ct.k+dt*2.5);
@@ -719,11 +782,14 @@ ct.tz0+(ct.tz1-ct.tz0)*e);
 fixP.u.lerpVectors(ct.u0,ct.u1,e).normalize();}
 if(ct.k>=1)ct=null;}
 if(camMode==='fixed'&&fixP&&!ct){
-const bx=rB.position.x,by=rB.position.y;
-if(fixP.mode==='top'){fixP.t.set(bx,0,0);fixP.p.x=bx;}
-else fixP.t.set(bx,by,0);}
+camTgt.set(rB.position.x,Math.max(0.8,rB.position.y),0);
+fixP.t.lerp(camTgt,Math.min(1,dt*2.5));
+if(fixP.mode==='top')fixP.p.x=fixP.t.x;}
 if(orbAuto)orb.th+=dt*0.3;
-if(follow&&camMode==='orbit'){orb.tx=rB.position.x;orb.ty=Math.max(2,rB.position.y);orb.tz=0;}
+if(follow&&camMode==='orbit'){
+orb.tx+=(rB.position.x-orb.tx)*Math.min(1,dt*3);
+orb.ty+=(Math.max(2,rB.position.y)-orb.ty)*Math.min(1,dt*3);
+orb.tz=0;}
 updCam();
 if(shk>0){shk=Math.max(0,shk-dt*2.5);const s=shk*0.5;
 cam.position.x+=(Math.random()-0.5)*s;cam.position.y+=(Math.random()-0.5)*s;}
@@ -737,36 +803,53 @@ if(bu.t>1.2){sc.remove(bu.p);bu=null;}}
 if(tgOn){const s=1+Math.sin(performance.now()*0.004)*0.07;tR.scale.setScalar(s);tR2.scale.setScalar(s);}
 fl.intensity=Math.max(0,fl.intensity-dt*6);
 if(run&&fc){tS=Math.min(tS+dt*P.ts,fc.time);upV();
-if(tS>=fc.time-1e-6){run=false;done=true;$('playB').textContent='▶ ПОВТОР';landed();}}
+if(tS>=fc.time-1e-6){run=false;done=true;setPlayTxt('▶ ПОВТОР');landed();}}
 rn.render(sc,cam);drCh();
 if(!ld){ld=true;setTimeout(()=>$('ld').classList.add('gone'),250);}}
 
-// ===== ГРАФИК =====
+// ===== ГРАФИКИ =====
 const chc=$('ch'),cg=chc.getContext('2d');
+const CHN={xy:'y(x)',yt:'y(t)',vt:'v(t)',at:'a(t)'};
+function accMag(p,mode){const rx=p.vx-P.wind,vy=p.vy,vr=Math.hypot(rx,vy);
+const k=0.5*P.rho*P.cd*P.area/P.mass;
+if(P.mode!=='air'||vr<1e-9)return P.g;
+return Math.hypot(-k*vr*rx,-P.g-k*vr*vy);}
 function drCh(){if(!fc||!idf)return;
 const W=chc.width,H=chc.height,pd=30,lt=document.body.dataset.th==='light';
 cg.clearRect(0,0,W,H);
-const mX=Math.max(fc.range,idf.range)*1.08+1,mY=Math.max(chH,2);
-const px=x=>pd+(x/mX)*(W-pd-8),py=y=>H-pd-(y/mY)*(H-pd-10);
+let mX,mY,vf;
+if(chMode==='xy'){mX=Math.max(fc.range,idf.range)*1.08+1;mY=Math.max(chH,2);vf=p=>[p.x,p.y];}
+else if(chMode==='yt'){mX=Math.max(fc.time,idf.time)*1.05;mY=Math.max(chH*0.87,2);vf=p=>[p.t,p.y];}
+else if(chMode==='vt'){mX=Math.max(fc.time,idf.time)*1.05;
+mY=Math.max(P.v0*1.05,5);vf=p=>[p.t,Math.hypot(p.vx||0,p.vy||0)];}
+else{mX=Math.max(fc.time,1)*1.05;
+mY=Math.max(P.g*1.6,accMag(fc.pts[0]||{vx:P.v0,vy:P.v0},0)*1.15,5);
+vf=p=>[p.t,accMag(p,0)];}
+const px=x=>pd+(x/mX)*(W-pd-8),py=y=>H-pd-(Math.max(0,y)/mY)*(H-pd-10);
 cg.strokeStyle=lt?'rgba(90,110,150,.3)':'rgba(148,166,201,.18)';cg.fillStyle='#94a6c9';cg.lineWidth=1;
 cg.font='9px Consolas';
 for(let i=0;i<=5;i++){const g=px(mX*i/5);cg.beginPath();cg.moveTo(g,py(0));cg.lineTo(g,py(mY));cg.stroke();
-cg.fillText((mX*i/5).toFixed(0),g-10,H-pd+11);}
+cg.fillText((mX*i/5).toFixed(mX<12?1:0),g-10,H-pd+11);}
 for(let i=0;i<=4;i++){const g=py(mY*i/4);cg.beginPath();cg.moveTo(pd,g);cg.lineTo(W-8,g);cg.stroke();
 cg.fillText((mY*i/4).toFixed(0),3,g+3);}
-if($('ghT').checked){cg.strokeStyle='rgba(129,140,248,.4)';cg.lineWidth=1.5;
+if(chMode==='xy'&&$('ghT').checked){cg.strokeStyle='rgba(129,140,248,.4)';cg.lineWidth=1.5;
 gh.forEach(g0=>{cg.beginPath();g0.pts.forEach((p,i)=>i?cg.lineTo(px(p.x),py(p.y)):cg.moveTo(px(p.x),py(p.y)));cg.stroke();});}
 cg.setLineDash([5,5]);cg.strokeStyle='#fbbf6b';cg.lineWidth=1.5;
-cg.beginPath();idf.pts.forEach((p,i)=>i?cg.lineTo(px(p.x),py(p.y)):cg.moveTo(px(p.x),py(p.y)));cg.stroke();
+let prev=null;
+cg.beginPath();
+idf.pts.forEach((p,i)=>{const[vx,vy]=vf(p);prev?cg.lineTo(px(vx),py(vy)):cg.moveTo(px(vx),py(vy));prev=p;});
+cg.stroke();
 cg.setLineDash([]);cg.strokeStyle='#5eead4';cg.lineWidth=2.4;
 const st=Math.max(1,Math.ceil(fc.pts.length/400)),up=Math.round(tS/STEP);
-cg.beginPath();
-for(let i=0;i<=Math.min(up,fc.pts.length-1);i+=st){const p=fc.pts[i];i?cg.lineTo(px(p.x),py(p.y)):cg.moveTo(px(p.x),py(p.y));}
-const la=fc.pts[Math.min(up,fc.pts.length-1)];
-cg.lineTo(px(la.x),py(la.y));cg.stroke();
-const flg=cg.createLinearGradient(0,0,0,H);flg.addColorStop(0,'rgba(94,234,212,.2)');flg.addColorStop(1,'rgba(94,234,212,0)');
-cg.lineTo(px(la.x),py(0));cg.lineTo(px(0),py(0));cg.closePath();cg.fillStyle=flg;cg.fill();
-cg.beginPath();cg.arc(px(la.x),py(la.y),4,0,Math.PI*2);cg.fillStyle='#5eead4';cg.fill();}
+prev=null;cg.beginPath();
+for(let i=0;i<=Math.min(up,fc.pts.length-1);i+=st){const[vx,vy]=vf(fc.pts[i]);prev?cg.lineTo(px(vx),py(vy)):cg.moveTo(px(vx),py(vy));prev=fc.pts[i];}
+if(prev)cg.lineTo(px(vf(prev)[0]),py(vf(prev)[1]));cg.stroke();
+if(chMode!=='xy'){const flg=cg.createLinearGradient(0,0,0,H);flg.addColorStop(0,'rgba(94,234,212,.18)');flg.addColorStop(1,'rgba(94,234,212,0)');
+cg.lineTo(px(vf(prev||fc.pts[fc.pts.length-1])[0]),py(0));cg.lineTo(px(0),py(0));cg.closePath();cg.fillStyle=flg;cg.fill();}
+if(prev){cg.beginPath();cg.arc(px(vf(prev)[0]),py(vf(prev)[1]),4,0,Math.PI*2);cg.fillStyle='#5eead4';cg.fill();}}
+document.querySelectorAll('.chTabs button').forEach(b=>b.addEventListener('click',()=>{
+document.querySelectorAll('.chTabs button').forEach(x=>x.classList.remove('act'));b.classList.add('act');
+chMode=b.dataset.cc;$('chName').textContent=CHN[chMode];drCh();}));
 
 // ===== КАМЕРЫ =====
 const V=(x,y,z)=>new THREE.Vector3(x,y,z);
@@ -816,6 +899,7 @@ o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+0.45);}catc
 // ===== UI =====
 function toast(m){const t=$('to');t.textContent=m;t.classList.add('show');
 clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2300);}
+function setPlayTxt(t){$('playB').textContent=t;$('mPlay').textContent=t.replace('▶ ','▶ ');}
 function paint(el){const p=((parseFloat(el.value)-parseFloat(el.min))/(parseFloat(el.max)-parseFloat(el.min)))*100;
 el.style.background='linear-gradient(90deg,#5eead4 0%,#38bdf8 '+p+'%,rgba(148,163,184,.16) '+p+'%)';}
 const SL=[['v0','v0','vL',v=>v.toFixed(1)+' м/с'],['a0','angle','aL',v=>v.toFixed(0)+'°'],
@@ -854,26 +938,28 @@ function bp(p,t,s){$(t).addEventListener('click',()=>{const h=$(p).classList.tog
 $(t).textContent=(s==='loff')?(h?'▶':'◀'):(h?'◀':'▶');});}
 bp('pL','tL','loff');bp('pR','tR','roff');
 $('chT').addEventListener('click',()=>{const h=$('chP').classList.toggle('off');
-$('chT').textContent=h?'📈 График y(x)':'✕ Скрыть график';});
+$('chT').textContent=h?'📈 Графики':'✕ Скрыть графики';});
 $('chP').classList.add('off');
 $('ghT').addEventListener('change',syncGh);
 $('playB').addEventListener('click',()=>{
-if(run){run=false;$('playB').textContent='▶ ПРОДОЛЖИТЬ';return;}
+if(run){run=false;setPlayTxt('▶ ПРОДОЛЖИТЬ');return;}
 if(done){tS=0;done=false;rGe.setDrawRange(0,0);sGe.setDrawRange(0,0);}
-run=true;$('playB').textContent='⏸ ПАУЗА';
+run=true;setPlayTxt('⏸ ПАУЗА');
 $('bigHud').classList.add('show');
-fl.position.set(2,P.h0+1,0);fl.intensity=3.5;who();});
+fl.position.set(0.3,fc?fc.pts[0].y:2,0);fl.intensity=3.5;who();});
 $('stopB').addEventListener('click',()=>{run=false;done=false;tS=0;
 rGe.setDrawRange(0,0);sGe.setDrawRange(0,0);
-$('playB').textContent='▶ ПУСК';$('tl').value=0;
+setPlayTxt('▶ ПУСК');$('tl').value=0;
 $('bigHud').classList.remove('show');upV();});
+$('mPlay').addEventListener('click',()=>$('playB').click());
+$('mRst').addEventListener('click',()=>$('stopB').click());
 $('cmpB').addEventListener('click',()=>{cmp=!cmp;$('cmpB').classList.toggle('act',cmp);
 if(!cmp){iB.visible=iG.visible=false;}
 if(cmp)unlock('r');recalc();
 if(cmp)toast('Гонка: бирюзовый — реал, золотой — идеал');});
 $('tl').addEventListener('input',()=>{if(!fc)return;run=false;
 tS=Math.min(fc.time,fc.time*parseFloat($('tl').value)/100);
-done=tS>=fc.time-1e-6;$('playB').textContent='▶ ПУСК';upV();});
+done=tS>=fc.time-1e-6;setPlayTxt('▶ ПУСК');upV();});
 $('csvB').addEventListener('click',()=>{if(!fc)return;
 let csv='t;x;y;vx;vy\n';
 fc.pts.forEach((p,i)=>{if(i%4===0)csv+=p.t.toFixed(3)+';'+p.x.toFixed(3)+';'+p.y.toFixed(3)+';'+(p.vx||0).toFixed(2)+';'+(p.vy||0).toFixed(2)+'\n';});
@@ -906,6 +992,9 @@ function swT(id){const ids=['t1','t2','t3','t4','t5','t6'];
 document.querySelectorAll('.tbs2 button').forEach((b,i)=>b.classList.toggle('act',ids[i]===id));
 document.querySelectorAll('.tcn').forEach(c=>c.classList.toggle('act',c.id===id));}
 window.swT=swT;
+document.querySelectorAll('.mcol').forEach(b=>b.addEventListener('click',e=>{
+e.stopPropagation();const p=$(b.dataset.for);
+p.classList.toggle('fold');b.textContent=p.classList.contains('fold')?'▴':'▾';}));
 $('rndB').addEventListener('click',()=>{
 $('v0').value=(5+Math.random()*75).toFixed(1);
 $('a0').value=Math.round(5+Math.random()*80);
