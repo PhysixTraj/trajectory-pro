@@ -305,7 +305,7 @@ background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent)
       <ul>
         <li><b>Ползунки:</b> статистика обновляется ещё до броска. Настройки запоминаются.</li>
         <li><b>Тела:</b> эмодзи-кнопки ставят реальные параметры снарядов.</li>
-        <li><b>Камера:</b> зажми мышь (или палец) — вращай, колесо (или щипок) — зум. Ракурсы — кнопки или клавиши 1–5, 🌀 — авто-вращение, 🎯 — следить за шаром.</li>
+        <li><b>Камера:</b> ракурсы — кнопки или клавиши 1–5. «Сверху» глядит строго вниз, «Сбоку» — с уровня земли в профиль. Свободное вращение: зажми мышь или палец.</li>
         <li><b>Радар:</b> вид сверху — шар, мишень, точки падения.</li>
         <li><b>Пуск:</b> полёт; повторно — пауза. ⏹ — к старту. Сверху парят скорость и высота.</li>
         <li><b>⚖️:</b> гонка реального и идеального шаров. <b>⚡/O:</b> оптимум. <b>🎯/G:</b> мишень.</li>
@@ -485,24 +485,37 @@ sc.add(bu.p);}
 
 // ===== КАМЕРА =====
 const orb={tx:20,ty:4,tz:0,r:60,th:0.9,ph:1.0};
-let orbAuto=false,follow=false,ct=null;
-function updCam(){cam.position.set(
+let camMode='orbit',orbAuto=false,follow=false,ct=null,fixP=null;
+function updCam(){
+if(camMode==='fixed'&&fixP){
+cam.position.copy(fixP.p);cam.up.copy(fixP.u);cam.lookAt(fixP.t);return;}
+cam.up.set(0,1,0);
+cam.position.set(
 orb.tx+orb.r*Math.sin(orb.ph)*Math.cos(orb.th),
 orb.ty+orb.r*Math.cos(orb.ph),
 orb.tz+orb.r*Math.sin(orb.ph)*Math.sin(orb.th));
 cam.lookAt(orb.tx,orb.ty,orb.tz);}
+function toOrbit(){const t=fixP?fixP.t:{x:orb.tx,y:orb.ty,z:orb.tz};
+const dx=cam.position.x-t.x,dy=cam.position.y-t.y,dz=cam.position.z-t.z;
+orb.r=Math.max(4,Math.sqrt(dx*dx+dy*dy+dz*dz));
+orb.ph=Math.max(0.04,Math.min(1.6,Math.acos(Math.max(-1,Math.min(1,dy/orb.r)))));
+orb.th=Math.atan2(dz,dx);orb.tx=t.x;orb.ty=t.y;orb.tz=t.z;
+camMode='orbit';fixP=null;}
 let drag=false,lx=0,ly=0,pinch=0;
 const cvEl=rn.domElement;
-cvEl.addEventListener('pointerdown',e=>{drag=true;lx=e.clientX;ly=e.clientY;ct=null;});
+cvEl.addEventListener('pointerdown',e=>{drag=true;lx=e.clientX;ly=e.clientY;
+if(camMode==='fixed')toOrbit();ct=null;});
 window.addEventListener('pointerup',()=>{drag=false;pinch=0;});
 window.addEventListener('pointercancel',()=>{drag=false;pinch=0;});
-window.addEventListener('pointermove',e=>{if(!drag)return;
+window.addEventListener('pointermove',e=>{if(!drag||camMode!=='orbit')return;
 orb.th-=(e.clientX-lx)*0.006;
-orb.ph=Math.max(0.05,Math.min(1.53,orb.ph-(e.clientY-ly)*0.005));
+orb.ph=Math.max(0.04,Math.min(1.6,orb.ph-(e.clientY-ly)*0.005));
 lx=e.clientX;ly=e.clientY;});
 cvEl.addEventListener('wheel',e=>{e.preventDefault();
+if(camMode==='fixed')toOrbit();
 orb.r=Math.max(4,Math.min(600,orb.r*(e.deltaY>0?1.1:0.9)));},{passive:false});
 cvEl.addEventListener('touchstart',e=>{if(e.touches.length===2){
+if(camMode==='fixed')toOrbit();
 pinch=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);drag=false;}},{passive:true});
 cvEl.addEventListener('touchmove',e=>{if(e.touches.length===2&&pinch>0){e.preventDefault();
 const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
@@ -574,7 +587,7 @@ mI.visible=lI.sp.visible=cmp;
 if(cmp){mI.position.set(idf.range,0,0);lI.sp.position.set(idf.range,L*0.09+3,0);
 lI.sp.scale.set(L*0.16,L*0.04,1);dl(lI,'ИДЕАЛ  '+F(idf.range)+' м');}
 if(tgOn)plTg();
-if(!run&&!ct&&!follow&&!orbAuto)setCam('reset');
+if(!run&&!ct&&!fixP&&!follow&&!orbAuto)setCam('reset');
 upV();}
 function upV(){if(!fc)return;
 const pts=fc.pts,i=Math.min(pts.length-1,Math.max(0,Math.round(tS/STEP)));
@@ -647,15 +660,26 @@ function tick(){requestAnimationFrame(tick);
 const dt=Math.min(ck.getDelta(),0.05);
 if(ct){ct.k=Math.min(1,ct.k+dt*2.5);
 const e=ct.k<0.5?2*ct.k*ct.k:1-Math.pow(-2*ct.k+2,2)/2;
+if(ct.mode==='orbit'){
 orb.r=ct.r0+(ct.r1-ct.r0)*e;
 orb.th=ct.th0+(ct.th1-ct.th0)*e;
 orb.ph=ct.ph0+(ct.ph1-ct.ph0)*e;
 orb.tx=ct.tx0+(ct.tx1-ct.tx0)*e;
 orb.ty=ct.ty0+(ct.ty1-ct.ty0)*e;
-orb.tz=ct.tz0+(ct.tz1-ct.tz0)*e;
+orb.tz=ct.tz0+(ct.tz1-ct.tz0)*e;}
+else{
+fixP.p.set(
+ct.px0+(ct.px1-ct.px0)*e,
+ct.py0+(ct.py1-ct.py0)*e,
+ct.pz0+(ct.pz1-ct.pz0)*e);
+fixP.t.set(
+ct.tx0+(ct.tx1-ct.tx0)*e,
+ct.ty0+(ct.ty1-ct.ty0)*e,
+ct.tz0+(ct.tz1-ct.tz0)*e);
+fixP.u.lerpVectors(ct.u0,ct.u1,e).normalize();}
 if(ct.k>=1)ct=null;}
 if(orbAuto)orb.th+=dt*0.3;
-if(follow){orb.tx=rB.position.x;orb.ty=Math.max(2,rB.position.y);orb.tz=0;}
+if(follow&&camMode==='orbit'){orb.tx=rB.position.x;orb.ty=Math.max(2,rB.position.y);orb.tz=0;}
 updCam();
 if(shk>0){shk=Math.max(0,shk-dt*2.5);const s=shk*0.5;
 cam.position.x+=(Math.random()-0.5)*s;cam.position.y+=(Math.random()-0.5)*s;}
@@ -701,23 +725,27 @@ cg.lineTo(px(la.x),py(0));cg.lineTo(px(0),py(0));cg.closePath();cg.fillStyle=flg
 cg.beginPath();cg.arc(px(la.x),py(la.y),4,0,Math.PI*2);cg.fillStyle='#55c8f2';cg.fill();}
 
 // ===== КАМЕРЫ =====
+const V=(x,y,z)=>new THREE.Vector3(x,y,z);
 function setCam(m){const L=fc?Math.max(fc.range,idf.range,10):50,cx=L/2;
-let po,tg=[cx,Math.min(9,L*0.1),0];
-if(m==='reset')po=[cx+L*0.55,L*0.42+6,L*0.8];
-else if(m==='top'){po=[cx,L*1.4+18,0.5];tg=[cx,0,0.5];}
-else if(m==='side')po=[cx,L*0.12+2,L*0.95+14];
-else if(m==='front')po=[-L*0.8-8,L*0.15+2,0.5];
-else if(m==='back')po=[cx+L*0.9+8,L*0.25+3,0.5];
+['c0','c1','c2','c3','c4'].forEach(id=>$(id).classList.remove('act'));
+$({reset:'c0',top:'c1',side:'c2',front:'c3',back:'c4'}[m]).classList.add('act');
+const p0=cam.position.clone(),t0=fixP?fixP.t.clone():V(orb.tx,orb.ty,orb.tz),
+u0=camMode==='fixed'?fixP.u.clone():V(0,1,0);
+if(m==='reset'){camMode='orbit';fixP=null;
+const po=[cx+L*0.55,L*0.42+6,L*0.8],tg=[cx,Math.min(9,L*0.1),0];
 const dx=po[0]-tg[0],dy=po[1]-tg[1],dz=po[2]-tg[2];
 const R=Math.max(1,Math.sqrt(dx*dx+dy*dy+dz*dz));
-const PH=Math.max(0.05,Math.min(1.53,Math.acos(Math.max(-1,Math.min(1,dy/R)))));
-let TH=Math.atan2(dz,dx);
-while(TH-orb.th>Math.PI)TH-=2*Math.PI;
-while(TH-orb.th<-Math.PI)TH+=2*Math.PI;
-ct={k:0,r0:orb.r,th0:orb.th,ph0:orb.ph,tx0:orb.tx,ty0:orb.ty,tz0:orb.tz,
-r1:R,th1:TH,ph1:PH,tx1:tg[0],ty1:tg[1],tz1:tg[2]};
-['c0','c1','c2','c3','c4'].forEach(id=>$(id).classList.remove('act'));
-$({reset:'c0',top:'c1',side:'c2',front:'c3',back:'c4'}[m]).classList.add('act');}
+ct={mode:'orbit',k:0,r0:orb.r,th0:orb.th,ph0:orb.ph,tx0:orb.tx,ty0:orb.ty,tz0:orb.tz,
+r1:R,ph1:Math.max(0.04,Math.min(1.6,Math.acos(Math.max(-1,Math.min(1,dy/R))))),
+th1:Math.atan2(dz,dx),tx1:tg[0],ty1:tg[1],tz1:tg[2]};return;}
+let p1,t1,u1;
+if(m==='top'){p1=V(cx,L*1.7+22,0.05);t1=V(cx,0,0);u1=V(0,0,-1);}
+else if(m==='side'){p1=V(cx,2.2,L*1.05+15);t1=V(cx,1.5,0);u1=V(0,1,0);}
+else if(m==='front'){p1=V(L*1.05+18,3.5,0.05);t1=V(1,2,0);u1=V(0,1,0);}
+else{p1=V(-L*0.35-10,3.5,0.05);t1=V(L*0.5,2,0);u1=V(0,1,0);}
+camMode='fixed';fixP={p:p0.clone(),t:t0.clone(),u:u0.clone()};
+ct={mode:'fixed',k:0,px0:p0.x,py0:p0.y,pz0:p0.z,tx0:t0.x,ty0:t0.y,tz0:t0.z,
+px1:p1.x,py1:p1.y,pz1:p1.z,tx1:t1.x,ty1:t1.y,tz1:t1.z,u0,u1};}
 document.querySelectorAll('.cb [data-cam]').forEach(b=>b.addEventListener('click',()=>{
 orbAuto=false;$('orbB').classList.remove('act');
 follow=false;$('folB').classList.remove('act');
@@ -770,10 +798,10 @@ recalc();toast('Планета: '+b.textContent.trim());}));
 document.querySelectorAll('#gseg button').forEach(b=>{
 if(Math.abs(P.g-parseFloat(b.dataset.g))<0.05){document.querySelectorAll('#gseg button').forEach(x=>x.classList.remove('act'));b.classList.add('act');}});
 $('orbB').addEventListener('click',()=>{orbAuto=!orbAuto;
-if(orbAuto){follow=false;$('folB').classList.remove('act');}
+if(orbAuto){follow=false;$('folB').classList.remove('act');if(camMode==='fixed')toOrbit();}
 $('orbB').classList.toggle('act',orbAuto);});
 $('folB').addEventListener('click',()=>{follow=!follow;$('folB').classList.toggle('act',follow);
-if(follow){orbAuto=false;ct=null;$('orbB').classList.remove('act');toast('Камера следует за шаром 🎯');}
+if(follow){orbAuto=false;ct=null;if(camMode==='fixed')toOrbit();$('orbB').classList.remove('act');toast('Камера следует за шаром 🎯');}
 else setCam('reset');});
 $('optB').addEventListener('click',()=>{const a=fOpt();P.angle=a;rSl();recalc();saveP();unlock('o');toast('⚡ Оптимум: '+a+'°');});
 $('tgtB').addEventListener('click',tgTg);
