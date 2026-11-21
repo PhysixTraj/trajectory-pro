@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Траектория PRO</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+:root{--bg:#050b1c;--pan:rgba(10,18,44,.8);--sol:#0b1531;--a:#55c8f2;--a2:#3b82f6;
+--g:#e8c46a;--r:#ff6b83;--tx:#eaf1fb;--mu:#8fa3c8;--bs:rgba(143,163,200,.15);--b:rgba(85,200,242,.25);--gl:rgba(85,200,242,.3);--gg:rgba(232,196,106,.3)}
+[data-th=light]{--bg:#e7edf7;--pan:rgba(255,255,255,.9);--sol:#fff;--a:#1d6fd6;--a2:#0ea5e9;--g:#b45309;--r:#dc2626;--tx:#0c1a33;--mu:#5b6b8c;--bs:rgba(30,50,90,.12);--gl:rgba(29,111,214,.3);--gg:rgba(180,83,9,.2)}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx)}
+body::after{content:'';position:fixed;inset:0;z-index:2;pointer-events:none;
+background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(2,6,20,.5) 100%)}
+[data-th=light] body::after{background:radial-gradient(ellipse at 50% 45%,transparent 60%,rgba(120,140,180,.22) 100%)}
+#sc{position:fixed;inset:0;z-index:1}#sc canvas{display:block}
+.ui{position:fixed;inset:0;z-index:10;pointer-events:none;padding:14px}
+body.hui .ui>*{opacity:0!important;pointer-events:none!important}
+.ui>*{transition:opacity .3s}
+::-webkit-scrollbar{width:7px}::-webkit-scrollbar-thumb{background:var(--bs);border-radius:4px}::-webkit-scrollbar-track{background:transparent}
+.gs{background:var(--pan);border:1px solid var(--bs);border-radius:14px;backdrop-filter:blur(14px) saturate(1.2);
+box-shadow:0 12px 36px rgba(2,8,30,.5),inset 0 1px 0 rgba(160,200,255,.07);position:relative}
+.gs::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;
+background:linear-gradient(120deg,rgba(85,200,242,.4),transparent 30%,transparent 70%,rgba(232,196,106,.35));
+-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+opacity:.45;pointer-events:none;transition:opacity .4s}
+.gs:hover::before{opacity:1}
+.tb{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;z-index:12}
+.br{pointer-events:auto;display:flex;align-items:center;gap:10px;padding:8px 16px 8px 12px;overflow:hidden}
+.br::after{content:'';position:absolute;left:16px;right:16px;bottom:5px;height:1px;
+background:linear-gradient(90deg,transparent,var(--g),var(--a),transparent);background-size:200% 100%;
+animation:au 5s linear infinite;opacity:.55}
+@keyframes au{from{background-position:0% 0}to{background-position:200% 0}}
+.mk{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--g),#8a6a1f);color:#0b1531;font-size:1rem;box-shadow:0 0 12px var(--gg);animation:mp 3s ease-in-out infinite}
+@keyframes mp{0%,100%{box-shadow:0 0 10px var(--gg)}50%{box-shadow:0 0 22px var(--gg)}}
+.bn{font-weight:800;letter-spacing:.12em;font-size:.9rem;background:linear-gradient(120deg,var(--tx),var(--g));-webkit-background-clip:text;background-clip:text;color:transparent}
+[data-th=light] .bn{color:var(--tx);-webkit-text-fill-color:var(--tx)}
+.sb{font-size:.55rem;color:var(--mu);letter-spacing:.25em;text-transform:uppercase}
+.tbs{pointer-events:auto;display:flex;gap:6px}
+.ib{width:40px;height:40px;border-radius:10px;background:var(--pan);border:1px solid var(--bs);color:var(--tx);cursor:pointer;backdrop-filter:blur(8px);transition:.2s;display:grid;place-items:center;font-size:1rem}
+.ib:hover{background:linear-gradient(135deg,var(--a),var(--a2));color:#04102a;box-shadow:0 0 14px var(--gl);transform:translateY(-2px)}
+[data-th=light] .ib:hover{color:#fff}
+.ib.act{background:linear-gradient(135deg,var(--a),var(--a2));color:#04102a}
+[data-th=light] .ib.act{color:#fff}
+.cb{pointer-events:auto;position:absolute;top:64px;left:50%;transform:translateX(-50%);display:flex;gap:3px;padding:4px}
+.cb button{background:transparent;border:0;color:var(--mu);padding:6px 11px;border-radius:8px;cursor:pointer;font-weight:600;font-size:.72rem;transition:.2s}
+.cb button:hover{background:rgba(85,200,242,.1);color:var(--tx)}
+.cb button.act{background:linear-gradient(135deg,var(--a),var(--a2));color:#04102a}
+[data-th=light] .cb button.act{color:#fff}
+.rp{position:absolute;top:112px;right:14px;z-index:11;padding:9px;pointer-events:auto}
+.rh{font-size:.55rem;color:var(--mu);font-weight:800;letter-spacing:.2em;text-transform:uppercase;text-align:center;margin-bottom:5px}
+#rd{display:block;border-radius:8px}
+.dk{position:absolute;pointer-events:none;z-index:11}
+.dl{left:14px;bottom:14px}.dr{right:14px;bottom:14px}
+.sp{pointer-events:auto;max-height:calc(100vh - 130px);overflow-y:auto;width:284px;transition:transform .35s,opacity .3s}
+.sp.loff{transform:translateX(calc(-100% - 20px));opacity:0;pointer-events:none}
+.sp.roff{transform:translateX(calc(100% + 20px));opacity:0;pointer-events:none}
+.pt{pointer-events:auto;position:absolute;top:50%;transform:translateY(-50%);width:26px;height:66px;background:var(--pan);border:1px solid var(--bs);color:var(--mu);cursor:pointer;border-radius:7px;font-size:.85rem;backdrop-filter:blur(8px)}
+.pt:hover{color:var(--g);box-shadow:0 0 12px var(--gl)}
+.dl .pt{left:-32px}.dr .pt{right:-32px}
+.cp{padding:13px;display:flex;flex-direction:column;gap:8px}
+.tt{font-size:.58rem;color:var(--g);font-weight:800;text-transform:uppercase;letter-spacing:.14em;display:flex;align-items:center;gap:6px}
+.tt::before{content:'';width:10px;height:2px;background:linear-gradient(90deg,var(--g),transparent);border-radius:2px}
+.pr{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.pr button{background:rgba(59,130,246,.06);border:1px solid var(--bs);border-radius:7px;padding:5px 7px;cursor:pointer;font-size:.95rem;transition:.2s}
+.pr button:hover{background:rgba(85,200,242,.12);transform:translateY(-1px)}
+.pr button.on{background:linear-gradient(135deg,var(--a),var(--a2));border-color:var(--a)}
+.ct{display:flex;flex-direction:column;gap:3px}
+.ct label{font-size:.6rem;color:var(--mu);display:flex;justify-content:space-between;font-weight:600;text-transform:uppercase}
+.ct label span{color:var(--g);font-family:Consolas,monospace;font-size:.75rem}
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:rgba(143,163,200,.14);outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--a),var(--a2));box-shadow:0 0 8px var(--gl);cursor:pointer;border:2px solid var(--tx)}
+.sg{display:flex;gap:4px}
+.sg button{flex:1;background:rgba(59,130,246,.05);border:1px solid var(--bs);color:var(--mu);padding:7px 3px;border-radius:7px;cursor:pointer;font-weight:600;font-size:.68rem;transition:.2s}
+.sg button.act{background:linear-gradient(135deg,var(--a),var(--a2));color:#04102a;border-color:var(--a)}
+[data-th=light] .sg button.act{color:#fff}
+.swr{display:flex;justify-content:space-between;align-items:center;font-size:.72rem;color:var(--mu);font-weight:600}
+.sw{position:relative;width:36px;height:19px;flex-shrink:0}
+.sw input{opacity:0;width:0;height:0}
+.sl{position:absolute;inset:0;background:rgba(143,163,200,.26);border-radius:18px;cursor:pointer;transition:.3s}
+.sl::before{content:'';position:absolute;width:13px;height:13px;border-radius:50%;left:3px;top:3px;background:#fff;transition:.3s}
+.sw input:checked+.sl{background:linear-gradient(90deg,var(--a),var(--a2));box-shadow:0 0 7px var(--gl)}
+.sw input:checked+.sl::before{transform:translateX(17px)}
+.hint{background:rgba(232,196,106,.06);border:1px dashed rgba(232,196,106,.3);border-radius:6px;padding:6px 9px;font-size:.7rem;color:var(--mu)}
+.hint b{color:var(--g);font-family:Consolas,monospace}
+.hudp{padding:13px;display:flex;flex-direction:column;gap:6px}
+.st{display:flex;justify-content:space-between;font-size:.72rem;color:var(--mu)}
+.st b{font-family:Consolas,monospace;font-size:.92rem;color:var(--tx)}
+.st b.blue{color:var(--a);font-size:1rem}.st b.red{color:var(--r)}.st b.gold{color:var(--g)}
+.tl{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;border-top:1px solid var(--bs);padding-top:7px}
+.tl div{background:rgba(59,130,246,.06);border-radius:7px;padding:4px 2px;text-align:center;transition:.2s}
+.tl div:hover{background:rgba(85,200,242,.13)}
+.tl small{display:block;font-size:.48rem;color:var(--mu);text-transform:uppercase}
+.tl b{font-family:Consolas,monospace;font-size:.78rem;color:var(--a)}
+.ab{display:flex;gap:5px;margin-top:3px}
+.bt{padding:11px;border-radius:9px;border:0;font-weight:800;cursor:pointer;font-size:.8rem;transition:.2s;position:relative;overflow:hidden}
+.bt.m{flex:2.2;background:linear-gradient(120deg,var(--a),var(--a2),var(--a));background-size:200% 200%;animation:ga 5s ease infinite;color:#04102a;box-shadow:0 0 18px var(--gl)}
+.bt.m::after{content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;
+background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);animation:sh 3.5s ease-in-out infinite}
+@keyframes sh{0%,60%{left:-80%}100%{left:130%}}
+@keyframes ga{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+[data-th=light] .bt.m{color:#fff}
+.bt.m:hover{transform:translateY(-2px);filter:brightness(1.15)}
+.bt.s{flex:1;background:rgba(59,130,246,.08);border:1px solid var(--bs);color:var(--tx)}
+.bt.s:hover{background:rgba(85,200,242,.18)}
+.bt.s.act{background:linear-gradient(135deg,var(--g),#8a6a1f);color:#0b1531}
+[data-th=light] .bt.s.act{color:#fff}
+.cdk{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:11;pointer-events:none;text-align:center}
+.ctb{pointer-events:auto;padding:7px 15px;background:var(--pan);border:1px solid var(--bs);border-radius:10px;color:var(--mu);font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;cursor:pointer}
+.ctb:hover{color:var(--g);box-shadow:0 0 12px var(--gl)}
+.chp{pointer-events:auto;margin-top:6px;padding:8px 12px;transition:transform .35s,opacity .3s}
+.chp.off{transform:translateY(calc(100% + 40px));opacity:0;pointer-events:none}
+.chh{display:flex;justify-content:space-between;font-size:.55rem;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.chh i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin:0 3px 2px 7px}
+.lgr{background:#55c8f2;box-shadow:0 0 5px #55c8f2}.lgi{background:repeating-linear-gradient(90deg,#e8c46a 0 4px,transparent 4px 8px)}.lgg{background:rgba(139,92,246,.6)}
+#ch{width:500px;max-width:54vw;display:block;border-radius:8px;border:1px solid var(--bs)}
+.bh{position:absolute;top:112px;left:50%;transform:translateX(-50%);z-index:11;text-align:center;pointer-events:none;opacity:0;transition:opacity .35s}
+.bh.show{opacity:1}
+.bh .n{font-family:Consolas,monospace;font-weight:700;font-size:2.3rem;line-height:1;background:linear-gradient(120deg,var(--a),var(--g));-webkit-background-clip:text;background-clip:text;color:transparent}
+.bh .l{font-size:.55rem;letter-spacing:.28em;color:var(--mu);text-transform:uppercase;margin-top:3px}
+.bh .alt{font-family:Consolas,monospace;font-size:.85rem;color:var(--mu);margin-top:4px}
+.md{position:fixed;inset:0;background:rgba(3,7,20,.8);backdrop-filter:blur(8px);z-index:100;display:none;justify-content:center;align-items:center;padding:16px;opacity:0;transition:opacity .3s}
+.md.open{display:flex;opacity:1}
+.mc{background:var(--sol);border:1px solid var(--b);border-radius:18px;padding:28px;max-width:720px;width:100%;box-shadow:0 0 50px var(--gl);max-height:88vh;overflow-y:auto;position:relative;transform:translateY(18px);transition:transform .3s}
+.md.open .mc{transform:translateY(0)}
+.mx{position:absolute;top:12px;right:14px;background:none;border:0;color:var(--mu);font-size:1.3rem;cursor:pointer;transition:.2s}
+.mx:hover{color:var(--a);transform:rotate(90deg)}
+.tbs2{display:flex;gap:5px;margin-bottom:14px;border-bottom:1px solid var(--bs);padding-bottom:9px;flex-wrap:wrap}
+.tbs2 button{background:none;border:0;color:var(--mu);font-size:.85rem;font-weight:600;cursor:pointer;padding:4px 8px;border-bottom:2px solid transparent;transition:.2s}
+.tbs2 button:hover{color:var(--tx)}
+.tbs2 button.act{color:var(--g);border-bottom-color:var(--g)}
+.tcn{display:none;line-height:1.6;font-size:.88rem}.tcn.act{display:block;animation:fi .3s ease}
+.tcn p{margin-bottom:8px;color:var(--mu)}.tcn p b{color:var(--tx)}
+.tcn .f{background:rgba(85,200,242,.07);border:1px solid var(--bs);padding:11px;border-radius:8px;font-family:Consolas,monospace;color:var(--a);margin:11px 0;text-align:center}
+.tcn ul{margin:6px 0 10px 18px;color:var(--mu)}.tcn li{margin-bottom:4px}
+.tcn kbd{background:rgba(143,163,200,.15);border:1px solid var(--bs);border-radius:5px;padding:1px 6px;font-family:Consolas,monospace;font-size:.76rem}
+.ar{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;background:rgba(59,130,246,.05);border:1px solid var(--bs);margin-bottom:6px;transition:.2s}
+.ar:hover{border-color:var(--b)}
+.ar .i{font-size:1.25rem;filter:grayscale(1) opacity(.4)}.ar.done .i{filter:none}
+.ar .nm{font-weight:700}.ar.done .nm{color:var(--g)}.ar .ds{font-size:.75rem;color:var(--mu)}
+.lgT{width:100%;border-collapse:collapse;font-size:.78rem;font-family:Consolas,monospace}
+.lgT th{color:var(--g);text-align:left;padding:5px 7px;border-bottom:1px solid var(--b);font-size:.65rem;text-transform:uppercase}
+.lgT td{padding:5px 7px;color:var(--mu);border-bottom:1px solid var(--bs)}
+.lgT tr:hover td{background:rgba(85,200,242,.06);color:var(--tx)}
+.lgE{color:var(--mu);font-style:italic}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+#to{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--sol);border:1px solid var(--g);color:var(--tx);padding:9px 18px;border-radius:11px;font-weight:600;font-size:.82rem;box-shadow:0 0 22px var(--gg);z-index:200;opacity:0;transition:.3s;pointer-events:none;max-width:80vw;text-align:center}
+#to.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#er{position:fixed;top:0;left:0;right:0;z-index:400;display:none;background:rgba(60,8,22,.92);border-bottom:1px solid var(--r);color:#ffd8de;padding:8px 14px;font-size:.76rem;font-family:Consolas,monospace}
+#er.show{display:block}
+#ld{position:fixed;inset:0;z-index:500;background:#050b1c;display:grid;place-items:center;transition:opacity .5s}
+#ld.gone{opacity:0;pointer-events:none}
+#ld .m{width:64px;height:64px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,#e8c46a,#b8860b);color:#050b1c;font-size:1.8rem;box-shadow:0 0 50px var(--gg);animation:lp 1.4s ease-in-out infinite}
+@keyframes lp{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+#ld .t{color:#8fa3c8;letter-spacing:.3em;text-transform:uppercase;font-size:.65rem;margin-top:14px}
+@media(max-width:1100px){html,body{overflow-y:auto}.tb{position:static;flex-direction:column;gap:8px}.br{justify-content:center}.tbs{justify-content:center}.cb{position:static;transform:none;justify-content:center;flex-wrap:wrap}.dl,.dr,.cdk,.rp{position:static}.pt{display:none}.sp.loff,.sp.roff,.chp.off{transform:none;opacity:1;pointer-events:auto}.cdk{display:flex;flex-direction:column;align-items:center}.rp{display:none}.ui{overflow-y:auto;height:auto;min-height:100%;display:flex;flex-direction:column;gap:10px;padding:10px}.sp{width:auto!important}#ch{width:100%;max-width:100%}.bh{display:none}}
+</style>
+</head>
+<body data-th="dark">
+<div id="ld"><div style="display:flex;flex-direction:column;align-items:center"><div class="m">◈</div><div class="t" id="ldT">Траектория Pro</div></div></div>
+<div id="er"></div>
+<div id="sc"></div>
+
+<div class="ui">
+<div class="tb">
+  <div class="br gs"><div class="mk">◈</div><div><div class="bn">ТРАЕКТОРИЯ <i>PRO</i></div><div class="sb">Physics Lab</div></div></div>
+  <div class="tbs">
+    <button class="ib" id="soundBtn" title="Звук">🔊</button>
+    <button class="ib" id="shotBtn" title="Скриншот">📸</button>
+    <button class="ib" id="huiBtn" title="Скрыть интерфейс (H)">👁</button>
+    <button class="ib" id="fsBtn" title="Полный экран">⛶</button>
+    <button class="ib" id="themeBtn" title="Тема">🌙</button>
+    <button class="ib" id="infoBtn" title="О проекте">📖</button>
+  </div>
+</div>
+
+<div class="cb gs">
+  <button class="act" data-cam="reset" id="c0">📷 Обзор</button>
+  <button data-cam="top" id="c1">🗺 Сверху</button>
+  <button data-cam="side" id="c2">📐 Сбоку</button>
+  <button data-cam="front" id="c3">🏎 Спереди</button>
+  <button id="orbB">🌀 Орбита</button>
+  <button id="folB">🎯 Следить</button>
+</div>
+
+<div class="rp gs"><div class="rh">Радар</div><canvas id="rd" width="140" height="140"></canvas></div>
+
+<div class="bh" id="bigHud"><div class="n" id="bigN">0 м/с</div><div class="l">скорость</div><div class="alt" id="bigA">высота 0 м</div></div>
+
+<div class="dk dl">
+  <div class="sp gs" id="pL">
+    <div class="cp">
+      <div><div class="tt">Готовые тела</div>
+      <div class="pr" id="prBox">
+        <button data-p="foot" title="Футбол">⚽</button><button data-p="tennis" title="Теннис">🎾</button>
+        <button data-p="basket" title="Баскетбол">🏀</button><button data-p="ping" title="Пинг-понг">⚪</button>
+        <button data-p="shot" title="Ядро">🔨</button><button data-p="badm" title="Волан">🏸</button>
+        <button data-p="feather" title="Пёрышко">🪶</button>
+      </div></div>
+      <div class="ct"><label>Скорость <span id="vL">25.0 м/с</span></label><input type="range" id="v0" min="5" max="80" step="0.5" value="25"></div>
+      <div class="ct"><label>Угол <span id="aL">45°</span></label><input type="range" id="a0" min="5" max="85" step="1" value="45"></div>
+      <div class="ct"><label>Масса <span id="mL">0.430 кг</span></label><input type="range" id="mass" min="0.002" max="7.26" step="0.001" value="0.43"></div>
+      <div class="ct"><label>Площадь <span id="AL">0.038 м²</span></label><input type="range" id="area" min="0.001" max="0.05" step="0.001" value="0.038"></div>
+      <div class="ct"><label>Cd <span id="cdL">0.50</span></label><input type="range" id="cd" min="0.05" max="1.4" step="0.05" value="0.5"></div>
+      <div class="ct"><label>Ветер <span id="windL">0 м/с</span></label><input type="range" id="wind" min="-15" max="15" step="0.5" value="0"></div>
+      <div class="ct"><label>Высота броска <span id="h0L">0.0 м</span></label><input type="range" id="h0" min="0" max="3" step="0.1" value="0"></div>
+      <div class="ct"><label>Скорость времени <span id="tsL">×1.0</span></label><input type="range" id="ts" min="0.1" max="2" step="0.1" value="1"></div>
+      <div><div class="tt" style="margin-bottom:4px">Планета</div>
+      <div class="sg" id="gseg">
+        <button class="act" data-g="9.81" data-rho="1.225">🌍 Земля</button>
+        <button data-g="1.62" data-rho="0">🌕 Луна</button>
+        <button data-g="3.71" data-rho="0.02">🔴 Марс</button>
+      </div></div>
+      <div class="sg"><button class="act" id="mAir">Атмосфера</button><button id="mVac">Вакуум</button></div>
+      <div class="swr">Вектор скорости<div class="sw"><input type="checkbox" id="arrT" checked><span class="sl"></span></div></div>
+      <div class="swr">Призраки<div class="sw"><input type="checkbox" id="ghT" checked><span class="sl"></span></div></div>
+      <div class="hint">💡 Оптимум: <b id="optA">–</b> · <b>O</b> применить · <b>G</b> мишень</div>
+    </div>
+  </div>
+  <button class="pt" id="tL">◀</button>
+</div>
+
+<div class="dk dr">
+  <div class="sp gs" id="pR">
+    <div class="cp hudp">
+      <div class="st"><span>Дальность (идеал)</span><b id="rI">–</b></div>
+      <div class="st"><span>Дальность (реал)</span><b class="blue" id="rR">–</b></div>
+      <div class="st"><span>Погрешность</span><b class="red" id="er">–</b></div>
+      <div class="st"><span>Макс. высота</span><b id="mH">–</b></div>
+      <div class="st"><span>Угол падения</span><b id="la">–</b></div>
+      <div class="st"><span>Рекорд</span><b class="gold" id="bs">–</b></div>
+      <div class="st"><span>Счёт в мишени</span><b class="gold" id="ss">0 · серия 0</b></div>
+      <div class="tl">
+        <div><small>Время</small><b id="tV">0.0 с</b></div><div><small>Скор.</small><b id="vV">0</b></div>
+        <div><small>Выс.</small><b id="hV">0</b></div><div><small>Путь</small><b id="xV">0</b></div>
+      </div>
+      <div class="ct"><label>Время полёта <span id="timeL">0.00 с</span></label><input type="range" id="tl" min="0" max="100" value="0" step="0.1"></div>
+      <div class="ab">
+        <button class="bt m" id="playB">▶ ПУСК</button>
+        <button class="bt s" id="cmpB" title="Гонка реал vs идеал">⚖️</button>
+        <button class="bt s" id="stopB">⏹</button>
+      </div>
+      <div class="ab" style="margin-top:0">
+        <button class="bt s" id="optB" title="Оптимум (O)">⚡</button>
+        <button class="bt s" id="tgtB" title="Мишень (G)">🎯</button>
+        <button class="bt s" id="rndB" title="Случайно">🎲</button>
+        <button class="bt s" id="rstB" title="Сброс">🔄</button>
+        <button class="bt s" id="csvB" title="CSV">📄</button>
+      </div>
+    </div>
+  </div>
+  <button class="pt" id="tR">▶</button>
+</div>
+
+<div class="cdk">
+  <button class="ctb gs" id="chT">📈 График y(x)</button>
+  <div class="chp gs" id="chP">
+    <div class="chh"><span>y(x)</span><span><i class="lgr"></i>реал<i class="lgi"></i>идеал<i class="lgg"></i>призраки</span></div>
+    <canvas id="ch" width="500" height="150"></canvas>
+  </div>
+</div>
+</div>
+
+<div class="md" id="mod">
+  <div class="mc">
+    <button class="mx" id="mx">✕</button>
+    <div class="tbs2">
+      <button class="act" onclick="swT('t1')">О проекте</button>
+      <button onclick="swT('t2')">Формулы</button>
+      <button onclick="swT('t3')">Управление</button>
+      <button onclick="swT('t4')">Эксперименты</button>
+      <button onclick="swT('t5')">Достижения</button>
+      <button onclick="swT('t6')">Журнал</button>
+    </div>
+    <div id="t1" class="tcn act">
+      <h3>Траектория PRO</h3>
+      <p><b>Тема:</b> влияние сопротивления воздуха на движение тела, брошенного под углом к горизонту.</p>
+      <p><b>Цель:</b> доказать, что школьная формула дальности (без учёта воздуха) даёт серьёзную погрешность для лёгких тел и высоких скоростей.</p>
+      <p><b>Гипотеза:</b> чем меньше масса и выше скорость — тем сильнее реальная траектория отличается от идеальной параболы, а оптимальный угол уходит ниже 45°.</p>
+      <ul>
+        <li>реальный полёт — численно, методом Рунге–Кутты 4-го порядка (шаг 1/240 с);</li>
+        <li>идеальный полёт — по классическим формулам кинематики;</li>
+        <li>параметры: скорость, угол, масса, площадь, Cd, ветер, высота, скорость времени;</li>
+        <li>3 планеты: Земля, Луна, Марс; 7 готовых тел от пинг-понга до ядра;</li>
+        <li>мишень со счётом, авто-оптимум, призраки, журнал бросков, CSV, скриншоты.</li>
+      </ul>
+      <p><b>Технологии:</b> HTML5, CSS3, Three.js (WebGL), Canvas 2D, Web Audio API, RK4.</p>
+      <p><b>Автор:</b> ученик 10–11 класса. Индивидуальный проект по физике.</p>
+    </div>
+    <div id="t2" class="tcn">
+      <h3>Математическая модель</h3>
+      <p><b>1. Идеальный полёт (вакуум):</b></p>
+      <div class="f">L = v₀² · sin(2α) / g</div>
+      <p><b>2. Реальный полёт</b> — второй закон Ньютона:</p>
+      <div class="f">m·a = F<sub>тяж</sub> + F<sub>сопр</sub><br>F<sub>сопр</sub> = ½ · ρ · C<sub>d</sub> · A · v²</div>
+      <p>Сопротивление растёт квадратично со скоростью: удвоил скорость — выросло в 4 раза. У волана погрешность в сотни процентов, у ядра — единицы.</p>
+      <p><b>3. Метод.</b> Уравнение аналитически не решается — используется Рунге–Кутта 4-го порядка, шаг 1/240 с.</p>
+      <p><b>4. Ветер.</b> Сопротивление считается по скорости воздуха относительно тела — встречный ветер тормозит заметнее, чем попутный ускоряет.</p>
+      <p><b>5. Оптимум.</b> В вакууме всегда 45°, с воздухом — ниже, обычно 30–40°. Клавиша O применяет найденный перебором угол.</p>
+    </div>
+    <div id="t3" class="tcn">
+      <h3>Как пользоваться</h3>
+      <ul>
+        <li><b>Ползунки:</b> статистика обновляется ещё до броска. Настройки запоминаются.</li>
+        <li><b>Тела:</b> эмодзи-кнопки ставят реальные параметры снарядов.</li>
+        <li><b>Камера:</b> зажми мышь — вращай, колесо — зум. Кнопки — ракурсы, 🌀 — авто-вращение, 🎯 — следить за шаром.</li>
+        <li><b>Радар:</b> вид сверху — шар, мишень, точки падения.</li>
+        <li><b>Пуск:</b> полёт; повторно — пауза. ⏹ — к старту. Сверху парят скорость и высота.</li>
+        <li><b>⚖️:</b> гонка реального и идеального шаров. <b>⚡/O:</b> оптимум. <b>🎯/G:</b> мишень.</li>
+        <li><b>📄:</b> CSV точек. <b>📓 Журнал:</b> таблица всех бросков + экспорт.</li>
+        <li><b>📸:</b> скриншот. <b>👁/H:</b> спрятать весь интерфейс.</li>
+        <li><b>Клавиши:</b> <kbd>Space</kbd> пуск, <kbd>R</kbd> сброс, <kbd>C</kbd> сравнение, <kbd>O</kbd> оптимум, <kbd>G</kbd> мишень, <kbd>H</kbd> скрыть UI, <kbd>1–4</kbd> камеры.</li>
+      </ul>
+    </div>
+    <div id="t4" class="tcn">
+      <h3>Эксперименты</h3>
+      <ul>
+        <li><b>Перо против ядра:</b> 25 м/с и 45° у 🪶 и 🔨 — сравни дальности.</li>
+        <li><b>Оптимум:</b> найди угол максимума реальной дальности, сравни с 45°.</li>
+        <li><b>Ветер:</b> сравни +10 и −10 м/с — эффект несимметричен.</li>
+        <li><b>Луна:</b> атмосферы нет — траектории совпадут.</li>
+        <li><b>Квадрат:</b> удвой скорость — посмотри, во сколько раз выросла погрешность.</li>
+        <li><b>Мишень:</b> попадай 3 раза подряд — готовый демо-сюжет для защиты.</li>
+        <li><b>Данные:</b> сделай серию бросков, открой журнал и экспортируй его в CSV — готовая таблица для отчёта.</li>
+      </ul>
+    </div>
+    <div id="t5" class="tcn">
+      <h3>Достижения</h3>
+      <div id="achL"></div>
+    </div>
+    <div id="t6" class="tcn">
+      <h3>Журнал бросков</h3>
+      <p>Каждый завершённый полёт пишется сюда автоматически и сохраняется в браузере. Экспорт — одной кнопкой в CSV.</p>
+      <div id="logB" style="max-height:280px;overflow-y:auto"></div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="bt s" id="lgCsv" style="flex:1">📄 Экспорт журнала</button>
+        <button class="bt s" id="lgClr" style="flex:1">🗑 Очистить</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="to"></div>
+
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+function showErr(m){const b=$('er');$('er').textContent='Ошибка: '+m;b.classList.add('show');
+const l=$('ldT');if(l)l.textContent='Сбой — см. плашку сверху';}
+window.addEventListener('error',e=>showErr(e.message));
+if(typeof THREE==='undefined'){$('ldT').textContent='Нет интернета — обнови страницу';throw new Error('no THREE');}
+
+const STEP=1/240;
+const DEF={v0:25,angle:45,mass:0.43,area:0.038,cd:0.5,wind:0,h0:0,ts:1,g:9.81,rho:1.225,mode:'air'};
+const P=Object.assign({},DEF);
+const PRE={foot:{v0:28,angle:35,mass:0.43,area:0.038,cd:0.25,h0:0,wind:0},
+tennis:{v0:35,angle:40,mass:0.058,area:0.0034,cd:0.55,h0:0,wind:0},
+basket:{v0:8,angle:52,mass:0.62,area:0.045,cd:0.5,h0:0,wind:0},
+ping:{v0:15,angle:45,mass:0.0027,area:0.0013,cd:0.5,h0:0,wind:0},
+shot:{v0:13,angle:41,mass:7.26,area:0.013,cd:0.47,h0:0,wind:0},
+badm:{v0:55,angle:20,mass:0.005,area:0.0028,cd:0.6,h0:1,wind:0},
+feather:{v0:6,angle:60,mass:0.002,area:0.004,cd:1.2,h0:2,wind:0}};
+try{const s=JSON.parse(localStorage.getItem('tp')||'null');
+if(s)Object.keys(DEF).forEach(k=>{if(k in s&&typeof s[k]==='number')P[k]=s[k];});
+if(P.mode!=='air'&&P.mode!=='vac')P.mode='air';}catch(e){}
+const saveP=()=>{try{localStorage.setItem('tp',JSON.stringify(P));}catch(e){}};
+
+const ACH=[{id:'l',ico:'🚀',n:'Первый пуск',d:'Запусти бросок'},{id:'r',ico:'⚖️',n:'Гонка',d:'Сравни реал и идеал'},
+{id:'50',ico:'🎯',n:'Дальнобой',d:'Дальность 50+ м'},{id:'100',ico:'💯',n:'Сотка',d:'Дальность 100+ м'},
+{id:'h',ico:'🏅',n:'В яблочко',d:'Попади в мишень'},{id:'s',ico:'🔥',n:'Снайпер',d:'3 подряд в мишень'},
+{id:'w',ico:'🌪',n:'Против ветра',d:'Ветер 10+ м/с'},{id:'o',ico:'⚡',n:'Перфекционист',d:'Примени оптимум'},
+{id:'f',ico:'🪶',n:'Лёгкие крылья',d:'Брось пёрышко'},{id:'m',ico:'🌕',n:'Маленький шаг',d:'Бросок на Луне'}];
+let ach={};try{ach=JSON.parse(localStorage.getItem('ach')||'{}');}catch(e){}
+let score=parseInt(localStorage.getItem('sc')||'0')||0,streak=0;
+function drawAch(){$('achL').innerHTML=ACH.map(a=>'<div class="ar'+(ach[a.id]?' done':'')+'"><div class="i">'+a.ico+'</div><div><div class="nm">'+a.n+'</div><div class="ds">'+a.d+'</div></div></div>').join('');}
+function unlock(id){if(ach[id])return;ach[id]=true;try{localStorage.setItem('ach',JSON.stringify(ach));}catch(e){}
+const a=ACH.find(x=>x.id===id);toast(a.ico+' '+a.n);chime();drawAch();}
+drawAch();
+const upS=()=>{$('ss').textContent=score+' · серия '+streak;};upS();
+
+let journal=[];try{journal=JSON.parse(localStorage.getItem('jr')||'[]');}catch(e){journal=[];}
+function addJr(f){journal.unshift({tm:new Date().toLocaleTimeString('ru-RU'),v0:P.v0,ang:P.angle,ms:P.mass,cd:P.cd,wd:P.wind,
+rng:f.range,flt:f.time,err:idf&&idf.range>0.01?Math.abs(idf.range-f.range)/idf.range*100:0});
+if(journal.length>30)journal.pop();try{localStorage.setItem('jr',JSON.stringify(journal));}catch(e){}renderJr();}
+function renderJr(){const b=$('logB');if(!b)return;
+if(!journal.length){b.innerHTML='<div class="lgE">Пока пусто — сделай первый бросок.</div>';return;}
+let h='<table class="lgT"><tr><th>Время</th><th>v₀</th><th>Уг.</th><th>Масса</th><th>Cd</th><th>Ветер</th><th>Дальн.</th><th>Погр.</th></tr>';
+journal.forEach(r=>{h+='<tr><td>'+r.tm+'</td><td>'+r.v0+'</td><td>'+r.ang+'°</td><td>'+r.ms+'</td><td>'+r.cd+'</td><td>'+r.wd+'</td><td>'+(+r.rng).toFixed(1)+' м</td><td>'+(+r.err).toFixed(0)+'%</td></tr>';});
+b.innerHTML=h+'</table>';}
+renderJr();
+
+// ===== 3D =====
+const rn=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
+rn.setPixelRatio(Math.min(devicePixelRatio,2));rn.setSize(innerWidth,innerHeight);$('sc').appendChild(rn.domElement);
+const sc=new THREE.Scene();sc.background=new THREE.Color(0x050b1c);sc.fog=new THREE.Fog(0x050b1c,150,900);
+const cam=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,0.1,5000);
+sc.add(new THREE.AmbientLight(0x8ab4ff,0.55));
+const sun=new THREE.DirectionalLight(0xbcd7ff,1);sun.position.set(60,90,40);sc.add(sun);
+const pl=new THREE.PointLight(0x55c8f2,1.1,80);pl.position.set(0,8,0);sc.add(pl);
+const gr=new THREE.GridHelper(600,60,0x2a5fb8,0x12244e);gr.material.transparent=true;gr.material.opacity=0.25;sc.add(gr);
+const gnd=new THREE.Mesh(new THREE.PlaneGeometry(800,800),new THREE.MeshStandardMaterial({color:0x0a1a3d,roughness:1,transparent:true,opacity:0.85}));
+gnd.rotation.x=-Math.PI/2;gnd.position.y=-0.03;sc.add(gnd);
+(function(){const n=400,a=new Float32Array(n*3);for(let i=0;i<n;i++){a[i*3]=(Math.random()-0.5)*1200;a[i*3+1]=Math.random()*400+20;a[i*3+2]=(Math.random()-0.5)*1200;}
+const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(a,3));
+sc.add(new THREE.Points(g,new THREE.PointsMaterial({color:0x9fd0ff,size:0.8,transparent:true,opacity:0.45})));})();
+(function(){const m=new THREE.MeshStandardMaterial({color:0x0f224e,roughness:1,flatShading:true});
+for(let i=0;i<12;i++){const an=Math.random()*Math.PI*2,d=280+Math.random()*140,h=25+Math.random()*50;
+const c=new THREE.Mesh(new THREE.ConeGeometry(30+Math.random()*35,h,5),m);c.position.set(Math.cos(an)*d,h/2-2,Math.sin(an)*d);sc.add(c);}})();
+const dg=new THREE.Group();sc.add(dg);
+function upD(L){while(dg.children.length)dg.remove(dg.children[0]);
+const st=L>150?25:L>60?10:5;
+for(let x=st;x<=L*1.1;x+=st){
+const t=new THREE.Mesh(new THREE.BoxGeometry(0.15,0.02,2.2),new THREE.MeshBasicMaterial({color:0x2a5fb8}));
+t.position.set(x,0.02,0);dg.add(t);
+const cv=document.createElement('canvas');cv.width=128;cv.height=64;const g=cv.getContext('2d');
+g.font='bold 34px Consolas';g.fillStyle='#55c8f2';g.textAlign='center';g.fillText(x+'м',64,44);
+const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthWrite:false}));
+sp.position.set(x,1.5,-2.4);sp.scale.set(st*0.15,st*0.075,1);dg.add(sp);}}
+const pad0=new THREE.Mesh(new THREE.TorusGeometry(1.2,0.06,8,40),new THREE.MeshBasicMaterial({color:0x55c8f2}));
+pad0.rotation.x=Math.PI/2;sc.add(pad0);
+const gun=new THREE.Group();
+const bar=new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.22,2.4,14),new THREE.MeshStandardMaterial({color:0x16305c,metalness:0.7,roughness:0.35}));
+bar.rotation.z=-Math.PI/2;bar.position.x=1.2;
+const mz=new THREE.Mesh(new THREE.TorusGeometry(0.22,0.05,8,20),new THREE.MeshBasicMaterial({color:0xe8c46a}));
+mz.rotation.y=Math.PI/2;mz.position.x=2.4;gun.add(bar,mz);sc.add(gun);
+const bg=new THREE.SphereGeometry(1,24,24);
+const rB=new THREE.Mesh(bg,new THREE.MeshStandardMaterial({color:0x55c8f2,emissive:0x1178a8,metalness:0.3,roughness:0.3}));
+const iB=new THREE.Mesh(bg,new THREE.MeshStandardMaterial({color:0xe8c46a,emissive:0x7a5a10,metalness:0.3,roughness:0.3}));
+iB.visible=false;sc.add(rB,iB);
+function gt(r,g,b){const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');
+const gr=x.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,'rgba('+r+','+g+','+b+',0.85)');
+gr.addColorStop(0.4,'rgba('+r+','+g+','+b+',0.22)');gr.addColorStop(1,'rgba('+r+','+g+','+b+',0)');
+x.fillStyle=gr;x.fillRect(0,0,128,128);return new THREE.CanvasTexture(c);}
+const rG=new THREE.Sprite(new THREE.SpriteMaterial({map:gt(85,200,242),blending:THREE.AdditiveBlending,depthWrite:false,transparent:true}));
+const iG=new THREE.Sprite(new THREE.SpriteMaterial({map:gt(232,196,106),blending:THREE.AdditiveBlending,depthWrite:false,transparent:true}));
+iG.visible=false;sc.add(rG,iG);
+const MX=60000,rP=new Float32Array(MX*3);
+const rGe=new THREE.BufferGeometry();rGe.setAttribute('position',new THREE.BufferAttribute(rP,3));rGe.setDrawRange(0,0);
+sc.add(new THREE.Line(rGe,new THREE.LineBasicMaterial({color:0x55c8f2,transparent:true,opacity:0.95})));
+const sGe=new THREE.BufferGeometry();sGe.setAttribute('position',rGe.getAttribute('position'));sGe.setDrawRange(0,0);
+sc.add(new THREE.Line(sGe,new THREE.LineBasicMaterial({color:0x9fe8ff,transparent:true,opacity:0.35,blending:THREE.AdditiveBlending})));
+let iLn=null;
+const gh=[];
+function addGh(pts){while(gh.length>=3){const g=gh.shift();sc.remove(g.line);}
+const a=new Float32Array(pts.length*3);pts.forEach((p,i)=>{a[i*3]=p.x;a[i*3+1]=p.y;a[i*3+2]=0;});
+const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(a,3));
+const ln=new THREE.Line(geo,new THREE.LineBasicMaterial({color:0x8b5cf6,transparent:true,opacity:0.3}));
+sc.add(ln);gh.push({line:ln,pts});}
+function clrGh(){gh.forEach(g=>sc.remove(g.line));gh.length=0;}
+function syncGh(){gh.forEach(g=>g.line.visible=$('ghT').checked);}
+function mk(c){const g=new THREE.Group();
+const r=new THREE.Mesh(new THREE.TorusGeometry(0.9,0.07,8,32),new THREE.MeshBasicMaterial({color:c}));r.rotation.x=Math.PI/2;
+const p=new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.02,5,8),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:0.4}));
+p.position.y=2.5;g.add(r,p);g.visible=false;sc.add(g);return g;}
+const mR=mk(0x55c8f2),mI=mk(0xe8c46a);
+const tgG=new THREE.Group();sc.add(tgG);
+const tR=new THREE.Mesh(new THREE.TorusGeometry(1.5,0.1,8,36),new THREE.MeshBasicMaterial({color:0xff6b83}));
+const tR2=new THREE.Mesh(new THREE.TorusGeometry(0.75,0.08,8,28),new THREE.MeshBasicMaterial({color:0xe8c46a}));
+tR.rotation.x=tR2.rotation.x=Math.PI/2;tR.position.y=tR2.position.y=0.15;
+tgG.add(tR,tR2);tgG.visible=false;
+let tgX=0,tgOn=false;const TOL=3;
+function lbl(c){const cv=document.createElement('canvas');cv.width=512;cv.height=128;const tx=new THREE.CanvasTexture(cv);
+const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,transparent:true,depthWrite:false,color:c}));
+sp.visible=false;sc.add(sp);return{sp,cv,tx};}
+const lR=lbl('#55c8f2'),lI=lbl('#e8c46a'),lT=lbl('#ff6b83');
+function dl(l,t){const g=l.cv.getContext('2d');g.clearRect(0,0,512,128);g.font='bold 54px Segoe UI';g.textAlign='center';g.fillText(t,256,80);l.tx.needsUpdate=true;}
+const vA=new THREE.ArrowHelper(new THREE.Vector3(1,0,0),new THREE.Vector3(),2,0xe8c46a,0.6,0.3);vA.visible=false;sc.add(vA);
+const fl=new THREE.PointLight(0x55c8f2,0,40);sc.add(fl);
+let sh=null,shT=1,shk=0;
+function spSh(x){if(sh)sc.remove(sh);
+sh=new THREE.Mesh(new THREE.RingGeometry(0.8,1.2,36),new THREE.MeshBasicMaterial({color:0x55c8f2,transparent:true,opacity:0.85,side:THREE.DoubleSide}));
+sh.rotation.x=-Math.PI/2;sh.position.set(x,0.05,0);sc.add(sh);shT=0;shk=1;}
+let bu=null;
+function spBu(x,n){if(bu)sc.remove(bu.p);
+const po=new Float32Array(n*3),ve=new Float32Array(n*3),co=new Float32Array(n*3);
+const pal=[[0.33,0.78,0.95],[0.91,0.77,0.42]];
+for(let i=0;i<n;i++){po[i*3]=x;po[i*3+1]=0.2;po[i*3+2]=0;
+const a=Math.random()*Math.PI*2;ve[i*3]=Math.cos(a)*Math.random()*5;ve[i*3+1]=2+Math.random()*6;ve[i*3+2]=Math.sin(a)*Math.random()*5;
+const c=pal[Math.floor(Math.random()*2)];co[i*3]=c[0];co[i*3+1]=c[1];co[i*3+2]=c[2];}
+const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(po,3));
+g.setAttribute('color',new THREE.BufferAttribute(co,3));
+bu={p:new THREE.Points(g,new THREE.PointsMaterial({size:0.45,vertexColors:true,transparent:true,opacity:1,blending:THREE.AdditiveBlending,depthWrite:false})),vel:ve,t:0};
+sc.add(bu.p);}
+
+// ===== КАМЕРА =====
+const orb={tx:20,ty:4,tz:0,r:60,th:0.9,ph:1.0};
+let orbAuto=false,follow=false;
+function updCam(){cam.position.set(
+orb.tx+orb.r*Math.sin(orb.ph)*Math.cos(orb.th),
+orb.ty+orb.r*Math.cos(orb.ph),
+orb.tz+orb.r*Math.sin(orb.ph)*Math.sin(orb.th));
+cam.lookAt(orb.tx,orb.ty,orb.tz);}
+let drag=false,lx=0,ly=0;
+const cvEl=rn.domElement;
+cvEl.addEventListener('mousedown',e=>{drag=true;lx=e.clientX;ly=e.clientY;});
+window.addEventListener('mouseup',()=>drag=false);
+window.addEventListener('mousemove',e=>{if(!drag)return;
+orb.th-=(e.clientX-lx)*0.006;
+orb.ph=Math.max(0.06,Math.min(1.54,orb.ph-(e.clientY-ly)*0.005));
+lx=e.clientX;ly=e.clientY;});
+cvEl.addEventListener('wheel',e=>{e.preventDefault();
+orb.r=Math.max(4,Math.min(600,orb.r*(e.deltaY>0?1.1:0.9)));},{passive:false});
+cvEl.addEventListener('contextmenu',e=>e.preventDefault());
+
+// ===== ФИЗИКА =====
+function ac(s,p,d){const rx=s[2]-p.wind,ry=s[3],vr=Math.sqrt(rx*rx+ry*ry);
+let ax=0,ay=-p.g;if(d&&vr>1e-9){const k=0.5*p.rho*p.cd*p.area/p.mass;ax=-k*vr*rx;ay=-p.g-k*vr*ry;}
+return[s[2],s[3],ax,ay];}
+function rk4(s,p,dt,d){const k1=ac(s,p,d);
+const k2=ac([s[0]+k1[0]*dt/2,s[1]+k1[1]*dt/2,s[2]+k1[2]*dt/2,s[3]+k1[3]*dt/2],p,d);
+const k3=ac([s[0]+k2[0]*dt/2,s[1]+k2[1]*dt/2,s[2]+k2[2]*dt/2,s[3]+k2[3]*dt/2],p,d);
+const k4=ac([s[0]+k3[0]*dt,s[1]+k3[1]*dt,s[2]+k3[2]*dt,s[3]+k3[3]*dt],p,d);
+return[0,1,2,3].map(i=>s[i]+dt/6*(k1[i]+2*k2[i]+2*k3[i]+k4[i]));}
+function simR(p){const a=p.angle*Math.PI/180;
+let s=[0,p.h0,p.v0*Math.cos(a),p.v0*Math.sin(a)];
+const pts=[{t:0,x:0,y:p.h0,vx:s[2],vy:s[3]}];
+let t=0,mH=p.h0;const d=p.mode==='air';
+while(t<220){const s2=rk4(s,p,STEP,d);t+=STEP;
+if(s2[1]<=0&&s[1]>0){const f=s[1]/(s[1]-s2[1]);
+const lxp=s[0]+f*(s2[0]-s[0]),lvx=s[2]+f*(s2[2]-s[2]),lvy=s[3]+f*(s2[3]-s[3]);
+pts.push({t,x:lxp,y:0,vx:lvx,vy:lvy});
+return{pts,range:lxp,time:t,maxH:mH,land:Math.atan2(Math.abs(lvy),lvx)*180/Math.PI};}
+s=s2;if(s[1]>mH)mH=s[1];pts.push({t,x:s[0],y:s[1],vx:s[2],vy:s[3]});}
+return{pts,range:s[0],time:t,maxH:mH,land:0};}
+function simI(p){const a=p.angle*Math.PI/180,vx=p.v0*Math.cos(a),vy=p.v0*Math.sin(a);
+const T=(vy+Math.sqrt(vy*vy+2*p.g*p.h0))/p.g,pts=[],n=300;
+for(let i=0;i<=n;i++){const t=T*i/n;pts.push({t,x:vx*t,y:Math.max(0,p.h0+vy*t-0.5*p.g*t*t)});}
+return{pts,range:vx*T,time:T,maxH:p.h0+vy*vy/(2*p.g)};}
+
+// ===== СОСТОЯНИЕ =====
+let fc=null,idf=null,chH=10,tS=0,run=false,done=false,cmp=false;
+let best=parseFloat(localStorage.getItem('bs')||'0')||0,snd=true,camA=null;
+const F=(x,d=1)=>x.toFixed(d);
+function fOpt(){let bA=45,bR=-1;
+for(let a=10;a<=80;a+=2.5){const q=Object.assign({},P,{angle:a});
+const r=q.mode==='vac'?simI(q).range:simR(q).range;if(r>bR){bR=r;bA=a;}}
+$('optA').textContent=bA+'°';return bA;}
+function recalc(){
+gun.rotation.z=P.angle*Math.PI/180;gun.position.y=P.h0;
+const r=0.22+0.55*Math.cbrt(P.mass/7.26);rB.scale.setScalar(r);iB.scale.setScalar(r);
+idf=simI(P);
+if(P.mode==='vac'){const a=P.angle*Math.PI/180,vx=P.v0*Math.cos(a),vy=P.v0*Math.sin(a);
+fc={pts:idf.pts.map(p=>({t:p.t,x:p.x,y:p.y,vx,vy:vy-P.g*p.t})),range:idf.range,time:idf.time,maxH:idf.maxH,
+land:Math.atan2(Math.abs(vy-P.g*idf.time),vx)*180/Math.PI};}
+else fc=simR(P);
+chH=Math.max(idf.maxH,fc.maxH)*1.15+1;
+if(iLn)sc.remove(iLn);
+iLn=new THREE.Line(new THREE.BufferGeometry().setFromPoints(idf.pts.map(p=>new THREE.Vector3(p.x,p.y,0))),
+new THREE.LineDashedMaterial({color:0xe8c46a,dashSize:1.2,gapSize:0.8,transparent:true,opacity:0.55}));
+iLn.computeLineDistances();sc.add(iLn);
+const pts=fc.pts;
+for(let i=0;i<pts.length&&i<MX;i++){rP[i*3]=pts[i].x;rP[i*3+1]=pts[i].y;rP[i*3+2]=0;}
+rGe.attributes.position.needsUpdate=true;sGe.attributes.position.needsUpdate=true;
+rGe.setDrawRange(0,0);sGe.setDrawRange(0,0);
+$('rI').textContent=F(idf.range)+' м';$('rR').textContent=F(fc.range)+' м';
+const er=idf.range>0.01?Math.abs(idf.range-fc.range)/idf.range*100:0;
+$('er').textContent=F(er)+' %';
+$('mH').textContent=F(Math.max(fc.maxH,idf.maxH))+' м';
+$('la').textContent=F(fc.land,0)+'°';
+$('bs').textContent=best>0?F(best)+' м':'–';
+$('timeL').textContent='0.00 / '+F(fc.time,2)+' с';$('tl').value=0;
+const L=Math.max(fc.range,idf.range,10);upD(L);
+mR.position.set(fc.range,0,0);mR.visible=true;
+lR.sp.position.set(fc.range,L*0.09+3,0);lR.sp.scale.set(L*0.16,L*0.04,1);lR.sp.visible=true;
+dl(lR,'РЕАЛ  '+F(fc.range)+' м');
+mI.visible=lI.sp.visible=cmp;
+if(cmp){mI.position.set(idf.range,0,0);lI.sp.position.set(idf.range,L*0.09+3,0);
+lI.sp.scale.set(L*0.16,L*0.04,1);dl(lI,'ИДЕАЛ  '+F(idf.range)+' м');}
+if(tgOn)plTg();
+if(!run&&!camA&&!follow)setCam('reset');
+upV();}
+function upV(){if(!fc)return;
+const pts=fc.pts,i=Math.min(pts.length-1,Math.max(0,Math.round(tS/STEP)));
+const p0=pts[i],p1=pts[Math.min(i+1,pts.length-1)];
+const sp=Math.max(p1.t-p0.t,1e-6),f=Math.min(1,Math.max(0,(tS-p0.t)/sp));
+const x=p0.x+(p1.x-p0.x)*f,y=p0.y+(p1.y-p0.y)*f;
+const vx=p0.vx+(p1.vx-p0.vx)*f,vy=p0.vy+(p1.vy-p0.vy)*f,spd=Math.hypot(vx,vy);
+rB.position.set(x,y,0);rG.position.copy(rB.position);
+rGe.setDrawRange(0,i+1);
+sGe.setDrawRange(Math.max(0,i-80),i+1-Math.max(0,i-80));
+if($('arrT').checked&&spd>0.05){vA.visible=true;vA.position.set(x,y,0);
+vA.setDirection(new THREE.Vector3(vx,vy,0).normalize());
+const l=Math.min(9,spd*0.32);vA.setLength(l,l*0.25,l*0.12);}else vA.visible=false;
+if(cmp){const ip=idf.pts,j=Math.min(ip.length-1,Math.max(0,Math.round(tS/idf.time*(ip.length-1))));
+iB.visible=iG.visible=true;iB.position.set(ip[j].x,ip[j].y,0);iG.position.copy(iB.position);}
+$('tV').textContent=tS.toFixed(1)+' с';$('vV').textContent=spd.toFixed(1);
+$('hV').textContent=y.toFixed(1);$('xV').textContent=x.toFixed(1);
+$('timeL').textContent=tS.toFixed(2)+' / '+F(fc.time,2)+' с';
+if(run||done){$('bigHud').classList.add('show');$('bigN').textContent=spd.toFixed(1)+' м/с';
+$('bigA').textContent='высота '+y.toFixed(1)+' м';}
+if(run)$('tl').value=(tS/fc.time*100).toFixed(1);
+drawRadar(x,y);}
+function landed(){unlock('l');
+if(fc.range>=50)unlock('50');if(fc.range>=100)unlock('100');
+if(Math.abs(P.wind)>=10)unlock('w');if(P.mass<=0.0025)unlock('f');
+if(P.mode==='air'&&Math.abs(P.g-1.62)<0.01)unlock('m');
+if(fc.range>best){best=fc.range;try{localStorage.setItem('bs',String(best));}catch(e){}
+$('bs').textContent=F(best)+' м';toast('🏆 Рекорд: '+F(best)+' м!');}
+addJr(fc);if($('ghT').checked)addGh(fc.pts);
+spSh(fc.range);spBu(fc.range,70);thud();
+if(tgOn)chkTg();}
+function plTg(){const L=Math.max(idf?idf.range:50,40);
+tgX=Math.round(15+Math.random()*(L*1.1));tgG.position.set(tgX,0,0);tgG.visible=true;
+lT.sp.position.set(tgX,4.5,0);lT.sp.scale.set(9,2.2,1);lT.sp.visible=true;
+dl(lT,'МИШЕНЬ ±'+TOL+' м');}
+function tgTg(){tgOn=!tgOn;$('tgtB').classList.toggle('act',tgOn);
+if(tgOn){plTg();toast('Мишень на '+tgX+' м — допуск ±'+TOL+' м. Жми ПУСК!');}
+else{tgG.visible=false;lT.sp.visible=false;}}
+function chkTg(){const d=Math.abs(fc.range-tgX);
+if(d<=TOL){score+=10;streak++;if(streak>=3)unlock('s');unlock('h');
+try{localStorage.setItem('sc',String(score));}catch(e){}
+toast('🎯 Попадание! +10 (промах '+F(d)+' м)');chime();
+tR.material.color.set(0x39d98a);
+setTimeout(()=>{if(tgOn){tR.material.color.set(0xff6b83);plTg();}},900);}
+else{streak=0;toast('💨 Промах на '+F(d)+' м');plTg();}upS();}
+
+// ===== РАДАР =====
+const rdc=$('rd'),rg=rdc.getContext('2d');
+function drawRadar(x,y){const W=rdc.width,H=rdc.height;
+const lt=document.body.dataset.th==='light';
+rg.clearRect(0,0,W,H);
+rg.fillStyle=lt?'rgba(29,111,214,.06)':'rgba(10,26,61,.5)';rg.fillRect(0,0,W,H);
+const L=Math.max(fc?fc.range:50,idf?idf.range:50,tgX,20)*1.1;
+const px=xx=>7+(xx/L)*(W-14);
+rg.strokeStyle=lt?'rgba(90,110,150,.35)':'rgba(85,200,242,.25)';rg.lineWidth=1;
+[0.25,0.5,0.75].forEach(f=>{rg.beginPath();rg.moveTo(px(L*f),0);rg.lineTo(px(L*f),H-12);rg.stroke();});
+rg.beginPath();rg.moveTo(7,H-12);rg.lineTo(W-7,H-12);rg.stroke();
+rg.font='8px Consolas';rg.fillStyle='#8fa3c8';rg.fillText(L.toFixed(0)+' м',W-36,H-2);
+rg.fillStyle='#e8c46a';rg.beginPath();rg.arc(px(0),H-12,3,0,Math.PI*2);rg.fill();
+if(tgOn){rg.strokeStyle='#ff6b83';rg.lineWidth=2;rg.beginPath();rg.arc(px(tgX),H-12,6,0,Math.PI*2);rg.stroke();}
+if(fc){rg.fillStyle='rgba(85,200,242,.5)';rg.fillRect(px(fc.range)-1.5,H-16,3,6);}
+if(cmp&&idf){rg.fillStyle='rgba(232,196,106,.7)';rg.fillRect(px(idf.range)-1.5,H-16,3,6);}
+if(x!==undefined){const by=H-12-Math.min(H-20,y/L*(H-20));
+rg.fillStyle='#55c8f2';rg.beginPath();rg.arc(px(x),by,4,0,Math.PI*2);rg.fill();
+rg.strokeStyle='rgba(85,200,242,.4)';rg.beginPath();rg.moveTo(px(x),H-12);rg.lineTo(px(x),by);rg.stroke();}}
+
+// ===== ЦИКЛ =====
+const ck=new THREE.Clock();let ld=false;
+function tick(){requestAnimationFrame(tick);
+const dt=Math.min(ck.getDelta(),0.05);
+if(camA){camA.k=Math.min(1,camA.k+dt*2.2);
+const t=camA.k,e=t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+cam.position.lerpVectors(camA.p0,camA.p1,e);
+orb.tx=camA.t0.x+(camA.t1.x-camA.t0.x)*e;
+orb.ty=camA.t0.y+(camA.t1.y-camA.t0.y)*e;
+orb.tz=camA.t0.z+(camA.t1.z-camA.t0.z)*e;
+if(camA.k>=1)camA=null;}
+if(orbAuto)orb.th+=dt*0.3;
+if(follow){orb.tx=rB.position.x;orb.ty=rB.position.y;orb.tz=0;}
+updCam();
+if(shk>0){shk=Math.max(0,shk-dt*2.5);const s=shk*0.5;
+cam.position.x+=(Math.random()-0.5)*s;cam.position.y+=(Math.random()-0.5)*s;}
+if(sh){shT=Math.min(1,shT+dt*1.8);sh.scale.setScalar(1+shT*9);sh.material.opacity=0.85*(1-shT);
+if(shT>=1){sc.remove(sh);sh=null;}}
+if(bu){bu.t+=dt;const po=bu.p.geometry.attributes.position;
+for(let i=0;i<po.count;i++){bu.vel[i*3+1]-=9.8*dt*0.6;
+po.setXYZ(i,po.getX(i)+bu.vel[i*3]*dt,Math.max(0,po.getY(i)+bu.vel[i*3+1]*dt),po.getZ(i)+bu.vel[i*3+2]*dt);}
+po.needsUpdate=true;bu.p.material.opacity=Math.max(0,1-bu.t/1.1);
+if(bu.t>1.2){sc.remove(bu.p);bu=null;}}
+if(tgOn){const s=1+Math.sin(performance.now()*0.004)*0.07;tR.scale.setScalar(s);tR2.scale.setScalar(s);}
+fl.intensity=Math.max(0,fl.intensity-dt*6);
+if(run&&fc){tS=Math.min(tS+dt*P.ts,fc.time);upV();
+if(tS>=fc.time-1e-6){run=false;done=true;$('playB').textContent='▶ ПОВТОР';landed();}}
+rn.render(sc,cam);drCh();
+if(!ld){ld=true;setTimeout(()=>$('ld').classList.add('gone'),250);}}
+
+// ===== ГРАФИК =====
+const chc=$('ch'),cg=chc.getContext('2d');
+function drCh(){if(!fc||!idf)return;
+const W=chc.width,H=chc.height,pd=30,lt=document.body.dataset.th==='light';
+cg.clearRect(0,0,W,H);
+const mX=Math.max(fc.range,idf.range)*1.08+1,mY=Math.max(chH,2);
+const px=x=>pd+(x/mX)*(W-pd-8),py=y=>H-pd-(y/mY)*(H-pd-10);
+cg.strokeStyle=lt?'rgba(90,110,150,.3)':'rgba(143,163,200,.18)';cg.fillStyle='#8fa3c8';cg.lineWidth=1;
+cg.font='9px Consolas';
+for(let i=0;i<=5;i++){const g=px(mX*i/5);cg.beginPath();cg.moveTo(g,py(0));cg.lineTo(g,py(mY));cg.stroke();
+cg.fillText((mX*i/5).toFixed(0),g-10,H-pd+11);}
+for(let i=0;i<=4;i++){const g=py(mY*i/4);cg.beginPath();cg.moveTo(pd,g);cg.lineTo(W-8,g);cg.stroke();
+cg.fillText((mY*i/4).toFixed(0),3,g+3);}
+if($('ghT').checked){cg.strokeStyle='rgba(139,92,246,.4)';cg.lineWidth=1.5;
+gh.forEach(g0=>{cg.beginPath();g0.pts.forEach((p,i)=>i?cg.lineTo(px(p.x),py(p.y)):cg.moveTo(px(p.x),py(p.y)));cg.stroke();});}
+cg.setLineDash([5,5]);cg.strokeStyle='#e8c46a';cg.lineWidth=1.5;
+cg.beginPath();idf.pts.forEach((p,i)=>i?cg.lineTo(px(p.x),py(p.y)):cg.moveTo(px(p.x),py(p.y)));cg.stroke();
+cg.setLineDash([]);cg.strokeStyle='#55c8f2';cg.lineWidth=2.4;
+const st=Math.max(1,Math.ceil(fc.pts.length/400)),up=Math.round(tS/STEP);
+cg.beginPath();
+for(let i=0;i<=Math.min(up,fc.pts.length-1);i+=st){const p=fc.pts[i];i?cg.lineTo(px(p.x),py(p.y)):cg.moveTo(px(p.x),py(p.y));}
+const la=fc.pts[Math.min(up,fc.pts.length-1)];
+cg.lineTo(px(la.x),py(la.y));cg.stroke();
+const flg=cg.createLinearGradient(0,0,0,H);flg.addColorStop(0,'rgba(85,200,242,.2)');flg.addColorStop(1,'rgba(85,200,242,0)');
+cg.lineTo(px(la.x),py(0));cg.lineTo(px(0),py(0));cg.closePath();cg.fillStyle=flg;cg.fill();
+cg.beginPath();cg.arc(px(la.x),py(la.y),4,0,Math.PI*2);cg.fillStyle='#55c8f2';cg.fill();}
+
+// ===== КАМЕРЫ =====
+function setCam(m){const L=fc?Math.max(fc.range,idf.range,10):50,cx=L/2;
+let po,tg=[cx,Math.min(9,L*0.1),0];
+if(m==='reset')po=[cx+L*0.55,L*0.42+6,L*0.8];
+if(m==='top'){po=[cx,L*1.4+18,0.5];tg=[cx,0,0.5];}
+if(m==='side')po=[cx,L*0.12+2,L*0.95+14];
+if(m==='front')po=[-L*0.8-8,L*0.15+2,0.5];
+camA={p0:cam.position.clone(),p1:new THREE.Vector3(po[0],po[1],po[2]),
+t0:new THREE.Vector3(orb.tx,orb.ty,orb.tz),t1:new THREE.Vector3(tg[0],tg[1],tg[2]),k:0};
+['c0','c1','c2','c3'].forEach(id=>$(id).classList.remove('act'));
+$({reset:'c0',top:'c1',side:'c2',front:'c3'}[m]).classList.add('act');}
+document.querySelectorAll('.cb [data-cam]').forEach(b=>b.addEventListener('click',()=>{
+follow=false;$('folB').classList.remove('act');setCam(b.dataset.cam);}));
+
+// ===== ЗВУК =====
+let AC=null;const acf=()=>{if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}return AC;};
+function who(){if(!snd||!acf())return;try{const c=AC,len=Math.floor(c.sampleRate*0.3),b=c.createBuffer(1,len,c.sampleRate),d=b.getChannelData(0);
+for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);
+const s=c.createBufferSource();s.buffer=b;const f=c.createBiquadFilter();f.type='bandpass';
+f.frequency.setValueAtTime(300,c.currentTime);f.frequency.exponentialRampToValueAtTime(1600,c.currentTime+0.28);
+const g=c.createGain();g.gain.setValueAtTime(0.1,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.32);
+s.connect(f);f.connect(g);g.connect(c.destination);s.start();}catch(e){}}
+function thud(){if(!snd||!acf())return;try{const c=AC,o=c.createOscillator(),g=c.createGain();
+o.type='sine';o.frequency.setValueAtTime(120,c.currentTime);o.frequency.exponentialRampToValueAtTime(45,c.currentTime+0.2);
+g.gain.setValueAtTime(0.18,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.25);
+o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+0.3);}catch(e){}}
+function chime(){if(!snd||!acf())return;try{const c=AC,o=c.createOscillator(),g=c.createGain();
+o.type='triangle';o.frequency.setValueAtTime(660,c.currentTime);o.frequency.setValueAtTime(880,c.currentTime+0.09);
+g.gain.setValueAtTime(0.1,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.4);
+o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+0.45);}catch(e){}}
+
+// ===== UI =====
+function toast(m){const t=$('to');t.textContent=m;t.classList.add('show');
+clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2300);}
+function paint(el){const p=((parseFloat(el.value)-parseFloat(el.min))/(parseFloat(el.max)-parseFloat(el.min)))*100;
+el.style.background='linear-gradient(90deg,var(--a) 0%,var(--a2) '+p+'%,rgba(143,163,200,.14) '+p+'%)';}
+const SL=[['v0','v0','vL',v=>v.toFixed(1)+' м/с'],['a0','angle','aL',v=>v.toFixed(0)+'°'],
+['mass','mass','mL',v=>v.toFixed(3)+' кг'],['area','area','AL',v=>v.toFixed(3)+' м²'],
+['cd','cd','cdL',v=>v.toFixed(2)],['wind','wind','windL',v=>(v>0?'→ ':'')+(v<0?'← ':'')+Math.abs(v).toFixed(1)+' м/с'],
+['h0','h0','h0L',v=>v.toFixed(1)+' м'],['ts','ts','tsL',v=>'×'+v.toFixed(1)]];
+SL.forEach(([id,k,lab,fn])=>{const el=$(id);el.value=P[k];$(lab).textContent=fn(P[k]);paint(el);
+el.addEventListener('input',()=>{P[k]=parseFloat(el.value);$(lab).textContent=fn(P[k]);paint(el);
+clearTimeout(recalc._t);recalc._t=setTimeout(recalc,120);
+clearTimeout(fOpt._t);fOpt._t=setTimeout(fOpt,280);
+clearTimeout(saveP._t);saveP._t=setTimeout(saveP,600);});});
+const rSl=()=>SL.forEach(([id,k,lab,fn])=>{$(id).value=P[k];$(lab).textContent=fn(P[k]);paint($(id));});
+if(P.mode==='vac'){$('mVac').classList.add('act');$('mAir').classList.remove('act');}
+$('mAir').onclick=()=>{P.mode='air';$('mAir').classList.add('act');$('mVac').classList.remove('act');recalc();toast('Воздух включён');};
+$('mVac').onclick=()=>{P.mode='vac';$('mVac').classList.add('act');$('mAir').classList.remove('act');recalc();toast('Вакуум 🌌');};
+document.querySelectorAll('#prBox button').forEach(b=>b.addEventListener('click',()=>{
+const p=PRE[b.dataset.p];if(!p)return;
+document.querySelectorAll('#prBox button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+Object.assign(P,p);rSl();recalc();saveP();toast('Тело выбрано — жми ПУСК');}));
+document.querySelectorAll('#gseg button').forEach(b=>b.addEventListener('click',()=>{
+document.querySelectorAll('#gseg button').forEach(x=>x.classList.remove('act'));b.classList.add('act');
+P.g=parseFloat(b.dataset.g);P.rho=parseFloat(b.dataset.rho);
+if(P.rho===0){P.mode='vac';$('mVac').classList.add('act');$('mAir').classList.remove('act');}
+recalc();toast('Планета: '+b.textContent.trim());}));
+document.querySelectorAll('#gseg button').forEach(b=>{
+if(Math.abs(P.g-parseFloat(b.dataset.g))<0.05){document.querySelectorAll('#gseg button').forEach(x=>x.classList.remove('act'));b.classList.add('act');}});
+let orb2=false;
+$('orbB').addEventListener('click',()=>{orb2=!orb2;orbAuto=orb2;
+if(orb2)follow=false;$('orbB').classList.toggle('act',orb2);$('folB').classList.remove('act');});
+$('folB').addEventListener('click',()=>{follow=!follow;$('folB').classList.toggle('act',follow);
+if(follow){orbAuto=false;orb2=false;$('orbB').classList.remove('act');toast('Камера следует за шаром 🎯');}
+else setCam('reset');});
+$('optB').addEventListener('click',()=>{const a=fOpt();P.angle=a;rSl();recalc();saveP();unlock('o');toast('⚡ Оптимум: '+a+'°');});
+$('tgtB').addEventListener('click',tgTg);
+function bp(p,t,s){$(t).addEventListener('click',()=>{const h=$(p).classList.toggle(s);
+$(t).textContent=(s==='loff')?(h?'▶':'◀'):(h?'◀':'▶');});}
+bp('pL','tL','loff');bp('pR','tR','roff');
+$('chT').addEventListener('click',()=>{const h=$('chP').classList.toggle('off');
+$('chT').textContent=h?'📈 График y(x)':'✕ Скрыть график';});
+$('chP').classList.add('off');
+$('ghT').addEventListener('change',syncGh);
+$('playB').addEventListener('click',()=>{
+if(run){run=false;$('playB').textContent='▶ ПРОДОЛЖИТЬ';return;}
+if(done){tS=0;done=false;rGe.setDrawRange(0,0);sGe.setDrawRange(0,0);}
+run=true;$('playB').textContent='⏸ ПАУЗА';
+$('bigHud').classList.add('show');
+fl.position.set(2,P.h0+1,0);fl.intensity=3.5;who();});
+$('stopB').addEventListener('click',()=>{run=false;done=false;tS=0;
+rGe.setDrawRange(0,0);sGe.setDrawRange(0,0);
+$('playB').textContent='▶ ПУСК';$('tl').value=0;
+$('bigHud').classList.remove('show');upV();});
+$('cmpB').addEventListener('click',()=>{cmp=!cmp;$('cmpB').classList.toggle('act',cmp);
+if(!cmp){iB.visible=iG.visible=false;}
+if(cmp)unlock('r');recalc();
+if(cmp)toast('Гонка: голубой — реал, золотой — идеал');});
+$('tl').addEventListener('input',()=>{if(!fc)return;run=false;
+tS=Math.min(fc.time,fc.time*parseFloat($('tl').value)/100);
+done=tS>=fc.time-1e-6;$('playB').textContent='▶ ПУСК';upV();});
+$('csvB').addEventListener('click',()=>{if(!fc)return;
+let csv='t;x;y;vx;vy\n';
+fc.pts.forEach((p,i)=>{if(i%4===0)csv+=p.t.toFixed(3)+';'+p.x.toFixed(3)+';'+p.y.toFixed(3)+';'+(p.vx||0).toFixed(2)+';'+(p.vy||0).toFixed(2)+'\n';});
+const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));
+a.download='trajectory.csv';a.click();toast('CSV сохранён 📄');});
+$('lgCsv').addEventListener('click',()=>{if(!journal.length){toast('Журнал пуст');return;}
+let csv='время;v0;угол;масса;cd;ветер;дальность;полёт;погрешность\n';
+journal.forEach(r=>{csv+=r.tm+';'+r.v0+';'+r.ang+';'+r.ms+';'+r.cd+';'+r.wd+';'+(+r.rng).toFixed(2)+';'+(+r.flt).toFixed(2)+';'+(+r.err).toFixed(1)+'\n';});
+const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));
+a.download='journal.csv';a.click();toast('Журнал выгружен 📄');});
+$('lgClr').addEventListener('click',()=>{journal=[];try{localStorage.removeItem('jr');}catch(e){}
+renderJr();toast('Журнал очищен');});
+$('shotBtn').addEventListener('click',()=>{rn.render(sc,cam);
+const a=document.createElement('a');a.href=rn.domElement.toDataURL('image/png');
+a.download='trajectory.png';a.click();toast('Скриншот 📸');});
+$('fsBtn').addEventListener('click',()=>{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();});
+$('themeBtn').addEventListener('click',()=>{const n=document.body.dataset.th==='dark'?'light':'dark';
+document.body.dataset.th=n;$('themeBtn').textContent=n==='dark'?'🌙':'☀️';
+sc.background.set(n==='dark'?0x050b1c:0xe7edf7);sc.fog.color.set(n==='dark'?0x050b1c:0xe7edf7);});
+$('soundBtn').addEventListener('click',()=>{snd=!snd;$('soundBtn').textContent=snd?'🔊':'🔇';});
+let hui=false;
+function toggleUi(){hui=!hui;document.body.classList.toggle('hui',hui);
+$('huiBtn').classList.toggle('act',hui);
+toast(hui?'Интерфейс скрыт — H или 👁 вернёт':'Интерфейс включён');}
+$('huiBtn').addEventListener('click',toggleUi);
+$('infoBtn').addEventListener('click',()=>$('mod').classList.add('open'));
+$('mx').addEventListener('click',()=>$('mod').classList.remove('open'));
+$('mod').addEventListener('click',e=>{if(e.target===$('mod'))$('mod').classList.remove('open');});
+function swT(id){const ids=['t1','t2','t3','t4','t5','t6'];
+document.querySelectorAll('.tbs2 button').forEach((b,i)=>b.classList.toggle('act',ids[i]===id));
+document.querySelectorAll('.tcn').forEach(c=>c.classList.toggle('act',c.id===id));}
+window.swT=swT;
+$('rndB').addEventListener('click',()=>{
+$('v0').value=(5+Math.random()*75).toFixed(1);
+$('a0').value=Math.round(5+Math.random()*80);
+$('mass').value=[0.0027,0.005,0.058,0.43,0.62,7.26][Math.floor(Math.random()*6)];
+$('area').value=[0.0013,0.0028,0.0034,0.008,0.038,0.045][Math.floor(Math.random()*6)];
+$('cd').value=(0.1+Math.random()*1.1).toFixed(2);
+$('h0').value=(Math.random()*2).toFixed(1);
+rSl();recalc();toast('Случайный бросок 🎲');});
+$('rstB').addEventListener('click',()=>{Object.assign(P,DEF);rSl();
+document.querySelectorAll('#prBox button').forEach(b=>b.classList.remove('on'));
+document.querySelectorAll('#gseg button').forEach((b,i)=>b.classList.toggle('act',i===0));
+cmp=false;$('cmpB').classList.remove('act');iB.visible=iG.visible=false;
+clrGh();recalc();saveP();toast('Сброшено');});
+window.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;
+if(e.code==='Space'){e.preventDefault();$('playB').click();}
+const k=e.key.toLowerCase();
+if(k==='h'||k==='р')toggleUi();
+if(k==='r'||k==='к')$('rstB').click();
+if(k==='c'||k==='с')$('cmpB').click();
+if(k==='o'||k==='о')$('optB').click();
+if(k==='g'||k==='п')tgTg();
+if(k==='1')setCam('reset');if(k==='2')setCam('top');
+if(k==='3')setCam('side');if(k==='4')setCam('front');});
+window.addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();rn.setSize(innerWidth,innerHeight);});
+
+// СТАРТ
+try{recalc();fOpt();setCam('reset');tick();}
+catch(e){showErr(e.message||String(e));}
+</script>
+</body>
+</html>
