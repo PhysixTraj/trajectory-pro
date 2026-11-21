@@ -639,10 +639,12 @@ function tick(){requestAnimationFrame(tick);
 const dt=Math.min(ck.getDelta(),0.05);
 if(camA){camA.k=Math.min(1,camA.k+dt*2.2);
 const t=camA.k,e=t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
-cam.position.lerpVectors(camA.p0,camA.p1,e);
-orb.tx=camA.t0.x+(camA.t1.x-camA.t0.x)*e;
-orb.ty=camA.t0.y+(camA.t1.y-camA.t0.y)*e;
-orb.tz=camA.t0.z+(camA.t1.z-camA.t0.z)*e;
+orb.r=camA.r0+(camA.r1-camA.r0)*e;
+orb.th=camA.th0+(camA.th1-camA.th0)*e;
+orb.ph=camA.ph0+(camA.ph1-camA.ph0)*e;
+orb.tx=camA.tx0+(camA.tx1-camA.tx0)*e;
+orb.ty=camA.ty0+(camA.ty1-camA.ty0)*e;
+orb.tz=camA.tz0+(camA.tz1-camA.tz0)*e;
 if(camA.k>=1)camA=null;}
 if(orbAuto)orb.th+=dt*0.3;
 if(follow){orb.tx=rB.position.x;orb.ty=rB.position.y;orb.tz=0;}
@@ -697,8 +699,14 @@ if(m==='reset')po=[cx+L*0.55,L*0.42+6,L*0.8];
 if(m==='top'){po=[cx,L*1.4+18,0.5];tg=[cx,0,0.5];}
 if(m==='side')po=[cx,L*0.12+2,L*0.95+14];
 if(m==='front')po=[-L*0.8-8,L*0.15+2,0.5];
-camA={p0:cam.position.clone(),p1:new THREE.Vector3(po[0],po[1],po[2]),
-t0:new THREE.Vector3(orb.tx,orb.ty,orb.tz),t1:new THREE.Vector3(tg[0],tg[1],tg[2]),k:0};
+const dx=po[0]-tg[0],dy=po[1]-tg[1],dz=po[2]-tg[2];
+const R=Math.max(1,Math.sqrt(dx*dx+dy*dy+dz*dz));
+const PH=Math.max(0.03,Math.min(1.54,Math.acos(Math.max(-1,Math.min(1,dy/R)))));
+let TH=Math.atan2(dz,dx);
+while(TH-orb.th>Math.PI)TH-=2*Math.PI;
+while(TH-orb.th<-Math.PI)TH+=2*Math.PI;
+camA={k:0,r0:orb.r,th0:orb.th,ph0:orb.ph,tx0:orb.tx,ty0:orb.ty,tz0:orb.tz,
+r1:R,th1:TH,ph1:PH,tx1:tg[0],ty1:tg[1],tz1:tg[2]};
 ['c0','c1','c2','c3'].forEach(id=>$(id).classList.remove('act'));
 $({reset:'c0',top:'c1',side:'c2',front:'c3'}[m]).classList.add('act');}
 document.querySelectorAll('.cb [data-cam]').forEach(b=>b.addEventListener('click',()=>{
