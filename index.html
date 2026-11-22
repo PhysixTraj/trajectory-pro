@@ -229,9 +229,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
     </div>
   </div>
   <div class="cb gs">
-    <button class="act" data-cam="reset">📷 Обзор</button><button data-cam="top">🗺 Сверху</button>
-    <button data-cam="side">📐 Сбоку</button><button data-cam="front">🏎 Спереди</button>
-    <button data-cam="back">🔙 Сзади</button><button id="orbB">🌀 Орбита</button><button id="folB">🎯 Следить</button>
+    <button class="act" data-cam="reset" id="c0">📷 Обзор</button>
+    <button data-cam="top" id="c1">🗺 Сверху</button>
+    <button data-cam="side" id="c2">📐 Сбоку</button>
+    <button data-cam="front" id="c3">🏎 Спереди</button>
+    <button data-cam="back" id="c4">🔙 Сзади</button>
+    <button id="orbB">🌀 Орбита</button><button id="folB">🎯 Следить</button>
   </div>
   <div id="fps" class="gs">FPS –</div>
   <div class="rp gs"><div class="rh">Радар</div><canvas id="rd" width="130" height="130"></canvas></div>
@@ -665,6 +668,7 @@ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAtt
 mets3.push({l:new THREE.Line(g,new THREE.LineBasicMaterial({color:0xdff2ff,transparent:true,opacity:.95,blending:THREE.AdditiveBlending})),
 vx:-60-Math.random()*60,vy:-40-Math.random()*30,t:0});
 sc.add(mets3[mets3.length-1].l);}
+/* ГАЛАКТИКА, СТАНЦИЯ, КОМЕТА */
 (function(){
 const N=1200,ga=new Float32Array(N*3);
 for(let i=0;i<N;i++){const arm=i%3,rr=40+Math.random()*160,an=arm*2.094+rr*.035+(Math.random()-.5)*.4;
