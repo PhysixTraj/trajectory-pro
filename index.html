@@ -1,136 +1,88 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Траектория PRO — Deep Space</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
-:root{
---bg:#01020a;--pan:rgba(8,14,36,.7);--sol:#060b20;--sol2:#0a1230;
---a:#5ee0ff;--a2:#8fb8ff;--g:#ff5ec8;--r:#ff6b83;--grn:#2dd18e;--vio:#9d8cff;
---tx:#eaf0ff;--mu:#8fa0c8;--mu2:#5a6b96;
---bs:rgba(94,160,255,.16);--b:rgba(94,160,255,.34);
---gl:rgba(94,224,255,.3);--gg:rgba(255,94,200,.26);
---sh:0 14px 40px -10px rgba(0,1,8,.9),0 2px 8px rgba(0,1,8,.5);
---gr:linear-gradient(135deg,#3bb8ff,#8fb8ff 55%,#a06bff);
---grG:linear-gradient(135deg,#8fb8ff,#ff5ec8);
---grT:linear-gradient(100deg,#f0f5ff 10%,#8fd8ff 50%,#bda8ff 90%);}
+:root{--bg:#01020a;--pan:rgba(8,14,36,.7);--sol:#060b20;--a:#5ee0ff;--a2:#8fb8ff;--g:#ff5ec8;--r:#ff6b83;--grn:#2dd18e;--vio:#9d8cff;--tx:#eaf0ff;--mu:#8fa0c8;--mu2:#5a6b96;--bs:rgba(94,160,255,.16);--b:rgba(94,160,255,.34);--gl:rgba(94,224,255,.3);--gg:rgba(255,94,200,.26);--sh:0 14px 40px -10px rgba(0,1,8,.9);--gr:linear-gradient(135deg,#3bb8ff,#8fb8ff 55%,#a06bff);--grG:linear-gradient(135deg,#8fb8ff,#ff5ec8);--grT:linear-gradient(100deg,#f0f5ff 10%,#8fd8ff 50%,#bda8ff 90%)}
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx)}
-body::before{content:'';position:fixed;inset:-20%;z-index:0;pointer-events:none;
-background:radial-gradient(1000px 640px at 15% 0%,rgba(40,90,220,.25),transparent 55%),
-radial-gradient(900px 600px at 90% 15%,rgba(110,60,240,.18),transparent 55%),
-radial-gradient(1100px 700px at 50% 115%,rgba(20,140,255,.14),transparent 60%);
-filter:blur(45px);animation:aur 26s ease-in-out infinite alternate}
-@keyframes aur{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-3%,2%) scale(1.05)}}
+body::before{content:'';position:fixed;inset:-20%;z-index:0;pointer-events:none;background:radial-gradient(1000px 640px at 15% 0%,rgba(40,90,220,.25),transparent 55%),radial-gradient(900px 600px at 90% 15%,rgba(110,60,240,.18),transparent 55%),radial-gradient(1100px 700px at 50% 115%,rgba(20,140,255,.14),transparent 60%);filter:blur(45px);animation:aur 26s ease-in-out infinite alternate}
+@keyframes aur{0%{transform:scale(1)}100%{transform:translate(-3%,2%) scale(1.05)}}
 #bgp{position:fixed;inset:0;z-index:0;pointer-events:none}
-.panel{position:fixed;inset:0;z-index:2;overflow-y:auto;overscroll-behavior:contain;
-padding:56px 3vw 12px;opacity:0;visibility:hidden;pointer-events:none;
-transform:perspective(1400px) rotateX(6deg) translateY(36px) scale(.96);transform-origin:50% 0;
-transition:opacity .45s ease,transform .55s cubic-bezier(.19,.75,.22,1),visibility .45s}
+.panel{position:fixed;inset:0;z-index:2;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;padding:52px 3vw 14px;opacity:0;visibility:hidden;pointer-events:none;transform:perspective(1400px) rotateX(6deg) translateY(36px) scale(.96);transition:opacity .45s,transform .55s cubic-bezier(.19,.75,.22,1),visibility .45s}
 .panel.active{opacity:1;visibility:visible;pointer-events:auto;transform:none}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:var(--bs);border-radius:3px}
-nav{position:fixed;top:0;width:100%;z-index:300;display:flex;justify-content:space-between;align-items:center;
-padding:9px 3vw;background:rgba(1,2,10,.82);backdrop-filter:blur(14px);border-bottom:1px solid rgba(94,160,255,.24)}
+nav{position:fixed;top:0;width:100%;z-index:300;display:flex;justify-content:space-between;align-items:center;padding:9px 3vw;background:rgba(1,2,10,.82);backdrop-filter:blur(14px);border-bottom:1px solid rgba(94,160,255,.24)}
 .logo{font-weight:800;letter-spacing:.13em;font-size:.95rem;background:var(--grT);-webkit-background-clip:text;background-clip:text;color:transparent}
-.nv button{background:transparent;border:0;color:var(--mu);margin-left:6px;font-size:.8rem;font-weight:700;
-padding:7px 16px;border-radius:999px;cursor:pointer;transition:.26s;letter-spacing:.03em}
+.nv button{background:transparent;border:0;color:var(--mu);margin-left:6px;font-size:.8rem;font-weight:700;padding:7px 16px;border-radius:999px;cursor:pointer;transition:.26s}
 .nv button:hover{color:var(--tx);background:rgba(94,224,255,.08)}
-.nv button.act{background:var(--gr);color:#02102e;box-shadow:0 0 18px var(--gl);transform:translateY(-1px)}
-.wrap{max-width:1280px;margin:0 auto}
-.tag{display:inline-block;border:1px solid rgba(143,184,255,.5);border-radius:999px;padding:4px 14px;
-font-size:.68rem;letter-spacing:.24em;text-transform:uppercase;color:#9fc6ff;margin-bottom:12px}
-h1.big{font-size:clamp(2rem,4.6vw,3.6rem);line-height:1.06;font-weight:800;margin-bottom:14px;
-background:var(--grT);-webkit-background-clip:text;background-clip:text;color:transparent}
-h2.big{font-size:clamp(1.4rem,2.6vw,2.1rem);font-weight:800;margin-bottom:8px;
-background:var(--grT);-webkit-background-clip:text;background-clip:text;color:transparent}
-.lead{color:var(--mu);font-size:.96rem;max-width:700px;margin-bottom:8px}
-.lead b{color:var(--tx)}
-.rv{opacity:0;transform:translateY(22px);transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1)}
-.rv.vis{opacity:1;transform:none}
+.nv button.act{background:var(--gr);color:#02102e;box-shadow:0 0 18px var(--gl)}
+.wrap{width:100%;max-width:1320px;margin:auto}
+.tag{display:inline-block;border:1px solid rgba(143,184,255,.5);border-radius:999px;padding:4px 14px;font-size:.68rem;letter-spacing:.24em;text-transform:uppercase;color:#9fc6ff;margin-bottom:12px}
+h1.big{font-size:clamp(2.4rem,5.2vw,4.2rem);line-height:1.05;font-weight:800;margin-bottom:14px;background:var(--grT);-webkit-background-clip:text;background-clip:text;color:transparent}
+h2.big{font-size:clamp(1.5rem,2.8vw,2.2rem);font-weight:800;margin-bottom:8px;background:var(--grT);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--mu);font-size:.98rem;max-width:720px;margin-bottom:8px}.lead b{color:var(--tx)}
+.rv{opacity:0;transform:translateY(22px);transition:opacity .6s,transform .6s}.rv.vis{opacity:1;transform:none}
 .hero2{display:grid;grid-template-columns:1.15fr .85fr;gap:24px;align-items:start}
 .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .stt{background:var(--pan);border:1px solid var(--bs);border-radius:12px;padding:11px 15px;backdrop-filter:blur(10px);transition:.26s}
-.stt:hover{transform:translateY(-3px);border-color:var(--a2);box-shadow:0 0 20px var(--bs)}
-.stt b{display:block;font-size:1.45rem;font-weight:800;font-family:Consolas,monospace;color:var(--a);text-shadow:0 0 14px var(--gl)}
+.stt:hover{transform:translateY(-3px);box-shadow:0 0 20px var(--bs)}
+.stt b{display:block;font-size:1.5rem;font-family:Consolas,monospace;color:var(--a);text-shadow:0 0 14px var(--gl)}
 .stt small{color:var(--mu);font-size:.6rem;text-transform:uppercase;letter-spacing:.1em}
 .steps{margin-top:12px;display:flex;flex-direction:column;gap:7px}
-.step{display:flex;gap:10px;align-items:flex-start;background:var(--pan);border:1px solid var(--bs);border-radius:12px;padding:9px 13px;backdrop-filter:blur(10px)}
+.step{display:flex;gap:10px;align-items:flex-start;background:var(--pan);border:1px solid var(--bs);border-radius:12px;padding:9px 13px}
 .step .n{width:24px;height:24px;flex-shrink:0;border-radius:50%;background:var(--gr);color:#02102e;display:grid;place-items:center;font-weight:800;font-size:.75rem}
-.step p{color:var(--mu);font-size:.8rem;line-height:1.42}
-.step p b{color:var(--tx)}
-.btn{display:inline-block;margin-top:14px;padding:11px 26px;border-radius:999px;font-weight:800;
-letter-spacing:.05em;color:#02102e;background:var(--gr);box-shadow:0 5px 24px var(--gl);transition:.22s;border:0;cursor:pointer;font-size:.86rem}
-.btn:hover{transform:translateY(-2px);box-shadow:0 9px 34px var(--gl)}
-.btn.ghost{background:transparent;border:1px solid rgba(143,184,255,.5);color:var(--tx);box-shadow:none}
-.btn.ghost:hover{background:rgba(143,184,255,.1);box-shadow:0 0 18px var(--bs)}
-.f{background:rgba(94,224,255,.05);border:1px solid var(--b);border-radius:10px;padding:9px;
-font-family:Consolas,monospace;color:var(--a);margin:9px 0;text-align:center;max-width:700px}
+.step p{color:var(--mu);font-size:.8rem;line-height:1.42}.step p b{color:var(--tx)}
+.btn{display:inline-block;margin-top:14px;padding:11px 26px;border-radius:999px;font-weight:800;color:#02102e;background:var(--gr);box-shadow:0 5px 24px var(--gl);transition:.22s;border:0;cursor:pointer;font-size:.86rem}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:transparent;border:1px solid rgba(143,184,255,.5);color:var(--tx)}
+.btn.ghost:hover{background:rgba(143,184,255,.1)}
+.f{background:rgba(94,224,255,.05);border:1px solid var(--b);border-radius:10px;padding:9px;font-family:Consolas,monospace;color:var(--a);margin:9px 0;text-align:center;max-width:720px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;margin-top:16px}
-.crd{background:var(--pan);border:1px solid var(--bs);border-radius:14px;padding:16px;backdrop-filter:blur(12px);
-transition:.3s;position:relative;overflow:hidden}
-.crd:hover{transform:translateY(-4px);border-color:var(--a2);box-shadow:0 0 30px var(--bs)}
-.crd::before{content:'';position:absolute;top:-30%;right:-20%;width:160px;height:160px;border-radius:50%;
-background:var(--a2);opacity:.06;pointer-events:none;filter:blur(18px)}
-.crd .ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-size:1.1rem;
-background:rgba(143,184,255,.12);border:1px solid rgba(143,184,255,.3);margin-bottom:9px}
-.crd h3{font-size:1rem;margin-bottom:5px;color:var(--tx)}
-.crd p{color:var(--mu);font-size:.82rem;line-height:1.45}
-.crd p b{color:var(--tx)}
+.crd{background:var(--pan);border:1px solid var(--bs);border-radius:14px;padding:16px;backdrop-filter:blur(12px);transition:.3s}
+.crd:hover{transform:translateY(-4px);box-shadow:0 0 30px var(--bs)}
+.crd .ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-size:1.1rem;background:rgba(143,184,255,.12);border:1px solid rgba(143,184,255,.3);margin-bottom:9px}
+.crd h3{font-size:1rem;margin-bottom:5px}.crd p{color:var(--mu);font-size:.82rem;line-height:1.45}.crd p b{color:var(--tx)}
 .tbl{width:100%;border-collapse:collapse;font-size:.74rem;font-family:Consolas,monospace;margin-top:4px}
 .tbl th{color:#9fc6ff;text-align:left;padding:3px 7px;border-bottom:1px solid var(--b);font-size:.58rem;text-transform:uppercase}
 .tbl td{padding:3px 7px;color:var(--mu);border-bottom:1px solid rgba(94,160,255,.1)}
 .techrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.tgb{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:999px;
-padding:5px 13px;font-size:.74rem;font-family:Consolas,monospace;color:var(--mu)}
+.tgb{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:5px 13px;font-size:.74rem;font-family:Consolas,monospace;color:var(--mu)}
 .foot{text-align:center;padding:12px 16px 20px;color:var(--mu2);font-size:.72rem}
-#simBox{position:relative;height:calc(100vh - 76px);min-height:460px;border:1px solid rgba(94,160,255,.4);border-radius:16px;
-overflow:hidden;box-shadow:0 0 50px rgba(40,90,220,.32),var(--sh)}
+#simBox{position:relative;height:calc(100vh - 72px);min-height:460px;border:1px solid rgba(94,160,255,.4);border-radius:16px;overflow:hidden;box-shadow:0 0 50px rgba(40,90,220,.32)}
 #sc{position:absolute;inset:0;z-index:1}#sc canvas{display:block}
 .ui{position:absolute;inset:0;z-index:10;pointer-events:none;padding:10px;user-select:none}
-body.hui .ui>*{opacity:0!important;pointer-events:none!important}
-.ui>*{transition:opacity .26s}
-.gs{background:var(--pan);border:1px solid var(--bs);border-radius:14px;backdrop-filter:blur(16px) saturate(1.4);
-box-shadow:var(--sh);position:relative;overflow:hidden}
-.gs::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;
-background:linear-gradient(130deg,rgba(94,224,255,.5),transparent 30%,transparent 65%,rgba(143,184,255,.4));
--webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
-opacity:.4;pointer-events:none;transition:opacity .36s}
-.gs:hover::before{opacity:.85}
+body.hui .ui>*{opacity:0!important;pointer-events:none!important}.ui>*{transition:opacity .26s}
+.gs{background:var(--pan);border:1px solid var(--bs);border-radius:14px;backdrop-filter:blur(16px);box-shadow:var(--sh)}
 .tb{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;z-index:12;gap:6px}
-.br{pointer-events:auto;display:flex;align-items:center;gap:8px;padding:6px 14px 6px 8px}
-.mk{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:var(--grG);color:#081024;font-size:.98rem;animation:mp 3.2s ease-in-out infinite}
-@keyframes mp{0%,100%{box-shadow:0 0 8px var(--gg)}50%{box-shadow:0 0 22px var(--gg)}}
+.br{pointer-events:auto;display:flex;align-items:center;gap:8px;padding:6px 14px}
+.mk{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:var(--grG);color:#081024;font-size:.98rem}
 .bn{font-weight:800;letter-spacing:.14em;font-size:.82rem;background:var(--grT);-webkit-background-clip:text;background-clip:text;color:transparent}
-.sb{font-size:.48rem;color:var(--mu2);letter-spacing:.3em;text-transform:uppercase;margin-top:1px}
+.sb{font-size:.48rem;color:var(--mu2);letter-spacing:.3em;text-transform:uppercase}
 .tbs{pointer-events:auto;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
 .ib{width:34px;height:34px;border-radius:9px;background:var(--pan);border:1px solid var(--bs);color:var(--tx);cursor:pointer;backdrop-filter:blur(8px);transition:.2s;display:grid;place-items:center;font-size:.92rem}
-.ib:hover{background:var(--gr);color:#02102e;box-shadow:0 0 16px var(--gl);transform:translateY(-1px)}
-.ib.act{background:var(--gr);color:#02102e;box-shadow:0 0 14px var(--gl)}
+.ib:hover{background:var(--gr);color:#02102e}.ib.act{background:var(--gr);color:#02102e}
 .cb{pointer-events:auto;position:absolute;top:48px;left:50%;transform:translateX(-50%);display:flex;gap:3px;padding:5px;flex-wrap:wrap;justify-content:center;border-radius:999px}
 .cb button{background:transparent;border:0;color:var(--mu);padding:6px 11px;border-radius:999px;cursor:pointer;font-weight:600;font-size:.66rem;transition:.2s}
-.cb button:hover{background:rgba(94,224,255,.1);color:var(--tx)}
-.cb button.act{background:var(--gr);color:#02102e;box-shadow:0 0 12px var(--gl)}
+.cb button.act{background:var(--gr);color:#02102e}
 .rp{position:absolute;top:88px;right:10px;z-index:11;padding:8px;pointer-events:auto}
 .rh{font-size:.5rem;color:var(--mu2);font-weight:800;letter-spacing:.22em;text-transform:uppercase;text-align:center;margin-bottom:3px}
 #rd{display:block;border-radius:8px}
 #fps{position:absolute;top:88px;left:10px;z-index:11;padding:5px 8px;font-size:.56rem;color:var(--mu);font-family:Consolas,monospace}
-.dk{position:absolute;pointer-events:none;z-index:11}
-.dl{left:10px;bottom:10px}.dr{right:10px;bottom:10px}
+.dk{position:absolute;pointer-events:none;z-index:11}.dl{left:10px;bottom:10px}.dr{right:10px;bottom:10px}
 .sp{pointer-events:auto;max-height:min(66vh,580px);overflow-y:auto;overscroll-behavior:contain;width:268px;transition:transform .3s,opacity .3s}
 .sp.loff{transform:translateX(calc(-100% - 16px));opacity:0;pointer-events:none}
 .sp.roff{transform:translateX(calc(100% + 16px));opacity:0;pointer-events:none}
-.pt{pointer-events:auto;position:absolute;top:50%;transform:translateY(-50%);width:22px;height:58px;background:var(--pan);border:1px solid var(--bs);color:var(--mu);cursor:pointer;border-radius:8px;font-size:.74rem;backdrop-filter:blur(8px)}
-.pt:hover{color:var(--a);box-shadow:0 0 12px var(--gl)}
+.pt{pointer-events:auto;position:absolute;top:50%;transform:translateY(-50%);width:22px;height:58px;background:var(--pan);border:1px solid var(--bs);color:var(--mu);cursor:pointer;border-radius:8px;font-size:.74rem}
 .dl .pt{left:-28px}.dr .pt{right:-28px}
 .cp{padding:10px;display:flex;flex-direction:column;gap:6px}
 .tt{font-size:.52rem;color:#9fc6ff;font-weight:800;text-transform:uppercase;letter-spacing:.14em;display:flex;align-items:center;gap:4px}
 .tt::before{content:'';width:9px;height:2px;background:var(--grG);border-radius:2px}
 .pr{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
 .pr button{background:rgba(143,184,255,.07);border:1px solid var(--bs);border-radius:8px;padding:4px 6px;cursor:pointer;font-size:.9rem;transition:.18s}
-.pr button:hover{background:rgba(94,224,255,.14);transform:translateY(-1px)}
-.pr button.on{background:var(--gr);border-color:transparent;box-shadow:0 0 10px var(--gl)}
+.pr button:hover{background:rgba(94,224,255,.14)}.pr button.on{background:var(--gr)}
 .ct{display:flex;flex-direction:column;gap:3px}
 .ct label{font-size:.54rem;color:var(--mu);display:flex;justify-content:space-between;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
 .ct label span{color:var(--a);font-family:Consolas,monospace;font-size:.68rem}
@@ -138,13 +90,13 @@ input[type=range]{-webkit-appearance:none;width:100%;height:3px;border-radius:2p
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--gr);box-shadow:0 0 8px var(--gl);cursor:pointer;border:2px solid var(--tx)}
 .sg{display:flex;gap:3px}
 .sg button{flex:1;background:rgba(143,184,255,.06);border:1px solid var(--bs);color:var(--mu);padding:6px 2px;border-radius:8px;cursor:pointer;font-weight:600;font-size:.62rem;transition:.18s}
-.sg button.act{background:var(--gr);color:#02102e;border-color:transparent;box-shadow:0 0 8px var(--gl)}
+.sg button.act{background:var(--gr);color:#02102e}
 .swr{display:flex;justify-content:space-between;align-items:center;font-size:.66rem;color:var(--mu);font-weight:600}
 .sw{position:relative;width:32px;height:17px;flex-shrink:0}
 .sw input{opacity:0;width:0;height:0}
 .sl{position:absolute;inset:0;background:rgba(90,107,150,.35);border-radius:16px;cursor:pointer;transition:.26s}
 .sl::before{content:'';position:absolute;width:11px;height:11px;border-radius:50%;left:3px;top:3px;background:#fff;transition:.26s}
-.sw input:checked+.sl{background:var(--gr);box-shadow:0 0 6px var(--gl)}
+.sw input:checked+.sl{background:var(--gr)}
 .sw input:checked+.sl::before{transform:translateX(15px)}
 .hint{background:rgba(255,94,200,.05);border:1px dashed rgba(255,94,200,.3);border-radius:8px;padding:6px 9px;font-size:.62rem;color:var(--mu)}
 .hint b{color:var(--a);font-family:Consolas,monospace}
@@ -154,61 +106,53 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 .st b.blue{color:var(--a);font-size:.92rem}.st b.red{color:var(--r)}.st b.gold{color:var(--g)}
 .tl{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;border-top:1px solid var(--bs);padding-top:6px}
 .tl div{background:rgba(143,184,255,.07);border-radius:8px;padding:4px 1px;text-align:center}
-.tl small{display:block;font-size:.42rem;color:var(--mu2);text-transform:uppercase;letter-spacing:.04em}
+.tl small{display:block;font-size:.42rem;color:var(--mu2);text-transform:uppercase}
 .tl b{font-family:Consolas,monospace;font-size:.72rem;color:var(--a)}
 .ab{display:flex;gap:4px;margin-top:2px}
-.bt{padding:9px;border-radius:9px;border:0;font-weight:800;cursor:pointer;font-size:.74rem;transition:.2s;position:relative;overflow:hidden;letter-spacing:.03em}
-.bt.m{flex:2.2;background:var(--gr);background-size:200% 200%;animation:ga 6s ease infinite;color:#02102e;box-shadow:0 4px 18px var(--gl)}
-.bt.m::after{content:'';position:absolute;top:0;left:-70%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.4),transparent);transform:skewX(-20deg);animation:shn 3.2s ease-in-out infinite}
-@keyframes shn{0%,60%{left:-70%}100%{left:120%}}
+.bt{padding:9px;border-radius:9px;border:0;font-weight:800;cursor:pointer;font-size:.74rem;transition:.2s;letter-spacing:.03em}
+.bt.m{flex:2.2;background:var(--gr);background-size:200% 200%;animation:ga 6s ease infinite;color:#02102e}
 @keyframes ga{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-.bt.m:hover{transform:translateY(-1px);filter:brightness(1.1)}
+.bt.m:hover{filter:brightness(1.12)}
 .bt.s{flex:1;background:rgba(143,184,255,.1);border:1px solid var(--bs);color:var(--tx)}
-.bt.s:hover{background:rgba(94,224,255,.14);border-color:var(--b)}
-.bt.s.act{background:var(--grG);color:#081024;box-shadow:0 0 12px var(--gg)}
+.bt.s:hover{background:rgba(94,224,255,.14)}
+.bt.s.act{background:var(--grG);color:#081024}
 .cdk{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:11;pointer-events:none;text-align:center}
-.ctb{pointer-events:auto;padding:6px 12px;background:var(--pan);border:1px solid var(--bs);border-radius:999px;color:var(--mu);font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;cursor:pointer;transition:.2s}
-.ctb:hover{color:var(--a);box-shadow:0 0 12px var(--gl)}
+.ctb{pointer-events:auto;padding:6px 12px;background:var(--pan);border:1px solid var(--bs);border-radius:999px;color:var(--mu);font-size:.62rem;font-weight:700;text-transform:uppercase;cursor:pointer}
 .chp{pointer-events:auto;margin-top:4px;padding:6px 10px;transition:transform .3s,opacity .3s}
 .chp.off{transform:translateY(calc(100% + 36px));opacity:0;pointer-events:none}
 .chTabs{display:flex;gap:2px;margin-bottom:4px;flex-wrap:wrap;justify-content:center}
-.chTabs button{background:rgba(143,184,255,.07);border:1px solid var(--bs);color:var(--mu);padding:3px 8px;border-radius:6px;cursor:pointer;font-size:.58rem;font-weight:700;transition:.18s}
-.chTabs button.act{background:var(--gr);color:#02102e;border-color:transparent}
-.chh{display:flex;justify-content:space-between;font-size:.5rem;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;flex-wrap:wrap;gap:3px}
+.chTabs button{background:rgba(143,184,255,.07);border:1px solid var(--bs);color:var(--mu);padding:3px 8px;border-radius:6px;cursor:pointer;font-size:.58rem;font-weight:700}
+.chTabs button.act{background:var(--gr);color:#02102e}
+.chh{display:flex;justify-content:space-between;font-size:.5rem;color:var(--mu);font-weight:700;text-transform:uppercase;margin-bottom:3px;flex-wrap:wrap;gap:3px}
 .chh i{display:inline-block;width:12px;height:3px;border-radius:2px;vertical-align:middle;margin:0 2px 1px 6px}
 .lgr{background:var(--a)}.lgi{background:repeating-linear-gradient(90deg,var(--g) 0 4px,transparent 4px 8px)}.lgA{background:var(--grn)}.lgB{background:var(--vio)}
 #ch{width:460px;max-width:52vw;display:block;border-radius:8px;border:1px solid var(--bs)}
 .bh{position:absolute;top:88px;left:50%;transform:translateX(-50%);z-index:11;text-align:center;pointer-events:none;opacity:0;transition:opacity .3s}
 .bh.show{opacity:1}
 .bh .n{font-family:Consolas,monospace;font-weight:700;font-size:2rem;background:var(--grT);-webkit-background-clip:text;background-clip:text;color:transparent}
-.bh .l{font-size:.5rem;letter-spacing:.28em;color:var(--mu2);text-transform:uppercase;margin-top:2px}
-.bh .alt{font-family:Consolas,monospace;font-size:.78rem;color:var(--mu);margin-top:3px}
+.bh .l{font-size:.5rem;letter-spacing:.28em;color:var(--mu2);text-transform:uppercase}
 .md{position:fixed;inset:0;background:rgba(1,3,10,.86);backdrop-filter:blur(12px);z-index:600;display:none;justify-content:center;align-items:center;padding:14px;opacity:0;transition:opacity .3s}
 .md.open{display:flex;opacity:1}
-.mc{background:linear-gradient(160deg,var(--sol2),var(--sol) 70%);border:1px solid var(--b);border-radius:16px;padding:22px;max-width:700px;width:100%;box-shadow:0 0 60px rgba(94,224,255,.12),var(--sh);max-height:86vh;overflow-y:auto;position:relative;transform:translateY(14px);transition:transform .3s}
-.md.open .mc{transform:translateY(0)}
+.mc{background:linear-gradient(160deg,#0a1230,#060b20 70%);border:1px solid var(--b);border-radius:16px;padding:22px;max-width:700px;width:100%;box-shadow:0 0 60px rgba(94,224,255,.12);max-height:86vh;overflow-y:auto;position:relative}
 .mx{position:absolute;top:10px;right:12px;background:rgba(143,184,255,.1);border:1px solid var(--bs);border-radius:50%;width:28px;height:28px;color:var(--mu);font-size:1rem;cursor:pointer;transition:.2s}
 .mx:hover{color:var(--a);transform:rotate(90deg)}
 .tbs2{display:flex;gap:4px;margin-bottom:12px;border-bottom:1px solid var(--bs);padding-bottom:7px;flex-wrap:wrap}
 .tbs2 button{background:none;border:0;color:var(--mu);font-size:.8rem;font-weight:600;cursor:pointer;padding:3px 8px;border-bottom:2px solid transparent;transition:.2s}
-.tbs2 button:hover{color:var(--tx)}
 .tbs2 button.act{color:var(--g);border-bottom-color:var(--g)}
 .tcn{display:none;line-height:1.56;font-size:.84rem}.tcn.act{display:block;animation:fi .3s ease}
 .tcn h3{margin-bottom:8px;background:var(--grT);-webkit-background-clip:text;background-clip:text;color:transparent}
 .tcn p{margin-bottom:6px;color:var(--mu)}.tcn p b{color:var(--tx)}
-.tcn .f{background:rgba(94,224,255,.05);border:1px solid var(--b);padding:10px;border-radius:8px;font-family:Consolas,monospace;color:var(--a);margin:10px 0;text-align:center}
-.tcn ul{margin:6px 0 8px 16px;color:var(--mu)}.tcn li{margin-bottom:3px}
+.tcn ul{margin:6px 0 8px 16px;color:var(--mu)}
 .tcn kbd{background:rgba(143,184,255,.14);border:1px solid var(--bs);border-radius:5px;padding:1px 6px;font-family:Consolas,monospace;font-size:.7rem}
-.ar{display:flex;gap:8px;align-items:center;padding:6px 9px;border-radius:9px;background:rgba(143,184,255,.05);border:1px solid var(--bs);margin-bottom:4px;transition:.18s}
+.ar{display:flex;gap:8px;align-items:center;padding:6px 9px;border-radius:9px;background:rgba(143,184,255,.05);border:1px solid var(--bs);margin-bottom:4px}
 .ar .i{font-size:1.1rem;filter:grayscale(1) opacity(.4)}.ar.done .i{filter:none}
 .ar .nm{font-weight:700}.ar.done .nm{color:var(--g)}.ar .ds{font-size:.7rem;color:var(--mu)}
 .lgT{width:100%;border-collapse:collapse;font-size:.72rem;font-family:Consolas,monospace}
 .lgT th{color:var(--g);text-align:left;padding:4px 6px;border-bottom:1px solid var(--b);font-size:.6rem;text-transform:uppercase}
 .lgT td{padding:4px 6px;color:var(--mu);border-bottom:1px solid var(--bs)}
-.lgT tr:hover td{background:rgba(94,224,255,.06);color:var(--tx)}
 .lgE{color:var(--mu);font-style:italic}
 @keyframes fi{from{opacity:0}to{opacity:1}}
-#to{position:fixed;bottom:16px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--sol);border:1px solid var(--g);color:var(--tx);padding:8px 16px;border-radius:11px;font-weight:600;font-size:.76rem;box-shadow:0 0 22px var(--gg),var(--sh);z-index:700;opacity:0;transition:.3s;pointer-events:none;max-width:76vw;text-align:center}
+#to{position:fixed;bottom:16px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--sol);border:1px solid var(--g);color:var(--tx);padding:8px 16px;border-radius:11px;font-weight:600;font-size:.76rem;z-index:700;opacity:0;transition:.3s;pointer-events:none;max-width:76vw;text-align:center}
 #to.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #er{position:absolute;top:0;left:0;right:0;z-index:800;display:none;background:rgba(80,8,30,.96);border-bottom:1px solid var(--r);color:#ffe0e6;padding:6px 12px;font-size:.7rem;font-family:Consolas,monospace}
 #er.show{display:block}
@@ -216,23 +160,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 #ld.gone{opacity:0;pointer-events:none}
 #ld .m{width:60px;height:60px;border-radius:16px;display:grid;place-items:center;background:var(--grG);color:#081024;font-size:1.6rem;animation:lp 1.4s ease-in-out infinite}
 @keyframes lp{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-#ld .t{color:var(--mu);letter-spacing:.32em;text-transform:uppercase;font-size:.6rem;margin-top:12px;text-align:center}
-#boot{position:fixed;inset:0;z-index:1000;background:#01020a;display:grid;place-items:center;transition:opacity .9s ease}
+#ld .t{color:var(--mu);letter-spacing:.32em;text-transform:uppercase;font-size:.6rem;margin-top:12px}
+#boot{position:fixed;inset:0;z-index:1000;background:#01020a;display:grid;place-items:center;transition:opacity .9s}
 #boot.gone{opacity:0;pointer-events:none}
 #boot .bl{font-weight:800;letter-spacing:.3em;font-size:clamp(1.2rem,3.4vw,2.4rem);background:var(--grT);-webkit-background-clip:text;background-clip:text;color:transparent;animation:bi 1.6s ease-in-out infinite}
-@keyframes bi{0%,100%{opacity:.45;transform:scale(.98)}50%{opacity:1;transform:scale(1.02)}}
+@keyframes bi{0%,100%{opacity:.45}50%{opacity:1}}
 #boot .bs{margin-top:14px;color:var(--mu2);font-size:.62rem;letter-spacing:.4em;text-transform:uppercase;text-align:center}
-@media(max-width:820px){
-.hero2{grid-template-columns:1fr}
-.nv button{margin-left:2px;padding:6px 9px;font-size:.7rem}
-.sp{width:min(80vw,268px)}
-#ch{max-width:82vw}}
+@media(max-width:820px){.hero2{grid-template-columns:1fr}.nv button{margin-left:2px;padding:6px 9px;font-size:.7rem}.sp{width:min(80vw,268px)}#ch{max-width:82vw}}
 </style>
 </head>
 <body>
 <div id="boot"><div><div class="bl">◈ ТРАЕКТОРИЯ PRO</div><div class="bs">инициализация орбитальной станции…</div></div></div>
 <canvas id="bgp"></canvas>
-
 <nav>
   <div class="logo">◈ ТРАЕКТОРИЯ PRO</div>
   <div class="nv">
@@ -241,317 +180,273 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
     <button data-sec="docs">Материалы</button>
   </div>
 </nav>
+<section id="about" class="panel active"><div class="wrap">
+  <div class="rv"><div class="tag">Индивидуальный проект · Физика</div>
+  <h1 class="big">Влияние сопротивления воздуха<br>на полёт тела</h1></div>
+  <div class="hero2"><div>
+    <p class="lead rv">Школьная формула работает только в вакууме. Я построил <b>численную модель реального полёта</b> и сравнил её с идеальной параболой для тел от пёрышка до ядра.</p>
+    <p class="lead rv" style="font-size:.9rem"><b>Гипотеза:</b> чем меньше масса и выше скорость, тем сильнее расхождение — а оптимальный угол уходит ниже 45°.</p>
+    <div class="f rv">L<sub>идеал</sub> = v₀²·sin(2α)/g · m·a = F<sub>тяж</sub> + ½·ρ·C<sub>d</sub>·A·v²</div>
+    <div class="steps rv">
+      <div class="step"><div class="n">1</div><p><b>Проблема.</b> Насколько велика ошибка школьной формулы, если воздух всё-таки есть?</p></div>
+      <div class="step"><div class="n">2</div><p><b>Метод.</b> Рунге–Кутта 4-го порядка, шаг 1/240 с — аналитического решения не существует.</p></div>
+      <div class="step"><div class="n">3</div><p><b>Проверка.</b> Контрольный тест на Луне: без атмосферы траектории совпадают — модель честная.</p></div>
+    </div>
+    <div class="rv">
+      <button class="btn" data-go="sim">🚀 Запустить симуляцию</button>
+      <button class="btn ghost" onclick="document.getElementById('mod').classList.add('open')">📖 Паспорт проекта</button>
+    </div>
+  </div><div>
+    <div class="stats rv">
+      <div class="stt"><b data-cnt="7">0</b><small>типов тел</small></div>
+      <div class="stt"><b data-cnt="3">0</b><small>планеты</small></div>
+      <div class="stt"><b data-cnt="240">0</b><small>шаг RK4, Гц</small></div>
+      <div class="stt"><b data-cnt="12">0</b><small>достижений</small></div>
+    </div>
+    <div class="step rv" style="margin-top:12px"><div class="n">✓</div><p><b>Ожидаемый результат.</b> У волана и пёрышка погрешность достигает сотен процентов; у ядра — единицы. Оптимум в воздухе: 30–40°.</p></div>
+    <div class="step rv"><div class="n">✓</div><p><b>Для комиссии:</b> живая 3D-сцена, графики y(x)/y(t)/v(t)/a(t), журнал и экспорт в CSV.</p></div>
+  </div></div>
+  <div class="cards rv" style="margin-top:18px">
+    <div class="crd"><div class="ic">🎯</div><h3>Что исследуем</h3><p>Дальность, высота, время полёта и угол падения при квадратичном сопротивлении. Сравнение с идеальной формулой на каждом броске.</p></div>
+    <div class="crd"><div class="ic">⚙️</div><h3>Как устроена модель</h3><p>На каждом шаге 1/240 с считаются три силы: тяжести, сопротивления и Магнуса. Плотность — экспонента по высоте.</p></div>
+    <div class="crd"><div class="ic">📐</div><h3>Контроль точности</h3><p>Шаг РК4 проверен сходимостью: уменьшение шага вдвое меняет дальность меньше чем на 0,1%.</p></div>
+  </div>
+  <div class="techrow rv" style="margin-top:14px">
+    <span class="tgb">⚖️ Гонка реал vs идеал</span><span class="tgb">🌀 Магнус</span><span class="tgb">🌬 Ветер ±15</span>
+    <span class="tgb">🌍 Луна · Марс</span><span class="tgb">💾 Снимки A/B</span><span class="tgb">📄 CSV</span>
+  </div>
+</div></section>
 
-<!-- РАЗДЕЛ 1 -->
-<section id="about" class="panel active">
-  <div class="wrap">
-    <div class="rv"><div class="tag">Индивидуальный проект · Физика</div>
-    <h1 class="big">Влияние сопротивления воздуха<br>на полёт тела</h1></div>
-    <div class="hero2">
-      <div>
-        <p class="lead rv">Школьная формула работает только в вакууме. Я построил <b>численную модель реального полёта</b> и сравнил её с идеальной параболой для тел от пёрышка до ядра.</p>
-        <p class="lead rv" style="font-size:.9rem"><b>Гипотеза:</b> чем меньше масса и выше скорость, тем сильнее расхождение — а оптимальный угол уходит ниже 45°.</p>
-        <div class="f rv">L<sub>идеал</sub> = v₀²·sin(2α)/g&nbsp;&nbsp;·&nbsp;&nbsp;m·a = F<sub>тяж</sub> + ½·ρ·C<sub>d</sub>·A·v²</div>
-        <div class="steps rv">
-          <div class="step"><div class="n">1</div><p><b>Проблема.</b> Насколько велика ошибка школьной формулы, если воздух всё-таки есть?</p></div>
-          <div class="step"><div class="n">2</div><p><b>Метод.</b> Рунге–Кутта 4-го порядка, шаг 1/240 с — аналитического решения с квадратичным сопротивлением не существует.</p></div>
-          <div class="step"><div class="n">3</div><p><b>Проверка.</b> Контрольный тест на Луне: без атмосферы траектории совпадают — значит, модель честная.</p></div>
-        </div>
-        <div class="rv">
-          <button class="btn" data-go="sim">🚀 Запустить симуляцию</button>
-          <button class="btn ghost" onclick="document.getElementById('mod').classList.add('open')">📖 Паспорт проекта</button>
-        </div>
-      </div>
-      <div>
-        <div class="stats rv">
-          <div class="stt"><b data-cnt="7">0</b><small>типов тел</small></div>
-          <div class="stt"><b data-cnt="3">0</b><small>планеты</small></div>
-          <div class="stt"><b data-cnt="240">0</b><small>шаг RK4, Гц</small></div>
-          <div class="stt"><b data-cnt="12">0</b><small>достижений</small></div>
-        </div>
-        <div class="step rv" style="margin-top:12px"><div class="n">✓</div><p><b>Ожидаемый результат.</b> У волана и пёрышка погрешность идеальной формулы достигает сотен процентов; у ядра — единицы. Оптимум в воздухе: 30–40°.</p></div>
-        <div class="step rv"><div class="n">✓</div><p><b>Для комиссии:</b> живая 3D-сцена, графики y(x)/y(t)/v(t)/a(t), журнал и экспорт в CSV.</p></div>
-      </div>
+<section id="sim" class="panel"><div id="simBox">
+  <div id="ld"><div style="display:flex;flex-direction:column;align-items:center"><div class="m">◈</div><div class="t" id="ldT">Загрузка…</div></div></div>
+  <div id="er"></div><div id="sc"></div>
+  <div class="ui">
+  <div class="tb">
+    <div class="br gs"><div class="mk">◈</div><div><div class="bn">ТРАЕКТОРИЯ <i>PRO</i></div><div class="sb">Deep Space</div></div></div>
+    <div class="tbs">
+      <button class="ib" id="soundBtn">🔊</button><button class="ib" id="shotBtn">📸</button>
+      <button class="ib" id="huiBtn">👁</button><button class="ib" id="fsBtn">⛶</button><button class="ib" id="infoBtn">📖</button>
     </div>
   </div>
-</section>
-
-<!-- РАЗДЕЛ 2 -->
-<section id="sim" class="panel">
-  <div id="simBox">
-    <div id="ld"><div style="display:flex;flex-direction:column;align-items:center"><div class="m">◈</div><div class="t" id="ldT">Загрузка…</div></div></div>
-    <div id="er"></div>
-    <div id="sc"></div>
-    <div class="ui">
-    <div class="tb">
-      <div class="br gs"><div class="mk">◈</div><div><div class="bn">ТРАЕКТОРИЯ <i>PRO</i></div><div class="sb">Deep Space</div></div></div>
-      <div class="tbs">
-        <button class="ib" id="soundBtn" title="Звук">🔊</button>
-        <button class="ib" id="shotBtn" title="Скриншот">📸</button>
-        <button class="ib" id="huiBtn" title="Скрыть интерфейс (H)">👁</button>
-        <button class="ib" id="fsBtn" title="Во весь экран">⛶</button>
-        <button class="ib" id="infoBtn" title="О проекте">📖</button>
+  <div class="cb gs">
+    <button class="act" data-cam="reset">📷 Обзор</button><button data-cam="top">🗺 Сверху</button>
+    <button data-cam="side">📐 Сбоку</button><button data-cam="front">🏎 Спереди</button>
+    <button data-cam="back">🔙 Сзади</button><button id="orbB">🌀 Орбита</button><button id="folB">🎯 Следить</button>
+  </div>
+  <div id="fps" class="gs">FPS –</div>
+  <div class="rp gs"><div class="rh">Радар</div><canvas id="rd" width="130" height="130"></canvas></div>
+  <div class="bh" id="bigHud"><div class="n" id="bigN">0 м/с</div><div class="l">скорость</div><div class="alt" id="bigA" style="font-family:Consolas,monospace;font-size:.78rem;color:var(--mu)">высота 0 м</div></div>
+  <div class="dk dl">
+    <div class="sp gs" id="pL"><div class="cp">
+      <div><div class="tt">Готовые тела</div><div class="pr" id="prBox">
+        <button data-p="foot">⚽</button><button data-p="tennis">🎾</button><button data-p="basket">🏀</button>
+        <button data-p="ping">⚪</button><button data-p="shot">🔨</button><button data-p="badm">🏸</button><button data-p="feather">🪶</button>
+      </div></div>
+      <div class="ct"><label>Скорость <span id="vL">25.0 м/с</span></label><input type="range" id="v0" min="5" max="80" step="0.5" value="25"></div>
+      <div class="ct"><label>Угол <span id="aL">45°</span></label><input type="range" id="a0" min="5" max="85" step="1" value="45"></div>
+      <div class="ct"><label>Масса <span id="mL">0.430 кг</span></label><input type="range" id="mass" min="0.002" max="7.26" step="0.001" value="0.43"></div>
+      <div class="ct"><label>Площадь <span id="AL">0.038 м²</span></label><input type="range" id="area" min="0.001" max="0.05" step="0.001" value="0.038"></div>
+      <div class="ct"><label>Cd <span id="cdL">0.50</span></label><input type="range" id="cd" min="0.05" max="1.4" step="0.05" value="0.5"></div>
+      <div class="ct"><label>Закрутка <span id="spinL">0.0</span></label><input type="range" id="spin" min="-3" max="3" step="0.1" value="0"></div>
+      <div class="ct"><label>Ветер <span id="windL">0 м/с</span></label><input type="range" id="wind" min="-15" max="15" step="0.5" value="0"></div>
+      <div class="ct"><label>Высота пушки <span id="h0L">0.0 м</span></label><input type="range" id="h0" min="0" max="3" step="0.1" value="0"></div>
+      <div class="ct"><label>Скорость времени <span id="tsL">×1.0</span></label><input type="range" id="ts" min="0.1" max="2" step="0.1" value="1"></div>
+      <div><div class="tt" style="margin-bottom:3px">Планета</div><div class="sg" id="gseg">
+        <button class="act" data-g="9.81" data-rho="1.225">🌍 Земля</button>
+        <button data-g="1.62" data-rho="0">🌕 Луна</button>
+        <button data-g="3.71" data-rho="0.02">🔴 Марс</button>
+      </div></div>
+      <div class="sg"><button class="act" id="mAir">Атмосфера</button><button id="mVac">Вакуум</button></div>
+      <div class="swr">Прогноз траектории<div class="sw"><input type="checkbox" id="prT" checked><span class="sl"></span></div></div>
+      <div class="swr">Вектор скорости<div class="sw"><input type="checkbox" id="arrT" checked><span class="sl"></span></div></div>
+      <div class="swr">Призраки<div class="sw"><input type="checkbox" id="ghT" checked><span class="sl"></span></div></div>
+      <div class="swr">Плотность ρ(h) ↓<div class="sw"><input type="checkbox" id="rhoH"><span class="sl"></span></div></div>
+      <div class="hint">💡 Оптимум: <b id="optA">–</b> · <b>O</b> применить · <b>G</b> мишень · <b>Space</b> пуск</div>
+    </div></div>
+    <button class="pt" id="tL">◀</button>
+  </div>
+  <div class="dk dr">
+    <div class="sp gs" id="pR"><div class="cp hudp">
+      <div class="st"><span>Дальность (идеал)</span><b id="rI">–</b></div>
+      <div class="st"><span>Дальность (реал)</span><b class="blue" id="rR">–</b></div>
+      <div class="st"><span>Погрешность</span><b class="red" id="erV">–</b></div>
+      <div class="st"><span>Макс. высота</span><b id="mH">–</b></div>
+      <div class="st"><span>Угол падения</span><b id="la">–</b></div>
+      <div class="st"><span>Рекорд</span><b class="gold" id="bs">–</b></div>
+      <div class="st"><span>Счёт в мишени</span><b class="gold" id="ss">0 · серия 0</b></div>
+      <div class="tl">
+        <div><small>Время</small><b id="tV">0.0 с</b></div><div><small>Скор.</small><b id="vV">0</b></div>
+        <div><small>Выс.</small><b id="hV">0</b></div><div><small>Путь</small><b id="xV">0</b></div>
       </div>
-    </div>
-    <div class="cb gs">
-      <button class="act" data-cam="reset" id="c0">📷 Обзор</button>
-      <button data-cam="top" id="c1">🗺 Сверху</button>
-      <button data-cam="side" id="c2">📐 Сбоку</button>
-      <button data-cam="front" id="c3">🏎 Спереди</button>
-      <button data-cam="back" id="c4">🔙 Сзади</button>
-      <button id="orbB">🌀 Орбита</button>
-      <button id="folB">🎯 Следить</button>
-    </div>
-    <div id="fps" class="gs">FPS –</div>
-    <div class="rp gs"><div class="rh">Радар</div><canvas id="rd" width="130" height="130"></canvas></div>
-    <div class="bh" id="bigHud"><div class="n" id="bigN">0 м/с</div><div class="l">скорость</div><div class="alt" id="bigA">высота 0 м</div></div>
-    <div class="dk dl">
-      <div class="sp gs" id="pL">
-        <div class="cp">
-          <div><div class="tt">Готовые тела</div>
-          <div class="pr" id="prBox">
-            <button data-p="foot" title="Футбол">⚽</button><button data-p="tennis" title="Теннис">🎾</button>
-            <button data-p="basket" title="Баскетбол">🏀</button><button data-p="ping" title="Пинг-понг">⚪</button>
-            <button data-p="shot" title="Ядро">🔨</button><button data-p="badm" title="Волан">🏸</button>
-            <button data-p="feather" title="Пёрышко">🪶</button>
-          </div></div>
-          <div class="ct"><label>Скорость <span id="vL">25.0 м/с</span></label><input type="range" id="v0" min="5" max="80" step="0.5" value="25"></div>
-          <div class="ct"><label>Угол <span id="aL">45°</span></label><input type="range" id="a0" min="5" max="85" step="1" value="45"></div>
-          <div class="ct"><label>Масса <span id="mL">0.430 кг</span></label><input type="range" id="mass" min="0.002" max="7.26" step="0.001" value="0.43"></div>
-          <div class="ct"><label>Площадь <span id="AL">0.038 м²</span></label><input type="range" id="area" min="0.001" max="0.05" step="0.001" value="0.038"></div>
-          <div class="ct"><label>Cd <span id="cdL">0.50</span></label><input type="range" id="cd" min="0.05" max="1.4" step="0.05" value="0.5"></div>
-          <div class="ct"><label>Закрутка <span id="spinL">0.0</span></label><input type="range" id="spin" min="-3" max="3" step="0.1" value="0"></div>
-          <div class="ct"><label>Ветер <span id="windL">0 м/с</span></label><input type="range" id="wind" min="-15" max="15" step="0.5" value="0"></div>
-          <div class="ct"><label>Высота пушки <span id="h0L">0.0 м</span></label><input type="range" id="h0" min="0" max="3" step="0.1" value="0"></div>
-          <div class="ct"><label>Скорость времени <span id="tsL">×1.0</span></label><input type="range" id="ts" min="0.1" max="2" step="0.1" value="1"></div>
-          <div><div class="tt" style="margin-bottom:3px">Планета</div>
-          <div class="sg" id="gseg">
-            <button class="act" data-g="9.81" data-rho="1.225">🌍 Земля</button>
-            <button data-g="1.62" data-rho="0">🌕 Луна</button>
-            <button data-g="3.71" data-rho="0.02">🔴 Марс</button>
-          </div></div>
-          <div class="sg"><button class="act" id="mAir">Атмосфера</button><button id="mVac">Вакуум</button></div>
-          <div class="swr">Прогноз траектории<div class="sw"><input type="checkbox" id="prT" checked><span class="sl"></span></div></div>
-          <div class="swr">Вектор скорости<div class="sw"><input type="checkbox" id="arrT" checked><span class="sl"></span></div></div>
-          <div class="swr">Призраки<div class="sw"><input type="checkbox" id="ghT" checked><span class="sl"></span></div></div>
-          <div class="swr">Плотность ρ(h) ↓ с высотой<div class="sw"><input type="checkbox" id="rhoH"><span class="sl"></span></div></div>
-          <div class="hint">💡 Оптимум: <b id="optA">–</b> · <b>O</b> применить · <b>G</b> мишень · <b>Space</b> пуск</div>
-        </div>
+      <div class="ct"><label>Время полёта <span id="timeL">0.00 с</span></label><input type="range" id="tl" min="0" max="100" value="0" step="0.1"></div>
+      <div class="ab">
+        <button class="bt m" id="playB">▶ ПУСК</button><button class="bt s" id="cmpB">⚖️</button><button class="bt s" id="stopB">⏹</button>
       </div>
-      <button class="pt" id="tL">◀</button>
-    </div>
-    <div class="dk dr">
-      <div class="sp gs" id="pR">
-        <div class="cp hudp">
-          <div class="st"><span>Дальность (идеал)</span><b id="rI">–</b></div>
-          <div class="st"><span>Дальность (реал)</span><b class="blue" id="rR">–</b></div>
-          <div class="st"><span>Погрешность</span><b class="red" id="erV">–</b></div>
-          <div class="st"><span>Макс. высота</span><b id="mH">–</b></div>
-          <div class="st"><span>Угол падения</span><b id="la">–</b></div>
-          <div class="st"><span>Рекорд</span><b class="gold" id="bs">–</b></div>
-          <div class="st"><span>Счёт в мишени</span><b class="gold" id="ss">0 · серия 0</b></div>
-          <div class="tl">
-            <div><small>Время</small><b id="tV">0.0 с</b></div><div><small>Скор.</small><b id="vV">0</b></div>
-            <div><small>Выс.</small><b id="hV">0</b></div><div><small>Путь</small><b id="xV">0</b></div>
-          </div>
-          <div class="ct"><label>Время полёта <span id="timeL">0.00 с</span></label><input type="range" id="tl" min="0" max="100" value="0" step="0.1"></div>
-          <div class="ab">
-            <button class="bt m" id="playB">▶ ПУСК</button>
-            <button class="bt s" id="cmpB" title="Гонка реал vs идеал">⚖️</button>
-            <button class="bt s" id="stopB">⏹</button>
-          </div>
-          <div class="ab" style="margin-top:0">
-            <button class="bt s" id="optB" title="Оптимум (O)">⚡</button>
-            <button class="bt s" id="tgtB" title="Мишень (G)">🎯</button>
-            <button class="bt s" id="rndB" title="Случайно">🎲</button>
-            <button class="bt s" id="rstB" title="Сброс">🔄</button>
-            <button class="bt s" id="csvB" title="CSV">📄</button>
-          </div>
-          <div class="ab" style="margin-top:0">
-            <button class="bt s" id="snapA" title="Сохранить бросок A">💾 A</button>
-            <button class="bt s" id="snapB" title="Сохранить бросок B">💾 B</button>
-            <button class="bt s" id="abClr" title="Убрать снимки">✖ AB</button>
-          </div>
-        </div>
+      <div class="ab" style="margin-top:0">
+        <button class="bt s" id="optB">⚡</button><button class="bt s" id="tgtB">🎯</button><button class="bt s" id="rndB">🎲</button>
+        <button class="bt s" id="rstB">🔄</button><button class="bt s" id="csvB">📄</button>
       </div>
-      <button class="pt" id="tR">▶</button>
-    </div>
-    <div class="cdk">
-      <button class="ctb gs" id="chT">📈 Графики</button>
-      <div class="chp gs" id="chP">
-        <div class="chTabs">
-          <button class="act" data-cc="xy">y(x)</button>
-          <button data-cc="yt">y(t)</button>
-          <button data-cc="vt">v(t)</button>
-          <button data-cc="at">a(t)</button>
-        </div>
-        <div class="chh"><span id="chName">y(x)</span><span><i class="lgr"></i>реал<i class="lgi"></i>идеал<i class="lgA"></i>A<i class="lgB"></i>B</span></div>
-        <canvas id="ch" width="500" height="170"></canvas>
+      <div class="ab" style="margin-top:0">
+        <button class="bt s" id="snapA">💾 A</button><button class="bt s" id="snapB">💾 B</button><button class="bt s" id="abClr">✖ AB</button>
       </div>
-    </div>
+    </div></div>
+    <button class="pt" id="tR">▶</button>
+  </div>
+  <div class="cdk">
+    <button class="ctb gs" id="chT">📈 Графики</button>
+    <div class="chp gs" id="chP">
+      <div class="chTabs">
+        <button class="act" data-cc="xy">y(x)</button><button data-cc="yt">y(t)</button>
+        <button data-cc="vt">v(t)</button><button data-cc="at">a(t)</button>
+      </div>
+      <div class="chh"><span id="chName">y(x)</span><span><i class="lgr"></i>реал<i class="lgi"></i>идеал<i class="lgA"></i>A<i class="lgB"></i>B</span></div>
+      <canvas id="ch" width="500" height="170"></canvas>
     </div>
   </div>
-</section>
-
-<!-- РАЗДЕЛ 3 -->
-<section id="docs" class="panel">
-  <div class="wrap">
-    <div class="rv"><div class="tag">Проект изнутри</div>
-    <h2 class="big">Метод и реализация</h2></div>
-    <div class="cards">
-      <div class="crd rv"><div class="ic">🧮</div><h3>Метод Рунге–Кутты</h3><p>Аналитического решения с квадратичным сопротивлением нет — уравнение интегрируется численно методом <b>РК4</b> с шагом 1/240 с. Точность порядка (Δt)⁴.</p></div>
-      <div class="crd rv"><div class="ic">🌀</div><h3>Эффект Магнуса</h3><p>Вращающийся шар увлекает воздух: <b>F = ½·ρ·A·r·S·v²</b>. Плюс — «сухой лист» в футболе, минус — подрезка. На Луне исчезает вместе с атмосферой.</p></div>
-      <div class="crd rv"><div class="ic">🌍</div><h3>Три планеты</h3><p>Земля (ρ=1.225), Луна (ρ=0), Марс (ρ=0.02). Луна — контрольный тест модели: траектории совпадают, что доказывает роль именно воздуха.</p></div>
-      <div class="crd rv"><div class="ic">📊</div><h3>Данные</h3><p>Журнал до 30 бросков в браузере, экспорт в CSV — готовая таблица для отчёта. Скриншоты сцены одной кнопкой 📸.</p></div>
-      <div class="crd rv"><div class="ic">💾</div><h3>Снимки A/B</h3><p>Два броска с разными параметрами на одной сцене и графике: 45° против оптимума ⚡ — выигрыш виден мгновенно.</p></div>
-      <div class="crd rv"><div class="ic">🏆</div><h3>Достижения</h3><p>12 ачивок, счёт в мишени и серия попаданий — геймификация помогает пройти все эксперименты.</p></div>
-    </div>
-    <div class="cards">
-      <div class="crd rv"><div class="ic">📐</div><h3>Параметры готовых тел</h3>
-        <table class="tbl">
-          <tr><th>Тело</th><th>Масса, кг</th><th>Площадь, м²</th><th>Cd</th></tr>
-          <tr><td>⚽ Футбол</td><td>0.43</td><td>0.038</td><td>0.25</td></tr>
-          <tr><td>🎾 Теннис</td><td>0.058</td><td>0.0034</td><td>0.55</td></tr>
-          <tr><td>🏀 Баскетбол</td><td>0.62</td><td>0.045</td><td>0.5</td></tr>
-          <tr><td>⚪ Пинг-понг</td><td>0.0027</td><td>0.0013</td><td>0.5</td></tr>
-          <tr><td>🔨 Ядро</td><td>7.26</td><td>0.013</td><td>0.47</td></tr>
-          <tr><td>🏸 Волан</td><td>0.005</td><td>0.0028</td><td>0.6</td></tr>
-          <tr><td>🪶 Пёрышко</td><td>0.002</td><td>0.004</td><td>1.2</td></tr>
-        </table>
-      </div>
-      <div class="crd rv"><div class="ic">🛠</div><h3>Стек и архитектура</h3>
-        <table class="tbl">
-          <tr><th>Слой</th><th>Технология</th><th>Задача</th></tr>
-          <tr><td>Рендер</td><td>Three.js · WebGL</td><td>3D-сцена, свет</td></tr>
-          <tr><td>Физика</td><td>RK4 · JS</td><td>интегратор, Магнус, ρ(h)</td></tr>
-          <tr><td>Графики</td><td>Canvas 2D</td><td>y(x), y(t), v(t), a(t)</td></tr>
-          <tr><td>Звук</td><td>Web Audio API</td><td>синтез, без файлов</td></tr>
-          <tr><td>Данные</td><td>localStorage</td><td>журнал, рекорды, ачивки</td></tr>
-        </table>
-      </div>
-      <div class="crd rv"><div class="ic">🧭</div><h3>Эксперименты для защиты</h3>
-        <p><b>1.</b> Перо против ядра — 25 м/с, 45°.<br><b>2.</b> Магнус: закрутка ±2.<br><b>3.</b> ρ(h) на скорости 80.<br><b>4.</b> A/B: 45° против оптимума.<br><b>5.</b> Ветер +10/−10.<br><b>6.</b> Луна — сходимость.<br><b>7.</b> a(t) у пёрышка &gt;&gt; g.</p>
-      </div>
-    </div>
-    <div class="techrow rv">
-      <span class="tgb">JavaScript</span><span class="tgb">Three.js · WebGL</span><span class="tgb">Canvas 2D</span>
-      <span class="tgb">Web Audio API</span><span class="tgb">RK4</span><span class="tgb">MIT License</span>
-    </div>
-    <div class="foot">Траектория PRO · индивидуальный проект по физике · 2026 · код открыт, лицензия MIT</div>
   </div>
-</section>
+</div></section>
 
-<!-- МОДАЛКА -->
-<div class="md" id="mod">
-  <div class="mc">
-    <button class="mx" id="mx">✕</button>
-    <div class="tbs2">
-      <button class="act" onclick="swT('t1')">О проекте</button>
-      <button onclick="swT('t2')">Формулы</button>
-      <button onclick="swT('t3')">Управление</button>
-      <button onclick="swT('t4')">Эксперименты</button>
-      <button onclick="swT('t5')">Достижения</button>
-      <button onclick="swT('t6')">Журнал</button>
+<section id="docs" class="panel"><div class="wrap">
+  <div class="rv"><div class="tag">Проект изнутри</div><h2 class="big">Метод и реализация</h2></div>
+  <div class="cards">
+    <div class="crd rv"><div class="ic">🧮</div><h3>Метод Рунге–Кутты</h3><p>Аналитического решения с квадратичным сопротивлением нет — уравнение интегрируется численно методом <b>РК4</b> с шагом 1/240 с.</p></div>
+    <div class="crd rv"><div class="ic">🌀</div><h3>Эффект Магнуса</h3><p>Вращающийся шар увлекает воздух: <b>F = ½·ρ·A·r·S·v²</b>. Плюс — «сухой лист», минус — подрезка. На Луне исчезает.</p></div>
+    <div class="crd rv"><div class="ic">🌍</div><h3>Три планеты</h3><p>Земля (ρ=1.225), Луна (ρ=0), Марс (ρ=0.02). Луна — контрольный тест модели.</p></div>
+    <div class="crd rv"><div class="ic">📊</div><h3>Данные</h3><p>Журнал до 30 бросков в браузере, экспорт в CSV. Скриншоты сцены кнопкой 📸.</p></div>
+    <div class="crd rv"><div class="ic">💾</div><h3>Снимки A/B</h3><p>Два броска на одной сцене: 45° против оптимума ⚡ — выигрыш виден мгновенно.</p></div>
+    <div class="crd rv"><div class="ic">🏆</div><h3>Достижения</h3><p>12 ачивок, счёт в мишени и серия попаданий — геймификация помогает пройти эксперименты.</p></div>
+  </div>
+  <div class="cards">
+    <div class="crd rv"><div class="ic">📐</div><h3>Параметры готовых тел</h3>
+      <table class="tbl"><tr><th>Тело</th><th>Масса, кг</th><th>Площадь, м²</th><th>Cd</th></tr>
+      <tr><td>⚽ Футбол</td><td>0.43</td><td>0.038</td><td>0.25</td></tr>
+      <tr><td>🎾 Теннис</td><td>0.058</td><td>0.0034</td><td>0.55</td></tr>
+      <tr><td>🏀 Баскетбол</td><td>0.62</td><td>0.045</td><td>0.5</td></tr>
+      <tr><td>⚪ Пинг-понг</td><td>0.0027</td><td>0.0013</td><td>0.5</td></tr>
+      <tr><td>🔨 Ядро</td><td>7.26</td><td>0.013</td><td>0.47</td></tr>
+      <tr><td>🏸 Волан</td><td>0.005</td><td>0.0028</td><td>0.6</td></tr>
+      <tr><td>🪶 Пёрышко</td><td>0.002</td><td>0.004</td><td>1.2</td></tr></table>
     </div>
-    <div id="t1" class="tcn act">
-      <h3>Траектория PRO — паспорт проекта</h3>
-      <p><b>Проблема.</b> Школьная формула дальности полёта предполагает вакуум. Насколько велика ошибка, если воздух всё-таки есть?</p>
-      <p><b>Гипотеза.</b> Чем меньше масса и выше скорость тела, тем сильнее реальная траектория отличается от идеальной параболы, а оптимальный угол броска уходит ниже 45°.</p>
-      <p><b>Метод.</b> Реальный полёт считается численно — методом Рунге–Кутты 4-го порядка с шагом 1/240 с. Идеальный — по классическим формулам кинематики. Оба сравниваются на одном графике и в 3D.</p>
-      <ul>
-        <li>7 готовых тел с реальными параметрами: от пинг-понгового шарика до ядра;</li>
-        <li>3 планеты: Земля, Луна, Марс — на Луне траектории совпадают;</li>
-        <li>эффект Магнуса: закрутка изгибает траекторию;</li>
-        <li>модель плотности ρ(h) = ρ₀·exp(−h/8500);</li>
-        <li>прогноз траектории до пуска;</li>
-        <li>снимки A/B, мишень со счётом, авто-оптимум, призраки;</li>
-        <li>4 графика и выгрузка в CSV.</li>
-      </ul>
-      <p><b>Ожидаемые результаты.</b> У волана и пёрышка погрешность достигает сотен процентов; у ядра — единицы. Оптимальный угол в воздухе — 30–40°.</p>
-      <p><b>Ограничения.</b> Тело — идеальная сфера; боковой ветер и переменный Cd не учтены. Это честные рамки применимости выводов.</p>
-      <p><b>Технологии:</b> HTML5, CSS3, Three.js (WebGL), Canvas 2D, Web Audio API, RK4.</p>
-      <p><b>Автор:</b> ученик 10–11 класса. Индивидуальный проект по физике.</p>
+    <div class="crd rv"><div class="ic">🛠</div><h3>Стек и архитектура</h3>
+      <table class="tbl"><tr><th>Слой</th><th>Технология</th><th>Задача</th></tr>
+      <tr><td>Рендер</td><td>Three.js · WebGL</td><td>3D-сцена, свет</td></tr>
+      <tr><td>Физика</td><td>RK4 · JS</td><td>интегратор, Магнус</td></tr>
+      <tr><td>Графики</td><td>Canvas 2D</td><td>y(x), y(t), v(t), a(t)</td></tr>
+      <tr><td>Звук</td><td>Web Audio API</td><td>синтез, без файлов</td></tr>
+      <tr><td>Данные</td><td>localStorage</td><td>журнал, рекорды</td></tr></table>
     </div>
-    <div id="t2" class="tcn">
-      <h3>Математическая модель</h3>
-      <p><b>1. Идеальный полёт (вакуум):</b></p>
-      <div class="f">L = v₀² · sin(2α) / g</div>
-      <p><b>2. Реальный полёт</b> — второй закон Ньютона:</p>
-      <div class="f">m·a = F<sub>тяж</sub> + F<sub>сопр</sub> + F<sub>магн</sub><br>F<sub>сопр</sub> = ½ · ρ · C<sub>d</sub> · A · v²</div>
-      <p>Сопротивление растёт квадратично со скоростью: удвоил скорость — выросло в 4 раза. У волана погрешность в сотни процентов, у ядра — единицы.</p>
-      <p><b>3. Метод.</b> Рунге–Кутта 4-го порядка, шаг 1/240 с.</p>
-      <p><b>4. Магнус.</b> F = ½·ρ·A·r·S·v², S — параметр закрутки. Плюс поднимает траекторию, минус «топит».</p>
-      <p><b>5. Плотность с высотой.</b> ρ(h) = ρ₀·exp(−h/8500): на высоте 8,5 км воздух вдвое реже.</p>
-      <p><b>6. Оптимум.</b> В вакууме 45°, в воздухе 30–40°. Клавиша O применяет найденный перебором угол.</p>
-    </div>
-    <div id="t3" class="tcn">
-      <h3>Как пользоваться</h3>
-      <ul>
-        <li><b>Ползунки:</b> статистика и прогноз обновляются до броска. Настройки запоминаются.</li>
-        <li><b>Тела:</b> эмодзи-кнопки ставят реальные параметры снарядов.</li>
-        <li><b>Камера:</b> ракурсы 1–5, зажми мышь — облёт, колесо — зум, двойной клик — пуск.</li>
-        <li><b>Снимки A/B:</b> 💾 A → поменяй параметры → 💾 B. ✖ AB — убрать.</li>
-        <li><b>Клавиши:</b> <kbd>Space</kbd> пуск, <kbd>R</kbd> сброс, <kbd>C</kbd> сравнение, <kbd>O</kbd> оптимум, <kbd>G</kbd> мишень, <kbd>H</kbd> скрыть UI, <kbd>1–5</kbd> камеры. Работают в разделе «Симуляция».</li>
-      </ul>
-    </div>
-    <div id="t4" class="tcn">
-      <h3>Эксперименты</h3>
-      <ul>
-        <li><b>Перо против ядра:</b> 25 м/с и 45° у 🪶 и 🔨 — сравни дальности.</li>
-        <li><b>Магнус:</b> закрутка +2 и −2 у футбольного мяча — «сухой лист» и подрезка.</li>
-        <li><b>Высота:</b> включи ρ(h), скорость 80 — полёт дальше.</li>
-        <li><b>A/B:</b> 45° против оптимума ⚡ — выигрыш виден сразу.</li>
-        <li><b>Ветер:</b> +10 и −10 м/с — эффект несимметричен; следи за флажком.</li>
-        <li><b>Луна:</b> атмосферы нет — траектории совпадут (и Магнус исчезнет).</li>
-        <li><b>График a(t):</b> у пёрышка ускорение в начале полёта в разы больше g.</li>
-        <li><b>Данные:</b> серия бросков → журнал → CSV для отчёта.</li>
-      </ul>
-    </div>
-    <div id="t5" class="tcn"><h3>Достижения</h3><div id="achL"></div></div>
-    <div id="t6" class="tcn">
-      <h3>Журнал бросков</h3>
-      <p>Каждый завершённый полёт пишется сюда и сохраняется в браузере.</p>
-      <div id="logB" style="max-height:280px;overflow-y:auto"></div>
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <button class="bt s" id="lgCsv" style="flex:1">📄 Экспорт журнала</button>
-        <button class="bt s" id="lgClr" style="flex:1">🗑 Очистить</button>
-      </div>
+    <div class="crd rv"><div class="ic">🧭</div><h3>Эксперименты для защиты</h3>
+      <p><b>1.</b> Перо против ядра — 25 м/с, 45°.<br><b>2.</b> Магнус: закрутка ±2.<br><b>3.</b> ρ(h) на скорости 80.<br><b>4.</b> A/B: 45° против оптимума.<br><b>5.</b> Ветер +10/−10.<br><b>6.</b> Луна — сходимость.<br><b>7.</b> a(t) у пёрышка &gt;&gt; g.</p>
     </div>
   </div>
-</div>
+  <div class="cards">
+    <div class="crd rv"><div class="ic">🧾</div><h3>Формулы модели</h3>
+      <div class="f" style="max-width:none">F<sub>сопр</sub> = ½·ρ·C<sub>d</sub>·A·v²</div>
+      <div class="f" style="max-width:none">F<sub>магн</sub> = ½·ρ·A·r·S·v²</div>
+      <div class="f" style="max-width:none">ρ(h) = ρ₀·exp(−h/8500)</div>
+      <p>Все силы подставляются в m·a = ΣF и интегрируются РК4.</p>
+    </div>
+    <div class="crd rv"><div class="ic">🗓</div><h3>План защиты · 7 минут</h3>
+      <p><b>1 мин</b> — проблема и гипотеза.<br><b>2 мин</b> — метод РК4 и силы.<br><b>2 мин</b> — демонстрация: перо vs ядро, оптимум ⚡.<br><b>1 мин</b> — Луна как контроль.<br><b>1 мин</b> — выводы.</p>
+    </div>
+    <div class="crd rv"><div class="ic">📚</div><h3>Источники</h3>
+      <p>И. В. Савельев «Курс общей физики».<br>Л. Д. Ландау, Е. М. Лифшиц «Механика».<br>Документация Three.js (WebGL).<br>Butcher J. «Numerical Methods for ODEs».</p>
+    </div>
+  </div>
+  <div class="techrow rv"><span class="tgb">JavaScript</span><span class="tgb">Three.js · WebGL</span><span class="tgb">Canvas 2D</span><span class="tgb">Web Audio API</span><span class="tgb">RK4</span><span class="tgb">MIT License</span></div>
+  <div class="foot">Траектория PRO · индивидуальный проект по физике · 2026 · код открыт, лицензия MIT</div>
+</div></section>
+
+<div class="md" id="mod"><div class="mc">
+  <button class="mx" id="mx">✕</button>
+  <div class="tbs2">
+    <button class="act" onclick="swT('t1')">О проекте</button><button onclick="swT('t2')">Формулы</button>
+    <button onclick="swT('t3')">Управление</button><button onclick="swT('t4')">Эксперименты</button>
+    <button onclick="swT('t5')">Достижения</button><button onclick="swT('t6')">Журнал</button>
+  </div>
+  <div id="t1" class="tcn act">
+    <h3>Траектория PRO — паспорт проекта</h3>
+    <p><b>Проблема.</b> Школьная формула дальности предполагает вакуум. Насколько велика ошибка, если воздух есть?</p>
+    <p><b>Гипотеза.</b> Чем меньше масса и выше скорость, тем сильнее расхождение с идеальной параболой, а оптимальный угол уходит ниже 45°.</p>
+    <p><b>Метод.</b> Реальный полёт — численно РК4, шаг 1/240 с. Идеальный — формулы кинематики. Сравнение на графике и в 3D.</p>
+    <ul><li>7 готовых тел с реальными параметрами;</li><li>3 планеты — на Луне траектории совпадают;</li><li>эффект Магнуса;</li><li>плотность ρ(h) = ρ₀·exp(−h/8500);</li><li>прогноз траектории до пуска;</li><li>снимки A/B, мишень со счётом, оптимум;</li><li>4 графика и выгрузка в CSV.</li></ul>
+    <p><b>Результаты.</b> У волана и пёрышка погрешность достигает сотен процентов; у ядра — единицы. Оптимальный угол в воздухе — 30–40°.</p>
+    <p><b>Ограничения.</b> Идеальная сфера; боковой ветер и переменный Cd не учтены.</p>
+    <p><b>Технологии:</b> HTML5, CSS3, Three.js (WebGL), Canvas 2D, Web Audio API, RK4.</p>
+    <p><b>Автор:</b> ученик 10–11 класса. Индивидуальный проект по физике.</p>
+  </div>
+  <div id="t2" class="tcn">
+    <h3>Математическая модель</h3>
+    <p><b>1. Идеальный полёт (вакуум):</b></p>
+    <div class="f">L = v₀² · sin(2α) / g</div>
+    <p><b>2. Реальный полёт</b> — второй закон Ньютона:</p>
+    <div class="f">m·a = F<sub>тяж</sub> + F<sub>сопр</sub> + F<sub>магн</sub><br>F<sub>сопр</sub> = ½ · ρ · C<sub>d</sub> · A · v²</div>
+    <p>Сопротивление растёт квадратично: удвоил скорость — выросло в 4 раза.</p>
+    <p><b>3. Метод.</b> Рунге–Кутта 4-го порядка, шаг 1/240 с.</p>
+    <p><b>4. Магнус.</b> F = ½·ρ·A·r·S·v². Плюс поднимает траекторию, минус «топит».</p>
+    <p><b>5. Плотность.</b> ρ(h) = ρ₀·exp(−h/8500): на 8,5 км воздух вдвое реже.</p>
+    <p><b>6. Оптимум.</b> В вакууме 45°, в воздухе 30–40°. Клавиша O применяет найденный перебором угол.</p>
+  </div>
+  <div id="t3" class="tcn">
+    <h3>Как пользоваться</h3>
+    <ul>
+      <li><b>Ползунки:</b> статистика и прогноз обновляются до броска. Настройки запоминаются.</li>
+      <li><b>Тела:</b> эмодзи-кнопки ставят реальные параметры снарядов.</li>
+      <li><b>Камера:</b> ракурсы 1–5, зажми мышь — облёт, колесо — зум, двойной клик — пуск.</li>
+      <li><b>Снимки A/B:</b> 💾 A → поменяй параметры → 💾 B. ✖ AB — убрать.</li>
+      <li><b>Клавиши:</b> <kbd>Space</kbd> пуск, <kbd>R</kbd> сброс, <kbd>C</kbd> сравнение, <kbd>O</kbd> оптимум, <kbd>G</kbd> мишень, <kbd>H</kbd> скрыть UI, <kbd>1–5</kbd> камеры.</li>
+    </ul>
+  </div>
+  <div id="t4" class="tcn">
+    <h3>Эксперименты</h3>
+    <ul>
+      <li><b>Перо против ядра:</b> 25 м/с и 45° у 🪶 и 🔨.</li>
+      <li><b>Магнус:</b> закрутка +2 и −2 у футбольного мяча.</li>
+      <li><b>Высота:</b> включи ρ(h), скорость 80 — полёт дальше.</li>
+      <li><b>A/B:</b> 45° против оптимума ⚡.</li>
+      <li><b>Ветер:</b> +10 и −10 — эффект несимметричен.</li>
+      <li><b>Луна:</b> траектории совпадут.</li>
+      <li><b>График a(t):</b> у пёрышка ускорение в разы больше g.</li>
+      <li><b>Данные:</b> журнал → CSV для отчёта.</li>
+    </ul>
+  </div>
+  <div id="t5" class="tcn"><h3>Достижения</h3><div id="achL"></div></div>
+  <div id="t6" class="tcn">
+    <h3>Журнал бросков</h3>
+    <p>Каждый завершённый полёт пишется сюда и сохраняется в браузере.</p>
+    <div id="logB" style="max-height:280px;overflow-y:auto"></div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="bt s" id="lgCsv" style="flex:1">📄 Экспорт</button>
+      <button class="bt s" id="lgClr" style="flex:1">🗑 Очистить</button>
+    </div>
+  </div>
+</div></div>
 <div id="to"></div>
 
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
-function showErr(m){try{$('er').textContent='Ошибка: '+m;$('er').classList.add('show');
-if($('ldT'))$('ldT').textContent='Сбой — см. плашку';}catch(e){console.error(m);}}
+function showErr(m){try{$('er').textContent='Ошибка: '+m;$('er').classList.add('show');if($('ldT'))$('ldT').textContent='Сбой — см. плашку';}catch(e){console.error(m);}}
 window.addEventListener('error',e=>showErr(e.message||String(e)));
 setTimeout(()=>{$('boot').classList.add('gone');},1400);
-
-/* ===== ФОН: ЗВЁЗДЫ + ДОЖДЬ ИЗ ЗВЁЗД ===== */
+/* ===== ФОН: ЗВЁЗДЫ + ДОЖДЬ ===== */
 (function(){const c=$('bgp'),x=c.getContext('2d');let w,h,pts=[],mets=[];
 function rs(){w=c.width=innerWidth;h=c.height=innerHeight;
-pts=Array.from({length:150},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.6+.3,
-s:Math.random()*.3+.05,ph:Math.random()*6.28,hue:Math.random()<.6?'100,160,255':'180,140,255'}));}
+pts=Array.from({length:150},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.6+.3,s:Math.random()*.3+.05,ph:Math.random()*6.28,hue:Math.random()<.6?'100,160,255':'180,140,255'}));}
 rs();addEventListener('resize',rs);
-function spawnMet(){mets.push({x:Math.random()*w,y:-20,
-vx:(Math.random()*.5+.35)*(Math.random()<.5?-1:1),vy:.9+Math.random()*.9,len:40+Math.random()*70,life:1});}
+function spawnMet(){mets.push({x:Math.random()*w,y:-20,vx:(Math.random()*.5+.35)*(Math.random()<.5?-1:1),vy:.9+Math.random()*.9,len:40+Math.random()*70,life:1});}
 (function a(){x.clearRect(0,0,w,h);
 pts.forEach(p=>{p.y-=p.s;if(p.y<-6)p.y=h+6;
 const al=.18+.3*Math.abs(Math.sin(performance.now()*.001+p.ph));
 x.beginPath();x.arc(p.x,p.y,p.r,0,7);
-x.fillStyle='rgba('+p.hue+','+al.toFixed(2)+')';
-x.shadowColor='rgba('+p.hue+',.8)';x.shadowBlur=5;x.fill();x.shadowBlur=0;});
+x.fillStyle='rgba('+p.hue+','+al.toFixed(2)+')';x.shadowColor='rgba('+p.hue+',.8)';x.shadowBlur=5;x.fill();x.shadowBlur=0;});
 if(mets.length<5&&Math.random()<.045)spawnMet();
 mets=mets.filter(m=>m.life>0&&m.y<h+100);
 mets.forEach(m=>{m.x+=m.vx;m.y+=m.vy;m.life-=.008;
-x.strokeStyle='rgba(200,230,255,'+Math.max(0,m.life).toFixed(2)+')';
-x.lineWidth=1.6;x.shadowColor='rgba(150,220,255,.9)';x.shadowBlur=8;
+x.strokeStyle='rgba(200,230,255,'+Math.max(0,m.life).toFixed(2)+')';x.lineWidth=1.6;x.shadowColor='rgba(150,220,255,.9)';x.shadowBlur=8;
 x.beginPath();x.moveTo(m.x,m.y);x.lineTo(m.x-m.vx*m.len,m.y-m.vy*m.len);x.stroke();x.shadowBlur=0;});
 requestAnimationFrame(a);})();})();
-
-/* ===== ПЕРЕКЛЮЧЕНИЕ РАЗДЕЛОВ ===== */
+/* ===== РАЗДЕЛЫ ===== */
 let simActive=false;
 const panels=document.querySelectorAll('.panel'),navB=document.querySelectorAll('.nv button');
 function runCounters(p){p.querySelectorAll('[data-cnt]').forEach((el,i)=>{
@@ -560,13 +455,11 @@ if(el._done)return;el._done=true;const tv=+el.dataset.cnt,t0=performance.now()+i
 el.textContent=v;if(k<1)requestAnimationFrame(st);})(performance.now());});}
 function go(id,skipHash){
 panels.forEach(p=>{const on=p.id===id;
-if(on&&!p.classList.contains('active')){
-p.classList.add('active');p.querySelectorAll('.rv').forEach((el,i)=>setTimeout(()=>el.classList.add('vis'),120+i*80));
-runCounters(p);}
+if(on&&!p.classList.contains('active')){p.classList.add('active');
+p.querySelectorAll('.rv').forEach((el,i)=>setTimeout(()=>el.classList.add('vis'),120+i*80));runCounters(p);}
 else if(!on)p.classList.remove('active');});
 navB.forEach(b=>b.classList.toggle('act',b.dataset.sec===id));
-simActive=(id==='sim');
-if(simActive)setTimeout(sizeSim,80);
+simActive=(id==='sim');if(simActive)setTimeout(sizeSim,80);
 if(!skipHash){try{history.replaceState(null,'','#'+id);}catch(e){location.hash=id;}}}
 navB.forEach(b=>b.addEventListener('click',()=>go(b.dataset.sec)));
 document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
@@ -575,11 +468,9 @@ if(['about','sim','docs'].includes(id)&&!document.querySelector('.panel.active#'
 (function(){const h=location.hash.slice(1);
 if(['about','sim','docs'].includes(h)&&h!=='about')go(h,true);
 else{const p=$('about');p.querySelectorAll('.rv').forEach((el,i)=>setTimeout(()=>el.classList.add('vis'),150+i*80));runCounters(p);}})();
-
 /* ===== СИМУЛЯТОР ===== */
 const box=$('simBox');
 if(typeof THREE==='undefined'){$('ldT').textContent='Нет интернета — обнови страницу';throw new Error('no THREE');}
-
 const STEP=1/240;
 const DEF={v0:25,angle:45,mass:0.43,area:0.038,cd:0.5,spin:0,wind:0,h0:0,ts:1,g:9.81,rho:1.225,rhoH:false,mode:'air'};
 const P=Object.assign({},DEF);
@@ -594,7 +485,6 @@ try{const s=JSON.parse(localStorage.getItem('tp')||'null');
 if(s)Object.keys(DEF).forEach(k=>{if(k in s&&(typeof s[k]==='number'||typeof s[k]==='boolean'))P[k]=s[k];});
 if(P.mode!=='air'&&P.mode!=='vac')P.mode='air';}catch(e){}
 const saveP=()=>{try{localStorage.setItem('tp',JSON.stringify(P));}catch(e){}};
-
 const ACH=[{id:'l',ico:'🚀',n:'Первый пуск',d:'Запусти бросок'},{id:'r',ico:'⚖️',n:'Гонка',d:'Сравни реал и идеал'},
 {id:'50',ico:'🎯',n:'Дальнобой',d:'Дальность 50+ м'},{id:'100',ico:'💯',n:'Сотка',d:'Дальность 100+ м'},
 {id:'h',ico:'🏅',n:'В яблочко',d:'Попади в мишень'},{id:'s',ico:'🔥',n:'Снайпер',d:'3 подряд в мишень'},
@@ -608,10 +498,8 @@ function unlock(id){if(ach[id])return;ach[id]=true;try{localStorage.setItem('ach
 const a=ACH.find(x=>x.id===id);toast(a.ico+' '+a.n);chime();drawAch();}
 drawAch();
 const upS=()=>{$('ss').textContent=score+' · серия '+streak;};upS();
-
 let journal=[];try{journal=JSON.parse(localStorage.getItem('jr')||'[]');}catch(e){journal=[];}
-function addJr(f){journal.unshift({tm:new Date().toLocaleTimeString('ru-RU'),v0:P.v0,ang:P.angle,ms:P.mass,cd:P.cd,sp:P.spin,wd:P.wind,
-rng:f.range,flt:f.time,err:idf&&idf.range>0.01?Math.abs(idf.range-f.range)/idf.range*100:0});
+function addJr(f){journal.unshift({tm:new Date().toLocaleTimeString('ru-RU'),v0:P.v0,ang:P.angle,ms:P.mass,cd:P.cd,sp:P.spin,wd:P.wind,rng:f.range,flt:f.time,err:idf&&idf.range>0.01?Math.abs(idf.range-f.range)/idf.range*100:0});
 if(journal.length>30)journal.pop();try{localStorage.setItem('jr',JSON.stringify(journal));}catch(e){}renderJr();}
 function renderJr(){const b=$('logB');if(!b)return;
 if(!journal.length){b.innerHTML='<div class="lgE">Пока пусто — сделай первый бросок.</div>';return;}
@@ -619,8 +507,7 @@ let h='<table class="lgT"><tr><th>Время</th><th>v₀</th><th>Уг.</th><th>
 journal.forEach(r=>{h+='<tr><td>'+r.tm+'</td><td>'+r.v0+'</td><td>'+r.ang+'°</td><td>'+r.ms+'</td><td>'+r.cd+'</td><td>'+r.sp+'</td><td>'+r.wd+'</td><td>'+(+r.rng).toFixed(1)+' м</td><td>'+(+r.err).toFixed(0)+'%</td></tr>';});
 b.innerHTML=h+'</table>';}
 renderJr();
-
-// ===== 3D: DEEP SPACE =====
+/* ===== 3D ===== */
 const rn=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
 rn.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
 $('sc').appendChild(rn.domElement);
@@ -638,7 +525,8 @@ gnd.rotation.x=-Math.PI/2;gnd.position.y=-0.03;sc.add(gnd);
 (function(){[[900,900,1.1,.7],[600,700,1.8,.55],[250,500,2.6,.4]].forEach(([n,spread,size,op])=>{
 const a=new Float32Array(n*3);for(let i=0;i<n;i++){a[i*3]=(Math.random()-.5)*spread*2;a[i*3+1]=Math.random()*400+20;a[i*3+2]=(Math.random()-.5)*spread*2;}
 const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(a,3));
-sc.add(new THREE.Points(g,new THREE.PointsMaterial({color:0xcfe0ff,size,transparent:true,opacity:op,sizeAttenuation:true})));});})();
+const pt=new THREE.Points(g,new THREE.PointsMaterial({color:0xcfe0ff,size,transparent:true,opacity:op,sizeAttenuation:true}));
+pt.userData._tw=1;pt.userData._ph=Math.random()*6.28;sc.add(pt);});})();
 (function(){function nb(r,g,b){const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');
 const gr=x.createRadialGradient(128,128,0,128,128,128);gr.addColorStop(0,'rgba('+r+','+g+','+b+',.5)');
 gr.addColorStop(.45,'rgba('+r+','+g+','+b+',.14)');gr.addColorStop(1,'rgba('+r+','+g+','+b+',0)');
@@ -648,8 +536,12 @@ x.fillStyle=gr;x.fillRect(0,0,256,256);return new THREE.CanvasTexture(c);}
 const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:nb(r,g,b),blending:THREE.AdditiveBlending,depthWrite:false,transparent:true,opacity:.8}));
 sp.position.set(x0,y0,z0);sp.scale.set(s,s,1);sc.add(sp);});})();
 const planet=new THREE.Group();sc.add(planet);
-const pm=new THREE.Mesh(new THREE.SphereGeometry(48,32,32),new THREE.MeshStandardMaterial({color:0x2a4a9e,emissive:0x0a1a4e,roughness:.9}));
+const pm=new THREE.Mesh(new THREE.SphereGeometry(48,48,48),new THREE.MeshStandardMaterial({roughness:.8}));
 pm.position.set(-320,64,-640);planet.add(pm);
+(function(){const pc=document.createElement('canvas');pc.width=256;pc.height=128;const x2=pc.getContext('2d');
+for(let y=0;y<128;y++){const t=y/128;const v=Math.floor(28+Math.sin(t*9)*20+Math.sin(t*23)*8);
+x2.fillStyle='rgb('+(v+30)+','+(v+55)+','+(v+120)+')';x2.fillRect(0,y,256,1);}
+pm.material.map=new THREE.CanvasTexture(pc);pm.material.color.set(0xffffff);pm.material.emissive.set(0x081a3e);pm.material.needsUpdate=true;})();
 const ring1=new THREE.Mesh(new THREE.RingGeometry(62,96,64),new THREE.MeshBasicMaterial({color:0x8fb8ff,transparent:true,opacity:.35,side:THREE.DoubleSide}));
 ring1.rotation.x=Math.PI/2.6;ring1.position.copy(pm.position);planet.add(ring1);
 const ring2=new THREE.Mesh(new THREE.RingGeometry(104,116,64),new THREE.MeshBasicMaterial({color:0x5ee0ff,transparent:true,opacity:.18,side:THREE.DoubleSide}));
@@ -663,10 +555,8 @@ const c=new THREE.Mesh(new THREE.ConeGeometry(30+Math.random()*35,h,5),m);c.posi
 for(let i=0;i<26;i++){const s=Math.random()*2.4+.8;
 const a=new THREE.Mesh(new THREE.IcosahedronGeometry(s,0),m.clone());
 const an=Math.random()*Math.PI*2,d=140+Math.random()*320,y=20+Math.random()*160;
-a.position.set(Math.cos(an)*d,y,Math.sin(an)*d-100);
-a.rotation.set(Math.random()*3,Math.random()*3,0);
-a.userData={rs:(Math.random()-.5)*.4,vx:(Math.random()-.5)*1.5};
-sc.add(a);asts.push(a);}})();
+a.position.set(Math.cos(an)*d,y,Math.sin(an)*d-100);a.rotation.set(Math.random()*3,Math.random()*3,0);
+a.userData={rs:(Math.random()-.5)*.4,vx:(Math.random()-.5)*1.5};sc.add(a);asts.push(a);}})();
 const dg=new THREE.Group();sc.add(dg);
 function upD(L){while(dg.children.length)dg.remove(dg.children[0]);
 const st=L>150?25:L>60?10:5;
@@ -679,7 +569,6 @@ const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(
 sp.position.set(x,1.5,-2.4);sp.scale.set(st*0.15,st*0.075,1);dg.add(sp);}}
 const pad0=new THREE.Mesh(new THREE.TorusGeometry(1.2,0.06,8,40),new THREE.MeshBasicMaterial({color:0x5ee0ff}));
 pad0.rotation.x=Math.PI/2;sc.add(pad0);
-
 const gun=new THREE.Group();sc.add(gun);
 const gMetal=new THREE.MeshStandardMaterial({color:0x1a2a6c,metalness:0.78,roughness:0.3});
 const gWood=new THREE.MeshStandardMaterial({color:0x1a2456,roughness:0.85});
@@ -698,7 +587,6 @@ const hub=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.09,0.14,12),gMetal);
 hub.rotation.x=Math.PI/2;hub.position.set(0.35,0.42,z);gun.add(hub);
 for(let s=0;s<6;s++){const sp2=new THREE.Mesh(new THREE.BoxGeometry(0.72,0.05,0.12),gWood);
 sp2.rotation.z=s*Math.PI/6;sp2.position.set(0.35,0.42,z);gun.add(sp2);}});
-
 const flag=new THREE.Group();sc.add(flag);
 const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.04,0.04,4,8),gMetal);
 pole.position.y=2;flag.add(pole);
@@ -709,10 +597,9 @@ flag.position.set(-2.2,0,2.4);
 const ballSh=new THREE.Mesh(new THREE.CircleGeometry(1,28),
 new THREE.MeshBasicMaterial({color:0x01020a,transparent:true,opacity:0.4,depthWrite:false}));
 ballSh.rotation.x=-Math.PI/2;ballSh.position.y=0.02;sc.add(ballSh);
-
-const bg=new THREE.SphereGeometry(1,24,24);
-const rB=new THREE.Mesh(bg,new THREE.MeshStandardMaterial({color:0x5ee0ff,emissive:0x0a4e7f,metalness:0.3,roughness:0.3}));
-const iB=new THREE.Mesh(bg,new THREE.MeshStandardMaterial({color:0xff5ec8,emissive:0x7f0a50,metalness:0.3,roughness:0.3}));
+const bgS=new THREE.SphereGeometry(1,24,24);
+const rB=new THREE.Mesh(bgS,new THREE.MeshStandardMaterial({color:0x5ee0ff,emissive:0x0a4e7f,metalness:0.3,roughness:0.3}));
+const iB=new THREE.Mesh(bgS,new THREE.MeshStandardMaterial({color:0xff5ec8,emissive:0x7f0a50,metalness:0.3,roughness:0.3}));
 iB.visible=false;sc.add(rB,iB);
 function gt(r,g,b){const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');
 const gr=x.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,'rgba('+r+','+g+','+b+',0.85)');
@@ -778,7 +665,28 @@ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAtt
 mets3.push({l:new THREE.Line(g,new THREE.LineBasicMaterial({color:0xdff2ff,transparent:true,opacity:.95,blending:THREE.AdditiveBlending})),
 vx:-60-Math.random()*60,vy:-40-Math.random()*30,t:0});
 sc.add(mets3[mets3.length-1].l);}
-
+(function(){
+const N=1200,ga=new Float32Array(N*3);
+for(let i=0;i<N;i++){const arm=i%3,rr=40+Math.random()*160,an=arm*2.094+rr*.035+(Math.random()-.5)*.4;
+ga[i*3]=-420+Math.cos(an)*rr;ga[i*3+1]=150+rr*.28+(Math.random()-.5)*14;ga[i*3+2]=-720+Math.sin(an)*rr;}
+const gg=new THREE.BufferGeometry();gg.setAttribute('position',new THREE.BufferAttribute(ga,3));
+const galaxy=new THREE.Points(gg,new THREE.PointsMaterial({color:0xbfd4ff,size:1.4,transparent:true,opacity:.7,sizeAttenuation:true,blending:THREE.AdditiveBlending,depthWrite:false}));
+galaxy.userData._tw=1;galaxy.userData._ph=Math.random()*6.28;sc.add(galaxy);window._galaxy=galaxy;
+const st=new THREE.Group();
+const stR=new THREE.Mesh(new THREE.TorusGeometry(6,.5,8,40),new THREE.MeshStandardMaterial({color:0x8fb8ff,emissive:0x1a2456,metalness:.7,roughness:.4}));
+st.add(stR);
+for(let i=0;i<4;i++){const sp=new THREE.Mesh(new THREE.BoxGeometry(.5,.5,12),new THREE.MeshStandardMaterial({color:0x5ee0ff,emissive:0x0a4e7f}));
+sp.rotation.y=i*Math.PI/4;st.add(sp);}
+const hub=new THREE.Mesh(new THREE.CylinderGeometry(1.4,1.4,3,16),new THREE.MeshStandardMaterial({color:0xcfe0ff,metalness:.8,roughness:.3}));
+st.add(hub);st.position.set(-190,90,-480);sc.add(st);window._station=st;
+const comet=new THREE.Group();
+comet.add(new THREE.Mesh(new THREE.SphereGeometry(2.2,16,16),new THREE.MeshBasicMaterial({color:0xdff2ff})));
+const tailG=new THREE.BufferGeometry();const tp=new Float32Array(40*3);
+for(let i=0;i<40;i++){tp[i*3]=-i*3;tp[i*3+1]=i*.5;tp[i*3+2]=(Math.random()-.5)*i*.4;}
+tailG.setAttribute('position',new THREE.BufferAttribute(tp,3));
+comet.add(new THREE.Points(tailG,new THREE.PointsMaterial({color:0xaee6ff,size:1.8,transparent:true,opacity:.8,blending:THREE.AdditiveBlending,depthWrite:false})));
+comet.position.set(420,260,-560);sc.add(comet);window._comet=comet;
+})();
 const SNCOL={A:0x2dd18e,B:0x9d8cff};
 const snaps={A:null,B:null};
 function setSnap(k){const btn=$(k==='A'?'snapA':'snapB');
@@ -790,22 +698,19 @@ const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Buffe
 const line=new THREE.Line(geo,new THREE.LineBasicMaterial({color:SNCOL[k],transparent:true,opacity:0.85}));
 sc.add(line);
 snaps[k]={line,pts:fc.pts,range:fc.range,label:k+' '+(+P.v0).toFixed(0)+'м/с '+P.angle+'°'};
-btn.classList.add('act');
-unlock('ab');toast('Снимок '+k+' сохранён: '+snaps[k].label);}
+btn.classList.add('act');unlock('ab');toast('Снимок '+k+' сохранён: '+snaps[k].label);}
 $('snapA').addEventListener('click',()=>setSnap('A'));
 $('snapB').addEventListener('click',()=>setSnap('B'));
 $('abClr').addEventListener('click',()=>{['A','B'].forEach(k=>{if(snaps[k]){sc.remove(snaps[k].line);snaps[k]=null;}});
 $('snapA').classList.remove('act');$('snapB').classList.remove('act');toast('Снимки убраны');drCh();});
-
-// ===== КАМЕРА =====
+/* ===== КАМЕРА ===== */
 const orb={tx:20,ty:4,tz:0,r:60,th:0.9,ph:1.0};
 let camMode='orbit',orbAuto=false,follow=false,ct=null,fixP=null;
 let idleT=0,mxN=0,myN=0,mxT=0,myT=0;
 addEventListener('mousemove',e=>{mxT=(e.clientX/innerWidth-.5);myT=(e.clientY/innerHeight-.5);});
 function updCam(dt){
 mxN+=(mxT-mxN)*.04;myN+=(myT-myN)*.04;
-if(camMode==='fixed'&&fixP){
-cam.position.copy(fixP.p);cam.up.copy(fixP.u);cam.lookAt(fixP.t);return;}
+if(camMode==='fixed'&&fixP){cam.position.copy(fixP.p);cam.up.copy(fixP.u);cam.lookAt(fixP.t);return;}
 cam.up.set(0,1,0);
 cam.position.set(
 orb.tx+orb.r*Math.sin(orb.ph)*Math.cos(orb.th),
@@ -821,8 +726,7 @@ function toOrbit(){const t=fixP?fixP.t:{x:orb.tx,y:orb.ty,z:orb.tz};
 const dx=cam.position.x-t.x,dy=cam.position.y-t.y,dz=cam.position.z-t.z;
 orb.r=Math.max(4,Math.sqrt(dx*dx+dy*dy+dz*dz));
 orb.ph=Math.max(0.04,Math.min(1.6,Math.acos(Math.max(-1,Math.min(1,dy/orb.r)))));
-orb.th=Math.atan2(dz,dx);orb.tx=t.x;orb.ty=t.y;orb.tz=t.z;
-camMode='orbit';fixP=null;}
+orb.th=Math.atan2(dz,dx);orb.tx=t.x;orb.ty=t.y;orb.tz=t.z;camMode='orbit';fixP=null;}
 let drag=false,lx=0,ly=0;
 const cvEl=rn.domElement;
 cvEl.addEventListener('pointerdown',e=>{drag=true;lx=e.clientX;ly=e.clientY;idleT=0;
@@ -838,8 +742,7 @@ if(camMode==='fixed')toOrbit();
 orb.r=Math.max(4,Math.min(600,orb.r*(e.deltaY>0?1.1:0.9)));},{passive:false});
 cvEl.addEventListener('dblclick',()=>$('playB').click());
 cvEl.addEventListener('contextmenu',e=>e.preventDefault());
-
-// ===== ФИЗИКА =====
+/* ===== ФИЗИКА ===== */
 function rhoAt(y,p){return p.rho*(p.rhoH?Math.exp(-Math.max(0,y)/8500):1);}
 function accel(x,y,vx,vy,p){
 const rx=vx-p.wind,ry=vy,vr=Math.hypot(rx,ry);
@@ -874,8 +777,7 @@ for(let i=0;i<=n;i++){const t=T*i/n;pts.push({t,x:vx*t,y:Math.max(0,p.h0+vy*t-0.
 return{pts,range:vx*T,time:T,maxH:p.h0+vy*vy/(2*p.g)};}
 function withMuzzle(){const a2=P.angle*Math.PI/180;
 return Object.assign({},P,{h0:P.h0+0.55+1.6*Math.sin(a2)});}
-
-// ===== СОСТОЯНИЕ =====
+/* ===== СОСТОЯНИЕ ===== */
 let fc=null,idf=null,chH=10,tS=0,run=false,done=false,cmp=false,chMode='xy';
 let best=parseFloat(localStorage.getItem('bs')||'0')||0,snd=true;
 const F=(x,d=1)=>x.toFixed(d);
@@ -972,8 +874,7 @@ toast('🎯 Попадание! +10 (промах '+F(d)+' м)');chime();
 tR.material.color.set(0x2dd18e);
 setTimeout(()=>{if(tgOn){tR.material.color.set(0xff6b83);plTg();}},900);}
 else{streak=0;toast('💨 Промах на '+F(d)+' м');plTg();}upS();}
-
-// ===== РАДАР =====
+/* ===== РАДАР ===== */
 const rdc=$('rd'),rg=rdc.getContext('2d');
 function drawRadar(x,y){const W=rdc.width,H=rdc.height;
 rg.clearRect(0,0,W,H);
@@ -992,8 +893,7 @@ if(cmp&&idf){rg.fillStyle='rgba(255,94,200,.7)';rg.fillRect(px(idf.range)-1.5,H-
 if(x!==undefined){const by=H-12-Math.min(H-20,y/L*(H-20));
 rg.fillStyle='#5ee0ff';rg.beginPath();rg.arc(px(x),by,4,0,Math.PI*2);rg.fill();
 rg.strokeStyle='rgba(94,224,255,.4)';rg.beginPath();rg.moveTo(px(x),H-12);rg.lineTo(px(x),by);rg.stroke();}}
-
-// ===== ЦИКЛ =====
+/* ===== ЦИКЛ ===== */
 const ck=new THREE.Clock();let ld=false,fpsN=0,fpsT=0;
 const camTgt=new THREE.Vector3();
 function tick(){requestAnimationFrame(tick);
@@ -1026,8 +926,15 @@ moonP.position.set(pm.position.x+Math.cos(ma)*80,pm.position.y+Math.sin(ma*.7)*1
 asts.forEach(a=>{a.rotation.x+=a.userData.rs*dt;a.rotation.y+=a.userData.rs*dt;
 a.position.x+=a.userData.vx*dt;
 if(Math.abs(a.position.x)>700)a.userData.vx*=-1;});
+if(window._galaxy)window._galaxy.rotation.y+=dt*.008;
+if(window._station)window._station.rotation.y+=dt*.6;
+if(window._comet){window._comet.rotation.y-=dt*.15;
+window._comet.position.x-=dt*22;window._comet.position.y-=dt*6;
+if(window._comet.position.x<-520){window._comet.position.set(420,200+Math.random()*160,-560+Math.random()*200);}}
+sc.children.forEach(o=>{if(o.userData&&o.userData._tw){
+o.material.opacity=.4+.4*Math.abs(Math.sin(performance.now()*.0012+o.userData._ph));}});
 metCd-=dt;
-if(metCd<=0&&mets3.length<7){spMet3();metCd=.5+Math.random()*1.4;}
+if(metCd<=0&&mets3.length<7){spMet3();metCd=.25+Math.random()*.8;}
 for(let i=mets3.length-1;i>=0;i--){const m=mets3[i];m.t+=dt;
 const po=m.l.geometry.attributes.position;
 po.setXYZ(0,po.getX(0)+m.vx*dt,po.getY(0)+m.vy*dt,0);
@@ -1051,8 +958,7 @@ if(run&&fc){tS=Math.min(tS+dt*P.ts,fc.time);upV();
 if(tS>=fc.time-1e-6){run=false;done=true;setPlayTxt('▶ ПОВТОР');landed();}}
 rn.render(sc,cam);drCh();
 if(!ld){ld=true;setTimeout(()=>$('ld').classList.add('gone'),250);}}
-
-// ===== ГРАФИКИ =====
+/* ===== ГРАФИКИ ===== */
 const chc=$('ch'),cg=chc.getContext('2d');
 const CHN={xy:'y(x)',yt:'y(t)',vt:'v(t)',at:'a(t)'};
 function accMag(p){const[a,b]=accel(p.x||0,p.y||0,p.vx||0,p.vy||0,P);return Math.hypot(a,b);}
@@ -1062,13 +968,11 @@ cg.clearRect(0,0,W,H);
 let mX,mY,vf;
 if(chMode==='xy'){mX=Math.max(fc.range,idf.range,snaps.A?snaps.A.range:0,snaps.B?snaps.B.range:0)*1.08+1;mY=Math.max(chH,2);vf=p=>[p.x,p.y];}
 else if(chMode==='yt'){mX=Math.max(fc.time,idf.time)*1.05;mY=Math.max(chH*0.87,2);vf=p=>[p.t,p.y];}
-else if(chMode==='vt'){mX=Math.max(fc.time,idf.time)*1.05;
-mY=Math.max(P.v0*1.05,5);vf=p=>[p.t,Math.hypot(p.vx||0,p.vy||0)];}
+else if(chMode==='vt'){mX=Math.max(fc.time,idf.time)*1.05;mY=Math.max(P.v0*1.05,5);vf=p=>[p.t,Math.hypot(p.vx||0,p.vy||0)];}
 else{mX=Math.max(fc.time,1)*1.05;
 mY=Math.max(P.g*1.6,accMag(fc.pts[0]||{vx:P.v0,vy:P.v0,y:withMuzzle().h0})*1.15,5);vf=p=>[p.t,accMag(p)];}
 const px=x=>pd+(x/mX)*(W-pd-8),py=y=>H-pd-(Math.max(0,y)/mY)*(H-pd-10);
-cg.strokeStyle='rgba(143,160,200,.18)';cg.fillStyle='#8fa0c8';cg.lineWidth=1;
-cg.font='9px Consolas';
+cg.strokeStyle='rgba(143,160,200,.18)';cg.fillStyle='#8fa0c8';cg.lineWidth=1;cg.font='9px Consolas';
 for(let i=0;i<=5;i++){const g=px(mX*i/5);cg.beginPath();cg.moveTo(g,py(0));cg.lineTo(g,py(mY));cg.stroke();
 cg.fillText((mX*i/5).toFixed(mX<12?1:0),g-10,H-pd+11);}
 for(let i=0;i<=4;i++){const g=py(mY*i/4);cg.beginPath();cg.moveTo(pd,g);cg.lineTo(W-8,g);cg.stroke();
@@ -1082,9 +986,9 @@ cg.setLineDash([5,5]);cg.strokeStyle='#ff5ec8';cg.lineWidth=1.5;
 cg.beginPath();idf.pts.forEach((p,i)=>{const[vx,vy]=vf(p);i?cg.lineTo(px(vx),py(vy)):cg.moveTo(px(vx),py(vy));});
 cg.stroke();
 cg.setLineDash([]);cg.strokeStyle='#5ee0ff';cg.lineWidth=2.4;
-const st=Math.max(1,Math.ceil(fc.pts.length/400)),up=Math.round(tS/STEP);
+const stp=Math.max(1,Math.ceil(fc.pts.length/400)),up=Math.round(tS/STEP);
 let prev=null;cg.beginPath();
-for(let i=0;i<=Math.min(up,fc.pts.length-1);i+=st){const[vx,vy]=vf(fc.pts[i]);prev?cg.lineTo(px(vx),py(vy)):cg.moveTo(px(vx),py(vy));prev=fc.pts[i];}
+for(let i=0;i<=Math.min(up,fc.pts.length-1);i+=stp){const[vx,vy]=vf(fc.pts[i]);prev?cg.lineTo(px(vx),py(vy)):cg.moveTo(px(vx),py(vy));prev=fc.pts[i];}
 if(prev)cg.lineTo(px(vf(prev)[0]),py(vf(prev)[1]));cg.stroke();
 if(chMode!=='xy'&&prev){const flg=cg.createLinearGradient(0,0,0,H);flg.addColorStop(0,'rgba(94,224,255,.18)');flg.addColorStop(1,'rgba(94,224,255,0)');
 cg.lineTo(px(vf(prev)[0]),py(0));cg.lineTo(px(0),py(0));cg.closePath();cg.fillStyle=flg;cg.fill();}
@@ -1092,8 +996,7 @@ if(prev){cg.beginPath();cg.arc(px(vf(prev)[0]),py(vf(prev)[1]),4,0,Math.PI*2);cg
 document.querySelectorAll('.chTabs button').forEach(b=>b.addEventListener('click',()=>{
 document.querySelectorAll('.chTabs button').forEach(x=>x.classList.remove('act'));b.classList.add('act');
 chMode=b.dataset.cc;$('chName').textContent=CHN[chMode];drCh();}));
-
-// ===== КАМЕРЫ =====
+/* ===== КАМЕРЫ ===== */
 const V=(x,y,z)=>new THREE.Vector3(x,y,z);
 function setCam(m){const L=fc?Math.max(fc.range,idf.range,10):50,cx=L/2;
 ['c0','c1','c2','c3','c4'].forEach(id=>$(id).classList.remove('act'));
@@ -1120,8 +1023,7 @@ document.querySelectorAll('.cb [data-cam]').forEach(b=>b.addEventListener('click
 orbAuto=false;$('orbB').classList.remove('act');
 follow=false;$('folB').classList.remove('act');
 setCam(b.dataset.cam);}));
-
-// ===== ЗВУК =====
+/* ===== ЗВУК ===== */
 let AC=null;const acf=()=>{if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}return AC;};
 function who(){if(!snd||!acf())return;try{const c=AC,len=Math.floor(c.sampleRate*0.3),b=c.createBuffer(1,len,c.sampleRate),d=b.getChannelData(0);
 for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);
@@ -1137,8 +1039,7 @@ function chime(){if(!snd||!acf())return;try{const c=AC,o=c.createOscillator(),g=
 o.type='triangle';o.frequency.setValueAtTime(660,c.currentTime);o.frequency.setValueAtTime(880,c.currentTime+0.09);
 g.gain.setValueAtTime(0.1,c.currentTime);g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.4);
 o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+0.45);}catch(e){}}
-
-// ===== UI =====
+/* ===== UI ===== */
 function toast(m){const t=$('to');t.textContent=m;t.classList.add('show');
 clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2300);}
 function setPlayTxt(t){$('playB').textContent=t;}
@@ -1252,7 +1153,6 @@ document.querySelectorAll('#prBox button').forEach(b=>b.classList.remove('on'));
 document.querySelectorAll('#gseg button').forEach((b,i)=>b.classList.toggle('act',i===0));
 cmp=false;$('cmpB').classList.remove('act');iB.visible=iG.visible=false;
 clrGh();recalc();saveP();toast('Сброшено');});
-
 addEventListener('keydown',e=>{if(!simActive||e.target.tagName==='INPUT')return;
 if(e.code==='Space'){e.preventDefault();$('playB').click();return;}
 const k=e.key.toLowerCase();
@@ -1265,8 +1165,7 @@ if(k==='1')setCam('reset');if(k==='2')setCam('top');
 if(k==='3')setCam('side');if(k==='4')setCam('front');
 if(k==='5')setCam('back');});
 addEventListener('resize',sizeSim);
-
-// СТАРТ
+/* СТАРТ */
 try{recalc();fOpt();setCam('reset');tick();}
 catch(e){showErr(e.message||String(e));}
 </script>
