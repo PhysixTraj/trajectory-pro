@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Траектория PRO — Physics Lab</title>
+<title>Траектория PRO — Cosmic Lab</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
 :root{
@@ -17,40 +17,42 @@
 --grG:linear-gradient(135deg,#ff85e0,#c026d3);
 --grT:linear-gradient(100deg,#f2ecff 10%,#7df3ff 45%,#ff85e0 90%);}
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
-html{scroll-behavior:smooth}
-body{overflow-x:hidden;background:var(--bg);color:var(--tx);line-height:1.6}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx)}
 body::before{content:'';position:fixed;inset:-20%;z-index:0;pointer-events:none;
-background:radial-gradient(900px 620px at 12% 8%,rgba(122,53,255,.16),transparent 55%),
-radial-gradient(800px 560px at 92% 20%,rgba(192,38,211,.12),transparent 55%),
-radial-gradient(900px 700px at 50% 110%,rgba(0,229,255,.06),transparent 60%);
+background:radial-gradient(900px 620px at 12% 8%,rgba(122,53,255,.2),transparent 55%),
+radial-gradient(800px 560px at 92% 20%,rgba(192,38,211,.15),transparent 55%),
+radial-gradient(900px 700px at 50% 110%,rgba(0,229,255,.08),transparent 60%);
 filter:blur(40px);animation:aur 22s ease-in-out infinite alternate}
 @keyframes aur{0%{transform:translate(0,0) scale(1)}100%{transform:translate(-3%,2%) scale(1.05)}}
 #bgp{position:fixed;inset:0;z-index:0;pointer-events:none}
-.goverlay{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35;
-background-image:linear-gradient(rgba(122,53,255,.05) 1px,transparent 1px),
-linear-gradient(90deg,rgba(122,53,255,.05) 1px,transparent 1px);background-size:80px 80px}
-#pbar{position:fixed;top:0;left:0;height:2px;width:0;z-index:400;background:var(--gr);box-shadow:0 0 10px var(--a3)}
+/* ===== ПЕРЕКЛЮЧЕНИЕ РАЗДЕЛОВ ===== */
+.panel{position:fixed;inset:0;z-index:2;overflow-y:auto;overflow-x:hidden;
+padding:96px 6vw 60px;opacity:0;visibility:hidden;pointer-events:none;
+transform:perspective(1400px) rotateX(5deg) translateY(36px) scale(.965);
+transform-origin:50% 0;
+transition:opacity .55s ease,transform .6s cubic-bezier(.19,.75,.22,1),visibility .55s}
+.panel.active{opacity:1;visibility:visible;pointer-events:auto;transform:none}
+::-webkit-scrollbar{width:7px}::-webkit-scrollbar-thumb{background:var(--bs);border-radius:4px}
 /* ===== НАВИГАЦИЯ ===== */
-nav{position:fixed;top:2px;width:100%;z-index:300;display:flex;justify-content:space-between;align-items:center;
+nav{position:fixed;top:0;width:100%;z-index:300;display:flex;justify-content:space-between;align-items:center;
 padding:14px 4vw;background:rgba(5,2,15,.72);backdrop-filter:blur(14px);border-bottom:1px solid rgba(178,107,255,.25)}
 .logo{font-weight:800;letter-spacing:.14em;font-size:1rem;background:var(--grT);-webkit-background-clip:text;background-clip:text;color:transparent}
-.nv a{color:var(--mu);text-decoration:none;margin-left:26px;font-size:.85rem;font-weight:600;transition:.25s;position:relative}
-.nv a:hover{color:var(--tx)}
-.nv a::after{content:'';position:absolute;left:0;bottom:-6px;height:1px;width:0;background:var(--a3);transition:.3s}
-.nv a:hover::after,.nv a.act::after{width:100%}
-.nv a.act{color:var(--a3)}
-/* ===== ЛЕНДИНГ ===== */
-section.lnd{position:relative;z-index:2;padding:120px 6vw 80px;max-width:1280px;margin:0 auto}
-.rv{opacity:0;transform:translateY(30px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
-.rv.vis{opacity:1;transform:none}
+.nv button{background:transparent;border:0;color:var(--mu);margin-left:8px;font-size:.85rem;font-weight:700;
+padding:8px 18px;border-radius:999px;cursor:pointer;transition:.28s;position:relative;letter-spacing:.04em}
+.nv button:hover{color:var(--tx);background:rgba(0,229,255,.08)}
+.nv button.act{background:var(--gr);color:#04122c;box-shadow:0 0 18px var(--gl);transform:translateY(-1px)}
+/* ===== КОНТЕНТ РАЗДЕЛОВ ===== */
+.wrap{max-width:1180px;margin:0 auto}
 .tag{display:inline-block;border:1px solid rgba(255,77,210,.5);border-radius:999px;padding:5px 16px;
 font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;color:var(--g2);margin-bottom:18px}
-h1.big{font-size:clamp(2.2rem,5.4vw,4.4rem);line-height:1.08;font-weight:800;margin-bottom:22px;
+h1.big{font-size:clamp(2.2rem,5.2vw,4.2rem);line-height:1.08;font-weight:800;margin-bottom:22px;
 background:var(--grT);-webkit-background-clip:text;background-clip:text;color:transparent}
 h2.big{font-size:clamp(1.7rem,3.4vw,2.6rem);font-weight:800;margin-bottom:14px;
 background:var(--grT);-webkit-background-clip:text;background-clip:text;color:transparent}
 .lead{color:var(--mu);font-size:1.05rem;max-width:660px;margin-bottom:12px}
 .lead b{color:var(--tx)}
+.rv{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+.rv.vis{opacity:1;transform:none}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:18px;margin:30px 0 8px;max-width:760px}
 .stt{background:var(--pan);border:1px solid var(--bs);border-radius:14px;padding:14px 16px;backdrop-filter:blur(12px)}
 .stt b{display:block;font-size:1.5rem;font-weight:800;background:var(--grT);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -65,26 +67,29 @@ font-family:Consolas,monospace;color:var(--a);margin:14px 0;text-align:center;ma
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:24px;margin-top:34px}
 .crd{background:var(--pan);border:1px solid var(--bs);border-radius:18px;padding:26px;backdrop-filter:blur(14px);
 transition:.35s;position:relative;overflow:hidden}
-.crd:hover{transform:translateY(-6px);border-color:var(--a2);box-shadow:0 0 34px var(--gl)}
+.crd:hover{transform:translateY(-6px) scale(1.01);border-color:var(--a2);box-shadow:0 0 34px var(--gl)}
 .crd::before{content:'';position:absolute;top:-40%;right:-30%;width:200px;height:200px;border-radius:50%;
 background:var(--a2);opacity:.08;pointer-events:none}
 .crd .ic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:1.3rem;
 background:rgba(178,107,255,.14);border:1px solid rgba(178,107,255,.3);margin-bottom:16px}
 .crd h3{font-size:1.15rem;margin-bottom:10px;color:var(--tx)}
 .crd p{color:var(--mu);font-size:.9rem}
-.crd a{color:var(--g2)}
-.techrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px}
-.tgb{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:999px;
-padding:7px 16px;font-size:.8rem;font-family:Consolas,monospace;color:var(--mu)}
-.foot{text-align:center;padding:40px 20px 46px;color:var(--mu2);font-size:.8rem;position:relative;z-index:2}
+.orb3d{position:absolute;right:4vw;top:120px;width:min(30vw,320px);height:min(30vw,320px);border-radius:50%;
+background:radial-gradient(circle at 32% 30%,#b99cff 0%,#5a2a9e 38%,#1d0f3d 72%);
+box-shadow:inset -30px -24px 80px rgba(0,0,0,.6),0 0 90px rgba(122,53,255,.45);
+animation:fl 9s ease-in-out infinite;pointer-events:none;z-index:0}
+.orb3d::after{content:'';position:absolute;inset:-16% -34%;border-radius:50%;
+border:1px solid rgba(0,229,255,.35);transform:rotate(-16deg) scaleY(.32);
+box-shadow:0 0 26px rgba(0,229,255,.4)}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+.foot{text-align:center;padding:30px 20px 40px;color:var(--mu2);font-size:.8rem}
 /* ===== СИМУЛЯТОР ===== */
-#simBox{position:relative;height:86vh;min-height:560px;border:1px solid rgba(178,107,255,.4);border-radius:22px;
-overflow:hidden;box-shadow:0 0 60px rgba(122,53,255,.35),var(--sh);margin-top:26px}
+#simBox{position:relative;height:calc(100vh - 150px);min-height:520px;border:1px solid rgba(178,107,255,.4);border-radius:22px;
+overflow:hidden;box-shadow:0 0 60px rgba(122,53,255,.35),var(--sh);margin-top:20px}
 #sc{position:absolute;inset:0;z-index:1}#sc canvas{display:block}
 .ui{position:absolute;inset:0;z-index:10;pointer-events:none;padding:14px;user-select:none}
 body.hui .ui>*{opacity:0!important;pointer-events:none!important}
 .ui>*{transition:opacity .3s}
-::-webkit-scrollbar{width:7px}::-webkit-scrollbar-thumb{background:var(--bs);border-radius:4px}
 .gs{background:var(--pan);border:1px solid var(--bs);border-radius:16px;backdrop-filter:blur(20px) saturate(1.4);
 box-shadow:var(--sh);position:relative;overflow:hidden}
 .gs::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1px;
@@ -112,7 +117,7 @@ opacity:.45;pointer-events:none;transition:opacity .4s}
 #fps{position:absolute;top:114px;left:14px;z-index:11;padding:6px 10px;font-size:.62rem;color:var(--mu);font-family:Consolas,monospace}
 .dk{position:absolute;pointer-events:none;z-index:11}
 .dl{left:14px;bottom:14px}.dr{right:14px;bottom:14px}
-.sp{pointer-events:auto;max-height:min(62vh,560px);overflow-y:auto;width:292px;transition:transform .35s,opacity .3s}
+.sp{pointer-events:auto;max-height:min(64vh,580px);overflow-y:auto;width:292px;transition:transform .35s,opacity .3s}
 .sp.loff{transform:translateX(calc(-100% - 20px));opacity:0;pointer-events:none}
 .sp.roff{transform:translateX(calc(100% + 20px));opacity:0;pointer-events:none}
 .pt{pointer-events:auto;position:absolute;top:50%;transform:translateY(-50%);width:28px;height:74px;background:var(--pan);border:1px solid var(--bs);color:var(--mu);cursor:pointer;border-radius:9px;font-size:.85rem;backdrop-filter:blur(10px)}
@@ -171,7 +176,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.15)}
 .chTabs button.act{background:var(--gr);color:#04122c;border-color:transparent}
 .chh{display:flex;justify-content:space-between;font-size:.55rem;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;flex-wrap:wrap;gap:4px}
 .chh i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin:0 3px 2px 7px}
-.lgr{background:var(--a)}.lgi{background:repeating-linear-gradient(90deg,var(--g) 0 4px,transparent 4px 8px)}.lgg{background:rgba(178,107,255,.65)}.lgA{background:var(--grn)}.lgB{background:var(--vio)}
+.lgr{background:var(--a)}.lgi{background:repeating-linear-gradient(90deg,var(--g) 0 4px,transparent 4px 8px)}.lgA{background:var(--grn)}.lgB{background:var(--vio)}
 #ch{width:500px;max-width:54vw;display:block;border-radius:10px;border:1px solid var(--bs)}
 .bh{position:absolute;top:114px;left:50%;transform:translateX(-50%);z-index:11;text-align:center;pointer-events:none;opacity:0;transition:opacity .35s}
 .bh.show{opacity:1}
@@ -200,7 +205,6 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.15)}
 .lgT{width:100%;border-collapse:collapse;font-size:.78rem;font-family:Consolas,monospace}
 .lgT th{color:var(--g);text-align:left;padding:5px 7px;border-bottom:1px solid var(--b);font-size:.65rem;text-transform:uppercase}
 .lgT td{padding:5px 7px;color:var(--mu);border-bottom:1px solid var(--bs)}
-.lgT tr:hover td{background:rgba(0,229,255,.07);color:var(--tx)}
 .lgE{color:var(--mu);font-style:italic}
 @keyframes fi{from{opacity:0}to{opacity:1}}
 #to{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--sol);border:1px solid var(--g);color:var(--tx);padding:10px 20px;border-radius:13px;font-weight:600;font-size:.82rem;box-shadow:0 0 26px var(--gg),var(--sh);z-index:700;opacity:0;transition:.3s;pointer-events:none;max-width:80vw;text-align:center}
@@ -213,183 +217,192 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.15)}
 @keyframes lp{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
 #ld .t{color:#a99cc9;letter-spacing:.34em;text-transform:uppercase;font-size:.64rem;margin-top:15px;text-align:center}
 @media(max-width:760px){
-nav a{margin-left:14px;font-size:.75rem}
+.nv button{margin-left:2px;padding:7px 10px;font-size:.72rem}
 .sp{width:min(84vw,292px)}
-#ch{max-width:86vw}
-#simBox{height:78vh;min-height:480px}}
+#ch{max-width:86vw}}
 </style>
 </head>
 <body>
 <canvas id="bgp"></canvas>
-<div class="goverlay"></div>
-<div id="pbar"></div>
 
 <nav>
   <div class="logo">◈ ТРАЕКТОРИЯ PRO</div>
   <div class="nv">
-    <a href="#about" class="act">О проекте</a>
-    <a href="#sim">Симуляция</a>
-    <a href="#docs">Материалы</a>
+    <button data-sec="about" class="act">О проекте</button>
+    <button data-sec="sim">Симуляция</button>
+    <button data-sec="docs">Материалы</button>
   </div>
 </nav>
 
 <!-- РАЗДЕЛ 1 -->
-<section id="about" class="lnd">
-  <div class="rv"><div class="tag">Индивидуальный проект · Физика</div></div>
-  <h1 class="big rv">Влияние сопротивления воздуха<br>на полёт тела</h1>
-  <p class="lead rv">Школьная формула дальности работает только в вакууме. Я построил <b>численную модель реального полёта</b> — и сравнил её с идеальной параболой для тел от пёрышка до ядра.</p>
-  <p class="lead rv" style="font-size:.95rem"><b>Гипотеза:</b> чем меньше масса и выше скорость, тем сильнее расхождение — а оптимальный угол уходит ниже 45°.</p>
-  <div class="f rv">L<sub>идеал</sub> = v₀² · sin(2α) / g&nbsp;&nbsp;·&nbsp;&nbsp;m·a = F<sub>тяж</sub> + ½·ρ·C<sub>d</sub>·A·v²</div>
-  <div class="stats rv">
-    <div class="stt"><b data-cnt="7">0</b><small>типов тел</small></div>
-    <div class="stt"><b data-cnt="3">0</b><small>планеты</small></div>
-    <div class="stt"><b data-cnt="240">0</b><small>шаг RK4, Гц</small></div>
-    <div class="stt"><b data-cnt="4">0</b><small>графика</small></div>
-  </div>
-  <div class="rv">
-    <a class="btn" href="#sim">Запустить симуляцию →</a>
-    <button class="btn ghost" onclick="document.getElementById('mod').classList.add('open')">📖 Паспорт проекта</button>
+<section id="about" class="panel active">
+  <div class="orb3d"></div>
+  <div class="wrap">
+    <div class="rv"><div class="tag">Индивидуальный проект · Физика</div></div>
+    <h1 class="big rv">Влияние сопротивления воздуха<br>на полёт тела</h1>
+    <p class="lead rv">Школьная формула дальности работает только в вакууме. Я построил <b>численную модель реального полёта</b> — и сравнил её с идеальной параболой для тел от пёрышка до ядра.</p>
+    <p class="lead rv" style="font-size:.95rem"><b>Гипотеза:</b> чем меньше масса и выше скорость, тем сильнее расхождение — а оптимальный угол уходит ниже 45°.</p>
+    <div class="f rv">L<sub>идеал</sub> = v₀² · sin(2α) / g&nbsp;&nbsp;·&nbsp;&nbsp;m·a = F<sub>тяж</sub> + ½·ρ·C<sub>d</sub>·A·v²</div>
+    <div class="stats rv">
+      <div class="stt"><b data-cnt="7">0</b><small>типов тел</small></div>
+      <div class="stt"><b data-cnt="3">0</b><small>планеты</small></div>
+      <div class="stt"><b data-cnt="240">0</b><small>шаг RK4, Гц</small></div>
+      <div class="stt"><b data-cnt="4">0</b><small>графика</small></div>
+    </div>
+    <div class="rv">
+      <button class="btn" data-go="sim">🚀 Запустить симуляцию</button>
+      <button class="btn ghost" onclick="document.getElementById('mod').classList.add('open')">📖 Паспорт проекта</button>
+    </div>
   </div>
 </section>
 
 <!-- РАЗДЕЛ 2 -->
-<section id="sim" class="lnd">
-  <div class="rv"><div class="tag">Живой эксперимент</div>
-  <h2 class="big">Интерактивная модель полёта</h2>
-  <p class="lead">Настраивай параметры слева, следи за статистикой справа. <b>Space</b> — пуск, <b>O</b> — оптимум угла, <b>G</b> — мишень, <b>C</b> — гонка реал vs идеал.</p></div>
-  <div id="simBox" class="rv">
-    <div id="ld"><div style="display:flex;flex-direction:column;align-items:center"><div class="m">◈</div><div class="t" id="ldT">Загрузка…</div></div></div>
-    <div id="er"></div>
-    <div id="sc"></div>
-    <div class="ui">
-    <div class="tb">
-      <div class="br gs"><div class="mk">◈</div><div><div class="bn">ТРАЕКТОРИЯ <i>PRO</i></div><div class="sb">Physics Lab</div></div></div>
-      <div class="tbs">
-        <button class="ib" id="soundBtn" title="Звук">🔊</button>
-        <button class="ib" id="shotBtn" title="Скриншот">📸</button>
-        <button class="ib" id="huiBtn" title="Скрыть интерфейс (H)">👁</button>
-        <button class="ib" id="fsBtn" title="Полный экран">⛶</button>
-        <button class="ib" id="themeBtn" title="Тема">🌙</button>
-        <button class="ib" id="infoBtn" title="О проекте">📖</button>
-      </div>
-    </div>
-    <div class="cb gs">
-      <button class="act" data-cam="reset" id="c0">📷 Обзор</button>
-      <button data-cam="top" id="c1">🗺 Сверху</button>
-      <button data-cam="side" id="c2">📐 Сбоку</button>
-      <button data-cam="front" id="c3">🏎 Спереди</button>
-      <button data-cam="back" id="c4">🔙 Сзади</button>
-      <button id="orbB">🌀 Орбита</button>
-      <button id="folB">🎯 Следить</button>
-    </div>
-    <div id="fps" class="gs">FPS –</div>
-    <div class="rp gs"><div class="rh">Радар</div><canvas id="rd" width="140" height="140"></canvas></div>
-    <div class="bh" id="bigHud"><div class="n" id="bigN">0 м/с</div><div class="l">скорость</div><div class="alt" id="bigA">высота 0 м</div></div>
-    <div class="dk dl">
-      <div class="sp gs" id="pL">
-        <div class="cp">
-          <div><div class="tt">Готовые тела</div>
-          <div class="pr" id="prBox">
-            <button data-p="foot" title="Футбол">⚽</button><button data-p="tennis" title="Теннис">🎾</button>
-            <button data-p="basket" title="Баскетбол">🏀</button><button data-p="ping" title="Пинг-понг">⚪</button>
-            <button data-p="shot" title="Ядро">🔨</button><button data-p="badm" title="Волан">🏸</button>
-            <button data-p="feather" title="Пёрышко">🪶</button>
-          </div></div>
-          <div class="ct"><label>Скорость <span id="vL">25.0 м/с</span></label><input type="range" id="v0" min="5" max="80" step="0.5" value="25"></div>
-          <div class="ct"><label>Угол <span id="aL">45°</span></label><input type="range" id="a0" min="5" max="85" step="1" value="45"></div>
-          <div class="ct"><label>Масса <span id="mL">0.430 кг</span></label><input type="range" id="mass" min="0.002" max="7.26" step="0.001" value="0.43"></div>
-          <div class="ct"><label>Площадь <span id="AL">0.038 м²</span></label><input type="range" id="area" min="0.001" max="0.05" step="0.001" value="0.038"></div>
-          <div class="ct"><label>Cd <span id="cdL">0.50</span></label><input type="range" id="cd" min="0.05" max="1.4" step="0.05" value="0.5"></div>
-          <div class="ct"><label>Закрутка <span id="spinL">0.0</span></label><input type="range" id="spin" min="-3" max="3" step="0.1" value="0"></div>
-          <div class="ct"><label>Ветер <span id="windL">0 м/с</span></label><input type="range" id="wind" min="-15" max="15" step="0.5" value="0"></div>
-          <div class="ct"><label>Высота пушки <span id="h0L">0.0 м</span></label><input type="range" id="h0" min="0" max="3" step="0.1" value="0"></div>
-          <div class="ct"><label>Скорость времени <span id="tsL">×1.0</span></label><input type="range" id="ts" min="0.1" max="2" step="0.1" value="1"></div>
-          <div><div class="tt" style="margin-bottom:4px">Планета</div>
-          <div class="sg" id="gseg">
-            <button class="act" data-g="9.81" data-rho="1.225">🌍 Земля</button>
-            <button data-g="1.62" data-rho="0">🌕 Луна</button>
-            <button data-g="3.71" data-rho="0.02">🔴 Марс</button>
-          </div></div>
-          <div class="sg"><button class="act" id="mAir">Атмосфера</button><button id="mVac">Вакуум</button></div>
-          <div class="swr">Вектор скорости<div class="sw"><input type="checkbox" id="arrT" checked><span class="sl"></span></div></div>
-          <div class="swr">Призраки<div class="sw"><input type="checkbox" id="ghT" checked><span class="sl"></span></div></div>
-          <div class="swr">Плотность ρ(h) ↓ с высотой<div class="sw"><input type="checkbox" id="rhoH"><span class="sl"></span></div></div>
-          <div class="hint">💡 Оптимум: <b id="optA">–</b> · <b>O</b> применить · <b>G</b> мишень · <b>Space</b> пуск</div>
+<section id="sim" class="panel">
+  <div class="wrap">
+    <div class="rv"><div class="tag">Живой эксперимент</div>
+    <h2 class="big" style="font-size:clamp(1.4rem,2.6vw,2rem)">Интерактивная модель полёта</h2></div>
+    <div id="simBox" class="rv">
+      <div id="ld"><div style="display:flex;flex-direction:column;align-items:center"><div class="m">◈</div><div class="t" id="ldT">Загрузка…</div></div></div>
+      <div id="er"></div>
+      <div id="sc"></div>
+      <div class="ui">
+      <div class="tb">
+        <div class="br gs"><div class="mk">◈</div><div><div class="bn">ТРАЕКТОРИЯ <i>PRO</i></div><div class="sb">Cosmic Lab</div></div></div>
+        <div class="tbs">
+          <button class="ib" id="soundBtn" title="Звук">🔊</button>
+          <button class="ib" id="shotBtn" title="Скриншот">📸</button>
+          <button class="ib" id="huiBtn" title="Скрыть интерфейс (H)">👁</button>
+          <button class="ib" id="fsBtn" title="Во весь экран">⛶</button>
+          <button class="ib" id="themeBtn" title="Тема">🌙</button>
+          <button class="ib" id="infoBtn" title="О проекте">📖</button>
         </div>
       </div>
-      <button class="pt" id="tL">◀</button>
-    </div>
-    <div class="dk dr">
-      <div class="sp gs" id="pR">
-        <div class="cp hudp">
-          <div class="st"><span>Дальность (идеал)</span><b id="rI">–</b></div>
-          <div class="st"><span>Дальность (реал)</span><b class="blue" id="rR">–</b></div>
-          <div class="st"><span>Погрешность</span><b class="red" id="erV">–</b></div>
-          <div class="st"><span>Макс. высота</span><b id="mH">–</b></div>
-          <div class="st"><span>Угол падения</span><b id="la">–</b></div>
-          <div class="st"><span>Рекорд</span><b class="gold" id="bs">–</b></div>
-          <div class="st"><span>Счёт в мишени</span><b class="gold" id="ss">0 · серия 0</b></div>
-          <div class="tl">
-            <div><small>Время</small><b id="tV">0.0 с</b></div><div><small>Скор.</small><b id="vV">0</b></div>
-            <div><small>Выс.</small><b id="hV">0</b></div><div><small>Путь</small><b id="xV">0</b></div>
-          </div>
-          <div class="ct"><label>Время полёта <span id="timeL">0.00 с</span></label><input type="range" id="tl" min="0" max="100" value="0" step="0.1"></div>
-          <div class="ab">
-            <button class="bt m" id="playB">▶ ПУСК</button>
-            <button class="bt s" id="cmpB" title="Гонка реал vs идеал">⚖️</button>
-            <button class="bt s" id="stopB">⏹</button>
-          </div>
-          <div class="ab" style="margin-top:0">
-            <button class="bt s" id="optB" title="Оптимум (O)">⚡</button>
-            <button class="bt s" id="tgtB" title="Мишень (G)">🎯</button>
-            <button class="bt s" id="rndB" title="Случайно">🎲</button>
-            <button class="bt s" id="rstB" title="Сброс">🔄</button>
-            <button class="bt s" id="csvB" title="CSV">📄</button>
-          </div>
-          <div class="ab" style="margin-top:0">
-            <button class="bt s" id="snapA" title="Сохранить бросок A">💾 A</button>
-            <button class="bt s" id="snapB" title="Сохранить бросок B">💾 B</button>
-            <button class="bt s" id="abClr" title="Убрать снимки">✖ AB</button>
+      <div class="cb gs">
+        <button class="act" data-cam="reset" id="c0">📷 Обзор</button>
+        <button data-cam="top" id="c1">🗺 Сверху</button>
+        <button data-cam="side" id="c2">📐 Сбоку</button>
+        <button data-cam="front" id="c3">🏎 Спереди</button>
+        <button data-cam="back" id="c4">🔙 Сзади</button>
+        <button id="orbB">🌀 Орбита</button>
+        <button id="folB">🎯 Следить</button>
+      </div>
+      <div id="fps" class="gs">FPS –</div>
+      <div class="rp gs"><div class="rh">Радар</div><canvas id="rd" width="140" height="140"></canvas></div>
+      <div class="bh" id="bigHud"><div class="n" id="bigN">0 м/с</div><div class="l">скорость</div><div class="alt" id="bigA">высота 0 м</div></div>
+      <div class="dk dl">
+        <div class="sp gs" id="pL">
+          <div class="cp">
+            <div><div class="tt">Готовые тела</div>
+            <div class="pr" id="prBox">
+              <button data-p="foot" title="Футбол">⚽</button><button data-p="tennis" title="Теннис">🎾</button>
+              <button data-p="basket" title="Баскетбол">🏀</button><button data-p="ping" title="Пинг-понг">⚪</button>
+              <button data-p="shot" title="Ядро">🔨</button><button data-p="badm" title="Волан">🏸</button>
+              <button data-p="feather" title="Пёрышко">🪶</button>
+            </div></div>
+            <div class="ct"><label>Скорость <span id="vL">25.0 м/с</span></label><input type="range" id="v0" min="5" max="80" step="0.5" value="25"></div>
+            <div class="ct"><label>Угол <span id="aL">45°</span></label><input type="range" id="a0" min="5" max="85" step="1" value="45"></div>
+            <div class="ct"><label>Масса <span id="mL">0.430 кг</span></label><input type="range" id="mass" min="0.002" max="7.26" step="0.001" value="0.43"></div>
+            <div class="ct"><label>Площадь <span id="AL">0.038 м²</span></label><input type="range" id="area" min="0.001" max="0.05" step="0.001" value="0.038"></div>
+            <div class="ct"><label>Cd <span id="cdL">0.50</span></label><input type="range" id="cd" min="0.05" max="1.4" step="0.05" value="0.5"></div>
+            <div class="ct"><label>Закрутка <span id="spinL">0.0</span></label><input type="range" id="spin" min="-3" max="3" step="0.1" value="0"></div>
+            <div class="ct"><label>Ветер <span id="windL">0 м/с</span></label><input type="range" id="wind" min="-15" max="15" step="0.5" value="0"></div>
+            <div class="ct"><label>Высота пушки <span id="h0L">0.0 м</span></label><input type="range" id="h0" min="0" max="3" step="0.1" value="0"></div>
+            <div class="ct"><label>Скорость времени <span id="tsL">×1.0</span></label><input type="range" id="ts" min="0.1" max="2" step="0.1" value="1"></div>
+            <div><div class="tt" style="margin-bottom:4px">Планета</div>
+            <div class="sg" id="gseg">
+              <button class="act" data-g="9.81" data-rho="1.225">🌍 Земля</button>
+              <button data-g="1.62" data-rho="0">🌕 Луна</button>
+              <button data-g="3.71" data-rho="0.02">🔴 Марс</button>
+            </div></div>
+            <div class="sg"><button class="act" id="mAir">Атмосфера</button><button id="mVac">Вакуум</button></div>
+            <div class="swr">Вектор скорости<div class="sw"><input type="checkbox" id="arrT" checked><span class="sl"></span></div></div>
+            <div class="swr">Призраки<div class="sw"><input type="checkbox" id="ghT" checked><span class="sl"></span></div></div>
+            <div class="swr">Плотность ρ(h) ↓ с высотой<div class="sw"><input type="checkbox" id="rhoH"><span class="sl"></span></div></div>
+            <div class="hint">💡 Оптимум: <b id="optA">–</b> · <b>O</b> применить · <b>G</b> мишень · <b>Space</b> пуск</div>
           </div>
         </div>
+        <button class="pt" id="tL">◀</button>
       </div>
-      <button class="pt" id="tR">▶</button>
-    </div>
-    <div class="cdk">
-      <button class="ctb gs" id="chT">📈 Графики</button>
-      <div class="chp gs" id="chP">
-        <div class="chTabs">
-          <button class="act" data-cc="xy">y(x)</button>
-          <button data-cc="yt">y(t)</button>
-          <button data-cc="vt">v(t)</button>
-          <button data-cc="at">a(t)</button>
+      <div class="dk dr">
+        <div class="sp gs" id="pR">
+          <div class="cp hudp">
+            <div class="st"><span>Дальность (идеал)</span><b id="rI">–</b></div>
+            <div class="st"><span>Дальность (реал)</span><b class="blue" id="rR">–</b></div>
+            <div class="st"><span>Погрешность</span><b class="red" id="erV">–</b></div>
+            <div class="st"><span>Макс. высота</span><b id="mH">–</b></div>
+            <div class="st"><span>Угол падения</span><b id="la">–</b></div>
+            <div class="st"><span>Рекорд</span><b class="gold" id="bs">–</b></div>
+            <div class="st"><span>Счёт в мишени</span><b class="gold" id="ss">0 · серия 0</b></div>
+            <div class="tl">
+              <div><small>Время</small><b id="tV">0.0 с</b></div><div><small>Скор.</small><b id="vV">0</b></div>
+              <div><small>Выс.</small><b id="hV">0</b></div><div><small>Путь</small><b id="xV">0</b></div>
+            </div>
+            <div class="ct"><label>Время полёта <span id="timeL">0.00 с</span></label><input type="range" id="tl" min="0" max="100" value="0" step="0.1"></div>
+            <div class="ab">
+              <button class="bt m" id="playB">▶ ПУСК</button>
+              <button class="bt s" id="cmpB" title="Гонка реал vs идеал">⚖️</button>
+              <button class="bt s" id="stopB">⏹</button>
+            </div>
+            <div class="ab" style="margin-top:0">
+              <button class="bt s" id="optB" title="Оптимум (O)">⚡</button>
+              <button class="bt s" id="tgtB" title="Мишень (G)">🎯</button>
+              <button class="bt s" id="rndB" title="Случайно">🎲</button>
+              <button class="bt s" id="rstB" title="Сброс">🔄</button>
+              <button class="bt s" id="csvB" title="CSV">📄</button>
+            </div>
+            <div class="ab" style="margin-top:0">
+              <button class="bt s" id="snapA" title="Сохранить бросок A">💾 A</button>
+              <button class="bt s" id="snapB" title="Сохранить бросок B">💾 B</button>
+              <button class="bt s" id="abClr" title="Убрать снимки">✖ AB</button>
+            </div>
+          </div>
         </div>
-        <div class="chh"><span id="chName">y(x)</span><span><i class="lgr"></i>реал<i class="lgi"></i>идеал<i class="lgA"></i>A<i class="lgB"></i>B</span></div>
-        <canvas id="ch" width="500" height="170"></canvas>
+        <button class="pt" id="tR">▶</button>
       </div>
-    </div>
+      <div class="cdk">
+        <button class="ctb gs" id="chT">📈 Графики</button>
+        <div class="chp gs" id="chP">
+          <div class="chTabs">
+            <button class="act" data-cc="xy">y(x)</button>
+            <button data-cc="yt">y(t)</button>
+            <button data-cc="vt">v(t)</button>
+            <button data-cc="at">a(t)</button>
+          </div>
+          <div class="chh"><span id="chName">y(x)</span><span><i class="lgr"></i>реал<i class="lgi"></i>идеал<i class="lgA"></i>A<i class="lgB"></i>B</span></div>
+          <canvas id="ch" width="500" height="170"></canvas>
+        </div>
+      </div>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- РАЗДЕЛ 3 -->
-<section id="docs" class="lnd">
-  <div class="rv"><div class="tag">Проект изнутри</div>
-  <h2 class="big">Метод и реализация</h2></div>
-  <div class="cards">
-    <div class="crd rv" style="--i:0"><div class="ic">🧮</div><h3>Метод Рунге–Кутты</h3><p>Аналитического решения с квадратичным сопротивлением нет — уравнение интегрируется численно методом РК4 с шагом 1/240 с. Идеальная парабола считается по формулам кинематики.</p></div>
-    <div class="crd rv" style="--i:1"><div class="ic">🌀</div><h3>Эффект Магнуса</h3><p>Вращающийся шар увлекает воздух: F = ½·ρ·A·r·S·v². Положительная закрутка поднимает траекторию, отрицательная «топит» — как «сухой лист» в футболе.</p></div>
-    <div class="crd rv" style="--i:2"><div class="ic">🌍</div><h3>Три планеты</h3><p>Земля, Луна, Марс. Контрольный тест: на Луне атмосферы нет — реальная и идеальная траектории совпадают, что доказывает роль именно воздуха.</p></div>
-    <div class="crd rv" style="--i:0"><div class="ic">📊</div><h3>Графики и данные</h3><p>Четыре графика: y(x), y(t), v(t), a(t). Журнал бросков хранится в браузере и выгружается в CSV — готовая таблица для отчёта.</p></div>
-    <div class="crd rv" style="--i:1"><div class="ic">💾</div><h3>Снимки A/B</h3><p>Сохрани бросок при 45°, найди оптимум ⚡ и сохрани как B — выигрыш от знания физики виден сразу на одной сцене.</p></div>
-    <div class="crd rv" style="--i:2"><div class="ic">🏆</div><h3>Достижения</h3><p>12 ачивок: от «Первого пуска» до «Снайпера» — геймификация помогает пройти все эксперименты. Открой паспорт проекта и посмотри список.</p></div>
-  </div>
-  <div class="techrow rv">
-    <span class="tgb">JavaScript</span><span class="tgb">Three.js · WebGL</span><span class="tgb">Canvas 2D</span>
-    <span class="tgb">Web Audio API</span><span class="tgb">RK4</span><span class="tgb">MIT License</span>
+<section id="docs" class="panel">
+  <div class="wrap">
+    <div class="rv"><div class="tag">Проект изнутри</div>
+    <h2 class="big">Метод и реализация</h2></div>
+    <div class="cards">
+      <div class="crd rv"><div class="ic">🧮</div><h3>Метод Рунге–Кутты</h3><p>Аналитического решения с квадратичным сопротивлением нет — уравнение интегрируется численно методом РК4 с шагом 1/240 с. Идеальная парабола считается по формулам кинематики.</p></div>
+      <div class="crd rv"><div class="ic">🌀</div><h3>Эффект Магнуса</h3><p>Вращающийся шар увлекает воздух: F = ½·ρ·A·r·S·v². Положительная закрутка поднимает траекторию, отрицательная «топит» — как «сухой лист» в футболе.</p></div>
+      <div class="crd rv"><div class="ic">🌍</div><h3>Три планеты</h3><p>Земля, Луна, Марс. Контрольный тест: на Луне атмосферы нет — реальная и идеальная траектории совпадают, что доказывает роль именно воздуха.</p></div>
+      <div class="crd rv"><div class="ic">📊</div><h3>Графики и данные</h3><p>Четыре графика: y(x), y(t), v(t), a(t). Журнал бросков хранится в браузере и выгружается в CSV — готовая таблица для отчёта.</p></div>
+      <div class="crd rv"><div class="ic">💾</div><h3>Снимки A/B</h3><p>Сохрани бросок при 45°, найди оптимум ⚡ и сохрани как B — выигрыш от знания физики виден сразу на одной сцене.</p></div>
+      <div class="crd rv"><div class="ic">🏆</div><h3>Достижения</h3><p>12 ачивок: от «Первого пуска» до «Снайпера» — геймификация помогает пройти все эксперименты. Открой паспорт проекта в симуляции.</p></div>
+    </div>
+    <div class="rv" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:30px">
+      <span class="tgb" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:7px 16px;font-size:.8rem;font-family:Consolas,monospace;color:var(--mu)">JavaScript</span>
+      <span class="tgb" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:7px 16px;font-size:.8rem;font-family:Consolas,monospace;color:var(--mu)">Three.js · WebGL</span>
+      <span class="tgb" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:7px 16px;font-size:.8rem;font-family:Consolas,monospace;color:var(--mu)">Canvas 2D</span>
+      <span class="tgb" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:7px 16px;font-size:.8rem;font-family:Consolas,monospace;color:var(--mu)">Web Audio API</span>
+      <span class="tgb" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:7px 16px;font-size:.8rem;font-family:Consolas,monospace;color:var(--mu)">RK4</span>
+      <span class="tgb" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:7px 16px;font-size:.8rem;font-family:Consolas,monospace;color:var(--mu)">MIT License</span>
+    </div>
+    <div class="foot">Траектория PRO · индивидуальный проект по физике · 2026 · код открыт, лицензия MIT</div>
   </div>
 </section>
 
+<!-- МОДАЛКА -->
 <div class="md" id="mod">
   <div class="mc">
     <button class="mx" id="mx">✕</button>
@@ -429,9 +442,9 @@ nav a{margin-left:14px;font-size:.75rem}
       <div class="f">m·a = F<sub>тяж</sub> + F<sub>сопр</sub> + F<sub>магн</sub><br>F<sub>сопр</sub> = ½ · ρ · C<sub>d</sub> · A · v²</div>
       <p>Сопротивление растёт квадратично со скоростью: удвоил скорость — выросло в 4 раза. У волана погрешность в сотни процентов, у ядра — единицы.</p>
       <p><b>3. Метод.</b> Уравнение аналитически не решается — используется Рунге–Кутта 4-го порядка, шаг 1/240 с.</p>
-      <p><b>4. Эффект Магнуса.</b> Вращающийся шар увлекает воздух, и возникает сила, перпендикулярная скорости: F = ½·ρ·A·r·S·v², где S — параметр закрутки. Положительная закрутка поднимает траекторию, отрицательная «топит» её — как верхняя и нижняя подача в теннисе.</p>
-      <p><b>5. Плотность с высотой.</b> Переключатель включает модель ρ(h) = ρ₀·exp(−h/8500): на высоте 8,5 км воздух вдвое реже. Для обычных бросков эффект мал, но его видно при сильных запусках — ещё одно доказательство честности модели.</p>
-      <p><b>6. Оптимум.</b> В вакууме всегда 45°, с воздухом — ниже, обычно 30–40°. Клавиша O применяет найденный перебором угол.</p>
+      <p><b>4. Эффект Магнуса.</b> Вращающийся шар увлекает воздух, и возникает сила, перпендикулярная скорости: F = ½·ρ·A·r·S·v², где S — параметр закрутки. Положительная закрутка поднимает траекторию, отрицательная «топит» её.</p>
+      <p><b>5. Плотность с высотой.</b> ρ(h) = ρ₀·exp(−h/8500): на высоте 8,5 км воздух вдвое реже.</p>
+      <p><b>6. Оптимум.</b> В вакууме всегда 45°, с воздухом — 30–40°. Клавиша O применяет найденный перебором угол.</p>
     </div>
     <div id="t3" class="tcn">
       <h3>Как пользоваться</h3>
@@ -439,23 +452,21 @@ nav a{margin-left:14px;font-size:.75rem}
         <li><b>Ползунки:</b> статистика обновляется ещё до броска. Настройки запоминаются.</li>
         <li><b>Тела:</b> эмодзи-кнопки ставят реальные параметры снарядов.</li>
         <li><b>Камера:</b> ракурсы 1–5 провожают шар в полёте. Зажми мышь — свободный облёт, колесо — зум.</li>
-        <li><b>Закрутка:</b> ползунок от −3 до 3. Проверь: при закрутке траектория изгибается, а на Луне — нет.</li>
-        <li><b>Снимки A/B:</b> 💾 A — сохрани бросок, поменяй параметры, 💾 B — второй. Обе траектории лягут на сцену и график. ✖ AB — убрать.</li>
-        <li><b>⚖️:</b> гонка реального и идеального шаров. <b>⚡/O:</b> оптимум. <b>🎯/G:</b> мишень. <b>📄:</b> CSV.</li>
-        <li><b>Клавиши:</b> <kbd>Space</kbd> пуск, <kbd>R</kbd> сброс, <kbd>C</kbd> сравнение, <kbd>O</kbd> оптимум, <kbd>G</kbd> мишень, <kbd>H</kbd> скрыть UI, <kbd>1–5</kbd> камеры. Работают, когда раздел «Симуляция» на экране.</li>
+        <li><b>Снимки A/B:</b> 💾 A — сохрани бросок, поменяй параметры, 💾 B — второй. ✖ AB — убрать.</li>
+        <li><b>Клавиши:</b> <kbd>Space</kbd> пуск, <kbd>R</kbd> сброс, <kbd>C</kbd> сравнение, <kbd>O</kbd> оптимум, <kbd>G</kbd> мишень, <kbd>H</kbd> скрыть UI, <kbd>1–5</kbd> камеры. Работают в разделе «Симуляция».</li>
       </ul>
     </div>
     <div id="t4" class="tcn">
       <h3>Эксперименты</h3>
       <ul>
         <li><b>Перо против ядра:</b> 25 м/с и 45° у 🪶 и 🔨 — сравни дальности.</li>
-        <li><b>Магнус:</b> закрутка +2 и −2 у футбольного мяча — траектории расходятся, как «сухой лист» и подрезка.</li>
-        <li><b>Высота:</b> включи ρ(h) и задай скорость 80 — полёт станет чуть дальше, чем без модели.</li>
-        <li><b>A/B-сравнение:</b> сохрани бросок при 45°, найди оптимум ⚡ и сохрани как B — выигрыш виден сразу.</li>
-        <li><b>Ветер:</b> сравни +10 и −10 м/с — эффект несимметричен; следи за флажком.</li>
-        <li><b>Луна:</b> атмосферы нет — траектории совпадут (и Магнус исчезнет).</li>
-        <li><b>График a(t):</b> у пёрышка ускорение в начале полёта в разы больше g — воздух тормозит сильнее гравитации.</li>
-        <li><b>Данные:</b> серия бросков → журнал → экспорт в CSV — готовая таблица для отчёта.</li>
+        <li><b>Магнус:</b> закрутка +2 и −2 у футбольного мяча — траектории расходятся.</li>
+        <li><b>Высота:</b> включи ρ(h) и задай скорость 80 — полёт станет дальше.</li>
+        <li><b>A/B:</b> 45° против оптимума ⚡ — выигрыш виден сразу.</li>
+        <li><b>Ветер:</b> +10 и −10 м/с — эффект несимметричен; следи за флажком.</li>
+        <li><b>Луна:</b> траектории совпадут (и Магнус исчезнет).</li>
+        <li><b>График a(t):</b> у пёрышка ускорение в начале полёта в разы больше g.</li>
+        <li><b>Данные:</b> серия бросков → журнал → CSV для отчёта.</li>
       </ul>
     </div>
     <div id="t5" class="tcn">
@@ -464,7 +475,7 @@ nav a{margin-left:14px;font-size:.75rem}
     </div>
     <div id="t6" class="tcn">
       <h3>Журнал бросков</h3>
-      <p>Каждый завершённый полёт пишется сюда автоматически и сохраняется в браузере. Экспорт — одной кнопкой в CSV.</p>
+      <p>Каждый завершённый полёт пишется сюда автоматически и сохраняется в браузере.</p>
       <div id="logB" style="max-height:280px;overflow-y:auto"></div>
       <div style="display:flex;gap:8px;margin-top:12px">
         <button class="bt s" id="lgCsv" style="flex:1">📄 Экспорт журнала</button>
@@ -474,48 +485,50 @@ nav a{margin-left:14px;font-size:.75rem}
   </div>
 </div>
 <div id="to"></div>
-<div class="foot">Траектория PRO · индивидуальный проект по физике · 2026 · код открыт, лицензия MIT</div>
 
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
 
-/* ===== ФОН: ЧАСТИЦЫ ===== */
+/* ===== ФОН: ЗВЁЗДЫ + ПАРАЛЛАКС ===== */
 (function(){const c=$('bgp'),x=c.getContext('2d');let w,h,pts=[];
 function rs(){w=c.width=innerWidth;h=c.height=innerHeight;
-pts=Array.from({length:110},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.6+.3,
-s:Math.random()*.28+.05,ph:Math.random()*6.28,hue:Math.random()<.7?'122,53,255':'255,77,210'}));}
+pts=Array.from({length:130},()=>({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.6+.3,
+s:Math.random()*.3+.05,ph:Math.random()*6.28,hue:Math.random()<.7?'122,53,255':'255,77,210'}));}
 rs();addEventListener('resize',rs);
-(function a(){x.clearRect(0,0,w,h);const sy=scrollY;
+(function a(){x.clearRect(0,0,w,h);
 pts.forEach(p=>{p.y-=p.s;if(p.y<-6)p.y=h+6;
-const yy=(p.y-sy*0.06%h+h)%h,al=.2+.3*Math.abs(Math.sin(performance.now()*.001+p.ph));
-x.beginPath();x.arc(p.x,yy,p.r,0,7);
+const al=.2+.3*Math.abs(Math.sin(performance.now()*.001+p.ph));
+x.beginPath();x.arc(p.x,p.y,p.r,0,7);
 x.fillStyle='rgba('+p.hue+','+al.toFixed(2)+')';
 x.shadowColor='rgba('+p.hue+',.8)';x.shadowBlur=6;x.fill();x.shadowBlur=0;});
 requestAnimationFrame(a);})();})();
 
-/* ===== ПРОГРЕСС И АКТИВНЫЙ РАЗДЕЛ ===== */
-addEventListener('scroll',()=>{const d=document.documentElement;
-$('pbar').style.width=(scrollY/(d.scrollHeight-innerHeight)*100)+'%';},{passive:true});
-const nvA=document.querySelectorAll('.nv a');
-new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)
-nvA.forEach(a=>a.classList.toggle('act',a.getAttribute('href')==='#'+e.target.id));});},
-{rootMargin:'-40% 0px -55% 0px'}).observe($('about'));
-new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)
-nvA.forEach(a=>a.classList.toggle('act',a.getAttribute('href')==='#'+e.target.id));});},
-{rootMargin:'-40% 0px -55% 0px'}).observe($('sim'));
-new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)
-nvA.forEach(a=>a.classList.toggle('act',a.getAttribute('href')==='#'+e.target.id));});},
-{rootMargin:'-40% 0px -55% 0px'}).observe($('docs'));
-
-/* ===== АНИМАЦИЯ ПОЯВЛЕНИЯ + СЧЁТЧИКИ ===== */
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');io.unobserve(e.target);}}),{threshold:.12});
-document.querySelectorAll('.rv').forEach(el=>io.observe(el));
-const cio=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;
-const el=e.target,tv=+el.dataset.cnt,t0=performance.now();
-(function st(n){const k=Math.min(1,(n-t0)/1100),v=Math.round(tv*(1-Math.pow(1-k,3)));
-el.textContent=v;if(k<1)requestAnimationFrame(st);})(t0);cio.unobserve(el);}),{threshold:.5});
-document.querySelectorAll('[data-cnt]').forEach(el=>cio.observe(el));
+/* ===== ПЕРЕКЛЮЧЕНИЕ РАЗДЕЛОВ ===== */
+let simActive=false;
+const panels=document.querySelectorAll('.panel'),navB=document.querySelectorAll('.nv button');
+function runCounters(p){p.querySelectorAll('[data-cnt]').forEach((el,i)=>{
+if(el._done)return;el._done=true;const tv=+el.dataset.cnt,t0=performance.now()+i*150;
+(function st(n){const k=Math.min(1,Math.max(0,(n-t0)/1100)),v=Math.round(tv*(1-Math.pow(1-k,3)));
+el.textContent=v;if(k<1)requestAnimationFrame(st);})(performance.now());});}
+function go(id,skipHash){
+panels.forEach(p=>{const on=p.id===id;
+if(on&&!p.classList.contains('active')){
+p.classList.add('active');p.querySelectorAll('.rv').forEach((el,i)=>setTimeout(()=>el.classList.add('vis'),120+i*90));
+runCounters(p);}
+else if(!on)p.classList.remove('active');});
+navB.forEach(b=>b.classList.toggle('act',b.dataset.sec===id));
+simActive=(id==='sim');
+if(simActive)setTimeout(sizeSim,80);
+if(!skipHash){try{history.replaceState(null,'','#'+id);}catch(e){location.hash=id;}}
+if(document.fullscreenElement&&id!=='sim')document.exitFullscreen();}
+navB.forEach(b=>b.addEventListener('click',()=>go(b.dataset.sec)));
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
+addEventListener('hashchange',()=>{const id=location.hash.slice(1);
+if(['about','sim','docs'].includes(id)&&!document.querySelector('.panel.active#'+id))go(id,true);});
+(function(){const h=location.hash.slice(1);
+if(['about','sim','docs'].includes(h)&&h!=='about')go(h,true);
+else{const p=$('about');p.querySelectorAll('.rv').forEach((el,i)=>setTimeout(()=>el.classList.add('vis'),150+i*90));runCounters(p);}})();
 
 /* ===== СИМУЛЯТОР ===== */
 const box=$('simBox');
@@ -564,7 +577,7 @@ journal.forEach(r=>{h+='<tr><td>'+r.tm+'</td><td>'+r.v0+'</td><td>'+r.ang+'°</t
 b.innerHTML=h+'</table>';}
 renderJr();
 
-// ===== 3D (в контейнере) =====
+// ===== 3D: КОСМИЧЕСКАЯ СЦЕНА =====
 const rn=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
 rn.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
 $('sc').appendChild(rn.domElement);
@@ -579,9 +592,28 @@ const pl=new THREE.PointLight(0x7df3ff,1.1,80);pl.position.set(0,8,0);sc.add(pl)
 const gr=new THREE.GridHelper(600,60,0x5a2a9e,0x1a0c3e);gr.material.transparent=true;gr.material.opacity=0.25;sc.add(gr);
 const gnd=new THREE.Mesh(new THREE.PlaneGeometry(800,800),new THREE.MeshStandardMaterial({color:0x120826,roughness:1,transparent:true,opacity:0.85}));
 gnd.rotation.x=-Math.PI/2;gnd.position.y=-0.03;sc.add(gnd);
-(function(){const n=420,a=new Float32Array(n*3);for(let i=0;i<n;i++){a[i*3]=(Math.random()-0.5)*1200;a[i*3+1]=Math.random()*400+20;a[i*3+2]=(Math.random()-0.5)*1200;}
+// звёзды 3 слоя
+(function(){[[900,900,1.1,.7],[600,700,1.8,.55],[250,500,2.6,.4]].forEach(([n,spread,size,op])=>{
+const a=new Float32Array(n*3);for(let i=0;i<n;i++){a[i*3]=(Math.random()-.5)*spread*2;a[i*3+1]=Math.random()*400+20;a[i*3+2]=(Math.random()-.5)*spread*2;}
 const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(a,3));
-sc.add(new THREE.Points(g,new THREE.PointsMaterial({color:0xd8b8ff,size:0.8,transparent:true,opacity:0.45})));})();
+sc.add(new THREE.Points(g,new THREE.PointsMaterial({color:0xd8b8ff,size,transparent:true,opacity:op,sizeAttenuation:true})));});})();
+// небулии — светящиеся спрайты
+(function(){function nb(r,g,b){const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');
+const gr=x.createRadialGradient(128,128,0,128,128,128);gr.addColorStop(0,'rgba('+r+','+g+','+b+',.5)');
+gr.addColorStop(.45,'rgba('+r+','+g+','+b+',.14)');gr.addColorStop(1,'rgba('+r+','+g+','+b+',0)');
+x.fillStyle=gr;x.fillRect(0,0,256,256);return new THREE.CanvasTexture(c);}
+[[122,53,255,-380,180,-420,340],[192,38,211,420,240,-520,420],[0,229,255,-120,320,-700,300],[255,77,210,560,120,-350,260]]
+.forEach(([r,g,b,x0,y0,z0,s])=>{
+const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:nb(r,g,b),blending:THREE.AdditiveBlending,depthWrite:false,transparent:true,opacity:.8}));
+sp.position.set(x0,y0,z0);sp.scale.set(s,s,1);sc.add(sp);});})();
+// планета с кольцом на горизонте
+const planet=new THREE.Group();sc.add(planet);
+const pm=new THREE.Mesh(new THREE.SphereGeometry(48,32,32),new THREE.MeshStandardMaterial({color:0x5a2a9e,emissive:0x2a0a5e,roughness:.9}));
+pm.position.set(-320,64,-640);planet.add(pm);
+const ring=new THREE.Mesh(new THREE.RingGeometry(62,96,64),new THREE.MeshBasicMaterial({color:0xb26bff,transparent:true,opacity:.35,side:THREE.DoubleSide}));
+ring.rotation.x=Math.PI/2.6;ring.position.copy(pm.position);planet.add(ring);
+const ring2=ring.clone();ring2.scale.setScalar(1.25);ring2.material=ring.material.clone();ring2.material.opacity=.18;planet.add(ring2);
+// горы
 (function(){const m=new THREE.MeshStandardMaterial({color:0x1d0f3d,roughness:1,flatShading:true});
 for(let i=0;i<12;i++){const an=Math.random()*Math.PI*2,d=280+Math.random()*140,h=25+Math.random()*50;
 const c=new THREE.Mesh(new THREE.ConeGeometry(30+Math.random()*35,h,5),m);c.position.set(Math.cos(an)*d,h/2-2,Math.sin(an)*d);sc.add(c);}})();
@@ -671,21 +703,14 @@ const lR=lbl('#7df3ff'),lI=lbl('#ff4dd2'),lT=lbl('#ff6b83');
 function dl(l,t){const g=l.cv.getContext('2d');g.clearRect(0,0,512,128);g.font='bold 54px Segoe UI';g.textAlign='center';g.fillText(t,256,80);l.tx.needsUpdate=true;}
 const vA=new THREE.ArrowHelper(new THREE.Vector3(1,0,0),new THREE.Vector3(),2,0xff4dd2,0.6,0.3);vA.visible=false;sc.add(vA);
 const fl=new THREE.PointLight(0x7df3ff,0,40);sc.add(fl);
-let sh=null,shT=1,shk=0;
-function spSh(x){if(sh)sc.remove(sh);
-sh=new THREE.Mesh(new THREE.RingGeometry(0.8,1.2,36),new THREE.MeshBasicMaterial({color:0x7df3ff,transparent:true,opacity:0.85,side:THREE.DoubleSide}));
-sh.rotation.x=-Math.PI/2;sh.position.set(x,0.05,0);sc.add(sh);shT=0;shk=1;}
-let bu=null;
-function spBu(x,n){if(bu)sc.remove(bu.p);
-const po=new Float32Array(n*3),ve=new Float32Array(n*3),co=new Float32Array(n*3);
-const pal=[[0.49,0.95,1],[1,0.3,0.82]];
-for(let i=0;i<n;i++){po[i*3]=x;po[i*3+1]=0.2;po[i*3+2]=0;
-const a=Math.random()*Math.PI*2;ve[i*3]=Math.cos(a)*Math.random()*5;ve[i*3+1]=2+Math.random()*6;ve[i*3+2]=Math.sin(a)*Math.random()*5;
-const c=pal[Math.floor(Math.random()*2)];co[i*3]=c[0];co[i*3+1]=c[1];co[i*3+2]=c[2];}
-const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(po,3));
-g.setAttribute('color',new THREE.BufferAttribute(co,3));
-bu={p:new THREE.Points(g,new THREE.PointsMaterial({size:0.45,vertexColors:true,transparent:true,opacity:1,blending:THREE.AdditiveBlending,depthWrite:false})),vel:ve,t:0};
-sc.add(bu.p);}
+// падающие звёзды
+let met=null,metT=0;
+function spMet(){const a=new Float32Array(2*3);
+const x0=(Math.random()-.5)*600,y0=180+Math.random()*160,z0=-300-Math.random()*300;
+a[0]=x0;a[1]=y0;a[2]=z0;
+const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(a,3));
+met={l:new THREE.Line(g,new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.9})),vx:-40-Math.random()*40,vy:-30-Math.random()*20,t:0};
+sc.add(met.l);}
 
 const SNCOL={A:0x34d399,B:0xa78bfa};
 const snaps={A:null,B:null};
@@ -705,10 +730,13 @@ $('snapB').addEventListener('click',()=>setSnap('B'));
 $('abClr').addEventListener('click',()=>{['A','B'].forEach(k=>{if(snaps[k]){sc.remove(snaps[k].line);snaps[k]=null;}});
 $('snapA').classList.remove('act');$('snapB').classList.remove('act');toast('Снимки убраны');drCh();});
 
-// ===== КАМЕРА =====
+// ===== КАМЕРА (дрейф + параллакс) =====
 const orb={tx:20,ty:4,tz:0,r:60,th:0.9,ph:1.0};
 let camMode='orbit',orbAuto=false,follow=false,ct=null,fixP=null;
-function updCam(){
+let idleT=0,mxN=0,myN=0,mxT=0,myT=0;
+addEventListener('mousemove',e=>{mxT=(e.clientX/innerWidth-.5);myT=(e.clientY/innerHeight-.5);});
+function updCam(dt){
+mxN+=(mxT-mxN)*.04;myN+=(myT-myN)*.04;
 if(camMode==='fixed'&&fixP){
 cam.position.copy(fixP.p);cam.up.copy(fixP.u);cam.lookAt(fixP.t);return;}
 cam.up.set(0,1,0);
@@ -716,7 +744,13 @@ cam.position.set(
 orb.tx+orb.r*Math.sin(orb.ph)*Math.cos(orb.th),
 orb.ty+orb.r*Math.cos(orb.ph),
 orb.tz+orb.r*Math.sin(orb.ph)*Math.sin(orb.th));
-cam.lookAt(orb.tx,orb.ty,orb.tz);}
+cam.lookAt(orb.tx,orb.ty,orb.tz);
+// параллакс + дрейф
+const idle=idleT>6&&!drag&&!ct;
+const dx=idle?Math.sin(performance.now()*.0002)*.02:mxN*.05,
+dy=idle?Math.sin(performance.now()*.00015)*.012:myN*.04;
+cam.rotateY(-dx);cam.rotateX(dy);
+if(idle)orb.th+=dt*.012;}
 function toOrbit(){const t=fixP?fixP.t:{x:orb.tx,y:orb.ty,z:orb.tz};
 const dx=cam.position.x-t.x,dy=cam.position.y-t.y,dz=cam.position.z-t.z;
 orb.r=Math.max(4,Math.sqrt(dx*dx+dy*dy+dz*dz));
@@ -725,15 +759,15 @@ orb.th=Math.atan2(dz,dx);orb.tx=t.x;orb.ty=t.y;orb.tz=t.z;
 camMode='orbit';fixP=null;}
 let drag=false,lx=0,ly=0;
 const cvEl=rn.domElement;
-cvEl.addEventListener('pointerdown',e=>{drag=true;lx=e.clientX;ly=e.clientY;
+cvEl.addEventListener('pointerdown',e=>{drag=true;lx=e.clientX;ly=e.clientY;idleT=0;
 if(camMode==='fixed')toOrbit();ct=null;});
-window.addEventListener('pointerup',()=>{drag=false;});
-window.addEventListener('pointercancel',()=>{drag=false;});
-window.addEventListener('pointermove',e=>{if(!drag||camMode!=='orbit')return;
+addEventListener('pointerup',()=>{drag=false;});
+addEventListener('pointercancel',()=>{drag=false;});
+addEventListener('pointermove',e=>{if(!drag||camMode!=='orbit')return;idleT=0;
 orb.th-=(e.clientX-lx)*0.006;
 orb.ph=Math.max(0.04,Math.min(1.6,orb.ph-(e.clientY-ly)*0.005));
 lx=e.clientX;ly=e.clientY;});
-cvEl.addEventListener('wheel',e=>{e.preventDefault();e.stopPropagation();
+cvEl.addEventListener('wheel',e=>{e.preventDefault();e.stopPropagation();idleT=0;
 if(camMode==='fixed')toOrbit();
 orb.r=Math.max(4,Math.min(600,orb.r*(e.deltaY>0?1.1:0.9)));},{passive:false});
 cvEl.addEventListener('dblclick',()=>$('playB').click());
@@ -895,7 +929,11 @@ const ck=new THREE.Clock();let ld=false,fpsN=0,fpsT=0;
 const camTgt=new THREE.Vector3();
 function tick(){requestAnimationFrame(tick);
 const dt=Math.min(ck.getDelta(),0.05);
+idleT+=dt;
 fpsN++;fpsT+=dt;if(fpsT>0.5){$('fps').textContent='FPS '+Math.round(fpsN/fpsT);fpsN=0;fpsT=0;}
+if(simActive||!fc===false){}
+if(!simActive){if(!ld){/* ждём */}
+  return;} // не рендерим вне раздела симуляции — экономим батарею
 if(ct){ct.k=Math.min(1,ct.k+dt*2.5);
 const e=ct.k<0.5?2*ct.k*ct.k:1-Math.pow(-2*ct.k+2,2)/2;
 if(ct.mode==='orbit'){
@@ -914,9 +952,17 @@ if(orbAuto)orb.th+=dt*0.3;
 if(follow&&camMode==='orbit'){
 orb.tx+=(rB.position.x-orb.tx)*Math.min(1,dt*3);
 orb.ty+=(Math.max(2,rB.position.y)-orb.ty)*Math.min(1,dt*3);orb.tz=0;}
-updCam();
+updCam(dt);
+planet.rotation.y+=dt*.02;
 if(shk>0){shk=Math.max(0,shk-dt*2.5);const s=shk*0.5;
 cam.position.x+=(Math.random()-0.5)*s;cam.position.y+=(Math.random()-0.5)*s;}
+metT-=dt;
+if(!met&&metT<=0){spMet();metT=4+Math.random()*7;}
+if(met){met.t+=dt;const po=met.l.geometry.attributes.position;
+po.setXYZ(0,po.getX(0)+met.vx*dt,po.getY(0)+met.vy*dt,0);
+po.setXYZ(1,po.getX(0)-met.vx*.04,po.getY(0)-met.vy*.04,0);
+po.needsUpdate=true;
+if(met.t>4){sc.remove(met.l);met=null;}}
 const wv=Math.abs(P.wind);
 cloth.scale.x=Math.max(0.15,Math.min(1.15,0.25+wv*0.06));
 cloth.rotation.y=(P.wind>=0?-1:1)*(-Math.PI/2)+Math.sin(performance.now()*0.006)*0.15*Math.min(1,wv*0.1);
@@ -1137,10 +1183,7 @@ document.querySelectorAll('#gseg button').forEach((b,i)=>b.classList.toggle('act
 cmp=false;$('cmpB').classList.remove('act');iB.visible=iG.visible=false;
 clrGh();recalc();saveP();toast('Сброшено');});
 
-// Клавиши — только когда симуляция на экране
-let simOn=false;
-new IntersectionObserver(es=>{simOn=es[0].isIntersecting;},{threshold:.2}).observe(box);
-window.addEventListener('keydown',e=>{if(!simOn||e.target.tagName==='INPUT')return;
+addEventListener('keydown',e=>{if(!simActive||e.target.tagName==='INPUT')return;
 if(e.code==='Space'){e.preventDefault();$('playB').click();return;}
 const k=e.key.toLowerCase();
 if(k==='h'||k==='р')toggleUi();
@@ -1151,8 +1194,7 @@ if(k==='g'||k==='п')tgTg();
 if(k==='1')setCam('reset');if(k==='2')setCam('top');
 if(k==='3')setCam('side');if(k==='4')setCam('front');
 if(k==='5')setCam('back');});
-window.addEventListener('resize',sizeSim);
-window.addEventListener('resize',()=>setTimeout(sizeSim,50));
+addEventListener('resize',()=>{sizeSim();});
 
 // СТАРТ
 try{recalc();fOpt();setCam('reset');tick();}
